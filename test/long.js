@@ -47,8 +47,6 @@ function fib(a) {
 function main() {
   var d = new Date;
 
-  print(longStr('77777777777777777', 10));
-
   print('-- basic operations --');
   print(basic());
 

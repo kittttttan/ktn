@@ -1,5 +1,5 @@
 /**
- * @fileOverview Fraction Object in JavaScript.
+ * @fileOverview Fraction in JavaScript.
  * @version 2011-03-20
  * @requires Long
  * @author kittttttan
@@ -41,36 +41,50 @@ var FRAC_ONE = new Fraction(longNum(1), longNum(1), true);
 var FRAC_ZERO = new Fraction(new Long(), longNum(1), true);
 
 /**
- * Convert String to Fraction.
- * @param {string} str ex.'-1/2'
+ * Convert Number to Fraction.
+ * @param {number} a Numerator
+ * @param {number} b Denominator
+ * @param {boolean} c
  * @returns {Fraction}
  */
-function fracStr(str) {
-  str = str.split('/');
-  return new Fraction(longStr(str[0]), longStr(str[1] || '1'));
+function fracNum(a, b, c) {
+  if (!b) {
+    return new Fraction(longNum(a), longNum(1), true);
+  }
+  return new Fraction(longNum(a), longNum(b), c);
+}
+
+/**
+ * Convert String to Fraction.
+ * @param {string} a ex.'-1/2'
+ * @returns {Fraction}
+ */
+function fracStr(a) {
+  a = a.split('/');
+  return new Fraction(longStr(a[0]), longStr(a[1] || '1'));
 }
 
 /**
  * Convert anything to Fraction.
- * @param n
- * @param d
+ * @param a
+ * @param b
  * @throws {Error} ZeroDivisionError
  * @returns {Fraction}
  */
-function frac(n, d) {
+function frac(a, b) {
   if (!arguments.length) {
     return new Fraction(new Long(), longNum(1), true);
   }
   if (arguments.length === 1) {
-    if (n instanceof Fraction) { return n.clone(); }
-    if (typeof(n) === "string") { return fracStr(n); }
-    return new Fraction(longint(n), longNum(1), true);
+    if (a instanceof Fraction) { return a.clone(); }
+    if (typeof(a) === "string") { return fracStr(a); }
+    return new Fraction(longint(a), longNum(1), true);
   }
-  if (!d) {
-    throw new Error(['ZeroDivisionError:frac(',n,',',d,')'].join(''));
+  if (!b) {
+    throw new Error(['ZeroDivisionError:frac(',a,',',b,')'].join(''));
   }
-  if (!n) { return new Fraction(new Long(), longNum(1), true); }
-  return new Fraction(longint(n), longint(d));
+  if (!a) { return new Fraction(new Long(), longNum(1), true); }
+  return new Fraction(longint(a), longint(b));
 }
 
 /**
@@ -90,185 +104,289 @@ function fracCancel(a, b) {
 }
 
 /**
- * @param {Fraction} f
- * @param {Fraction} g
- * @returns {Fraction} f + g
+ * @param {Fraction} a
+ * @param {Fraction} b
+ * @returns {Fraction} a + b
  */
-function fracAdd(f, g) {
-  return new Fraction(longAdd(longMul(f._n, g._d), longMul(f._d, g._n)),
-                      longMul(f._d, g._d));
+function fracAdd(a, b) {
+  return new Fraction(longAdd(longMul(a._n, b._d), longMul(a._d, b._n)),
+                      longMul(a._d, b._d));
 }
 
 /**
- * @param {Fraction} f
- * @param {Fraction} g
- * @returns {Fraction} f - g
+ * @param {Fraction} a
+ * @param {Fraction} b
+ * @returns {Fraction} a - b
  */
-function fracSub(f, g) {
-  return new Fraction(longSub(longMul(f._n, g._d), longMul(f._d, g._n)),
-                      longMul(f._d, g._d));
+function fracSub(a, b) {
+  return new Fraction(longSub(longMul(a._n, b._d), longMul(a._d, b._n)),
+                      longMul(a._d, b._d));
 }
 
 /**
- * @param {Fraction} f
- * @param {Fraction} g
- * @returns {Fraction} f * g
+ * @param {Fraction} a
+ * @param {Fraction} b
+ * @returns {Fraction} a * b
  */
-function fracMul(f, g) {
-  return new Fraction(longMul(f._n, g._n), longMul(f._d, g._d));
+function fracMul(a, b) {
+  return new Fraction(longMul(a._n, b._n), longMul(a._d, b._d));
 }
 
 /**
- * @param {Fraction} f
- * @param {Fraction} g
- * @returns {Fraction} f / g
+ * @param {Fraction} a
+ * @param {Fraction} b
+ * @returns {Fraction} a / b
  */
-function fracDiv(f, g) {
-  return new Fraction(longMul(f._n, g._d), longMul(f._d, g._n));
+function fracDiv(a, b) {
+  return new Fraction(longMul(a._n, b._d), longMul(a._d, b._n));
 }
 
 /**
- * @param {Fraction} f
- * @param {number} n
- * @returns {Fraction} f^n
+ * @param {Fraction} a
+ * @param {number} b
+ * @returns {Fraction} a^b
  */
-function fracPow(f, n) {
-  return new Fraction(longPow(f._n, n), longPow(f._d, n), true);
+function fracPow(a, b) {
+  return new Fraction(longPow(a._n, b), longPow(a._d, b), true);
 }
 
 /**
- * @param {Fraction} f
- * @returns {Fraction} |f|
+ * @param {Fraction} a
+ * @returns {Fraction} |a|
  */
-function fracAbs(f) {
-  return new Fraction(longAbs(f._n), f._d, true);
+function fracAbs(a) {
+  return new Fraction(longAbs(a._n), a._d, true);
 }
 
 /**
- * @param {Fraction} f
- * @returns {Fraction} -f
+ * @param {Fraction} a
+ * @returns {Fraction} -a
  */
-function fracNeg(f) {
-  return new Fraction(longNeg(f._n), f._d, true);
+function fracNeg(a) {
+  return new Fraction(longNeg(a._n), a._d, true);
 }
 
 /**
- * @param {Fraction} f
- * @param {Fraction} g
- * @returns {boolean} f == g
+ * @param {Fraction} a
+ * @param {Fraction} b
+ * @returns {boolean} a == b
  */
-function fracEq(f, g) {
-  f = frac(f);
-  g = frac(g);
-  if (longEq(f._n, g._n) && longEq(f._d, g._d)) { return true; }
+function fracEq(a, b) {
+  f = frac(a);
+  g = frac(b);
+  if (longEq(a._n, b._n) && longEq(a._d, b._d)) { return true; }
   return false;
 }
 
 /**
- * @param {Fraction} f
- * @param {Fraction} g
- * @returns {boolean} f === g
+ * @param {Fraction} a
+ * @param {Fraction} b
+ * @returns {boolean} a === b
  */
-function fracEqual(f, g) {
-  if (!(f instanceof Fraction) || !(g instanceof Fraction)) { return false; }
-  if (longEqual(f._n, g._n) && longEqual(f._d, g._d)) { return true; }
+function fracEqual(a, b) {
+  if (!(a instanceof Fraction) || !(b instanceof Fraction)) { return false; }
+  if (longEqual(a._n, b._n) && longEqual(a._d, b._d)) { return true; }
   return false;
 }
 
 /**
- * @param {Fraction} f
- * @param {Fraction} g
- * @returns {number} If f > g then 1, else if f == g then 0, else -1.
+ * @param {Fraction} a
+ * @param {Fraction} b
+ * @returns {number} <br>
+ *    1 (a > b)<br>
+ *    0 (a = b)<br>
+ *   -1 (a < b)
  */
-function fracCmp(f, g) {
-  var a = longMul(f._n, g._d);
-  var b = longMul(f._d, g._n);
-  return cmp(a, b);
+function fracCmp(a, b) {
+  var c = longMul(a._n, b._d);
+  var d = longMul(a._d, b._n);
+  return cmp(c, d);
 }
 
 /**
- * @param {Fraction} f
+ * @param {Fraction} a
  * @returns {Fraction}
  */
-function fracClone(f) {
-  return new Fraction(f._n, f._d, true);
+function fracClone(a) {
+  return new Fraction(a._n, a._d, true);
 }
 
 /**
- * @param {Fraction} f
+ * @param {Fraction} a
  * @returns {string}
  */
-function fracToString(f) {
-  //if (f._d == 1) {return f._n.toString();}
-  return '(' + [f._n, f._d].join('/') + ')';
+function fracToString(a) {
+  //if (a._d == 1) {return a._n.toString();}
+  return '(' + [a._n, a._d].join('/') + ')';
 }
 
 /**
- * @param {Fraction} f
+ * @param {Fraction} a
  * @returns {string}
  */
-function fracTex(f) {
-  //if (f._d == 1) {return f._n.toString();}
-  return ['\\frac{', f._n, '}{', f._d, '}'].join('');
+function fracTex(a) {
+  //if (a._d == 1) {return a._n.toString();}
+  return ['\\frac{', a._n, '}{', a._d, '}'].join('');
 }
 
 /**
- * @param {Fraction} f
+ * @param {Fraction} a
  * @returns {number}
  */
-function fracValue(f) {
-  return f._n.valueOf() / f._d.valueOf();
+function fracValue(a) {
+  return a._n.valueOf() / a._d.valueOf();
 }
 
 /**
- * @param {Fraction} f
+ * @param {Fraction} a
  * @returns {number}
  */
-function fracLength(f) {
-  return f.toString().length;
+function fracLength(a) {
+  return a.toString().length;
 }
 
 Fraction.prototype = {
   constructor: Fraction,
-  /** Apply {@link fracClone} */
+
+  /**
+   * @returns {Fraction}
+   * @see fracClone
+   */
   clone: function() { return fracClone(this); },
-  /** Apply {@link fracToString} */
-  toString: function() { return fracToString(this); },
-  /** Apply {@link fracValue} */
+
+  /**
+   * @returns {number}
+   * @see fracValue
+   */
   valueOf: function() { return fracValue(this); },
-  /** Apply {@link fracToString} */
+
+  /**
+   * @returns {string}
+   * @see fracToString
+   */
+  toString: function() { return fracToString(this); },
   _html_: function() { return fracToString(this); },
-  /** Apply {@link fracTex} */
+
+  /**
+   * @returns {string}
+   * @see fracTex
+   */
   _tex_: function(){ return fracTex(this); },
-  /** Apply {@link fracLength} */
+
+  /**
+   * @returns {number}
+   * @see fracLength
+   */
   _len_: function() { return fracLength(this); },
-  /** Apply {@link fracAbs} */
+
+  /**
+   * @returns {Fraction}
+   * @see fracAbs
+   */
   _abs_: function() { return fracAbs(this); },
-  /** Apply {@link fracNeg} */
+
+  /**
+   * @returns {Fraction}
+   * @see fracNeg
+   */
   _neg_: function() { return fracNeg(this); },
-  /** Apply {@link fracEq} */
-  _eq_: function(x) { return fracEq(x); },
-  /** Apply {@link fracEqual} */
-  _equal_: function(x) { return fracEqual(x); },
-  /** Apply {@link fracCmp} */
-  _cmp_: function(x) { return fracCmp(frac(x)); },
-  _inv_: function() { return new Fraction(this._d, this._n, true); },
+
+  /**
+   * @param {object} a
+   * @returns {boolean}
+   * @see fracEq
+   */
+  _eq_: function(a) { return fracEq(a); },
+
+  /**
+   * @param {Fraction} a
+   * @returns {boolean}
+   * @see fracEqual
+   */
+  _equal_: function(a) { return fracEqual(a); },
+
+  /**
+   * @param {Fraction} a
+   * @returns {number}
+   * @see fracCmp
+   */
+  _cmp_: function(a) { return fracCmp(frac(a)); },
+
+  /**
+   * Multiplicative inverse (or reciprocal)
+   * @returns {Fraction}
+   */
+  _inv_: function() {
+    if (!this._n.isNonZero()) {
+      throw new Error(
+          ['ZeroDivisionError:Fraction(',this._d,',',this._n,')'].join(''));
+    }
+    return new Fraction(this._d, this._n, true);
+  },
+
+  /** @returns {number} */
   _co_: function() { return 1; },
-  _asim_: function(x) { return isNum(x); },
-  _msim_: function(x) { return isNum(x); },
-  /** Apply {@link fracAdd} */
-  add: function(f) { return fracAdd(this, f); },
-  /** Apply {@link fracSub} */
-  sub: function(f) { return fracSub(this, f); },
-  /** Apply {@link fracMul} */
-  mul: function(f) { return fracMul(this, f); },
-  /** Apply {@link fracDiv} */
-  div: function(f) { return fracDiv(this, f); },
-  /** Apply {@link fracPow} */
-  pow: function(n) { return fracPow(this, n); },
-  _add_: function(x) { return fracAdd(this, frac(x)); },
-  _sub_: function(x) { return fracSub(this, frac(x)); },
-  _mul_: function(x) { return fracMul(this, frac(x)); },
-  _div_: function(x) { return fracDiv(this, frac(x)); },
-  _d_: function() { return FRAC_ZERO; }
+
+  /**
+   * @param {Fraction} a
+   * @returns {Fraction}
+   * @see fracAdd
+   */
+  add: function(a) { return fracAdd(this, a); },
+
+  /**
+   * @param {Fraction} a
+   * @returns {Fraction}
+   * @see fracSub
+   */
+  sub: function(a) { return fracSub(this, a); },
+
+  /**
+   * @param {Fraction} a
+   * @returns {Fraction}
+   * @see fracMul
+   */
+  mul: function(a) { return fracMul(this, a); },
+
+  /**
+   * @param {Fraction} a
+   * @returns {Fraction}
+   * @see fracDiv
+   */
+  div: function(a) { return fracDiv(this, a); },
+
+  /**
+   * @param {number} a
+   * @returns {Fraction}
+   * @see fracPow
+   */
+  pow: function(a) { return fracPow(this, a); },
+
+  /**
+   * @param {object} a
+   * @returns {Fraction}
+   * @see fracAdd
+   */
+  _add_: function(a) { return fracAdd(this, frac(a)); },
+
+  /**
+   * @param {object} a
+   * @returns {Fraction}
+   * @see fracSub
+   */
+  _sub_: function(a) { return fracSub(this, frac(a)); },
+
+  /**
+   * @param {object} a
+   * @returns {Fraction}
+   * @see fracMul
+   */
+  _mul_: function(a) { return fracMul(this, frac(a)); },
+
+  /**
+   * @param {object} a
+   * @returns {Fraction}
+   * @see fracDiv
+   */
+  _div_: function(a) { return fracDiv(this, frac(a)); }
 };

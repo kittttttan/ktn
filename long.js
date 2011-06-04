@@ -1,6 +1,6 @@
 /**
  * @fileOverview Big Integer in JavaScript.
- * @version 2011-06-02
+ * @version 2011-06-04
  * @author kittttttan
  * @url http://kittttttan.web.fc2.com/work/mathjs.html
  * @example
@@ -30,24 +30,18 @@
  * @class Big integer
  * @property {Array.<number>} _ds Digits
  * @property {boolean} _sn Sign +, -
- * @param {number|string} len
+ * @param {number} len
  * @param {boolean} sign
  */
 function Long(len, sign) {
-  if (arguments.length === 1) {
-    len = longint(len);
-    this._sn = len._sn;
-    this._ds = len._ds;
+  len |= 0;
+  if (len < 1) {
+    this._sn = true;
+    this._ds = [0];
   } else {
-    len |= 0;
-    if (len < 1) {
-      this._sn = true;
-      this._ds = [0];
-    } else {
-      this._sn = sign ? true : false;
-      this._ds = [];
-      this._ds.length = len;
-    }
+    this._sn = sign ? true : false;
+    this._ds = [];
+    this._ds.length = len;
   }
 }
 
@@ -55,12 +49,13 @@ function Long(len, sign) {
  * Assign zero to initialize.
  * @private
  * @param {Long} a
- * @returns {void}
+ * @returns {Long}
  */
 function longFillZero(a) {
   var ds = a._ds;
   var l = ds.length;
   while (l--) { ds[l] = 0; }
+  return a;
 }
 
 /**
@@ -69,10 +64,9 @@ function longFillZero(a) {
  * @returns {Long}
  */
 function longNum(a) {
-  var sign;
   if (a < 0) {
     a = -a;
-    sign = false;
+    var sign = false;
   } else {
     sign = true;
   }
@@ -100,7 +94,7 @@ var LONG_ONE = longNum(1);
  * @constant
  * @type {Long}
  */
-var LONG_ZERO = new Long();
+var LONG_ZERO = new Long;
 
 /**
  * Delete zeros.
@@ -133,7 +127,7 @@ function longStr(a, b) {
     a_i += 1;
     sign = false;
   }
-  if (a.charAt(a_i) === '@') { return new Long(); }
+  if (a.charAt(a_i) === '@') { return new Long; }
   if (!b) {
     if (a.charAt(a_i) === '0') {
       var c = a.charAt(a_i + 1);
@@ -231,7 +225,7 @@ function longClone(a) {
  */
 function longint(a) {
   if (typeof(a) === 'object') {
-    return (a instanceof Long) ? longClone(a) : new Long();
+    return (a instanceof Long) ? longClone(a) : new Long;
   }
   if (typeof(a) === 'string') {
     return longStr(a);
@@ -261,7 +255,7 @@ function longint(a) {
     while (a2-- > 0) { a1 += '0'; }
     return longStr(a1);
   }
-  return new Long();
+  return new Long;
 }
 
 /**
@@ -638,7 +632,7 @@ function longDivmod(a, b, modulo) {
   var albl = na === nb;
   if (na < nb || (albl && ads[na - 1] < bds[nb - 1])) {
     if (modulo) { return longNorm(a); }
-    return new Long();
+    return new Long;
   }
 
   var dd, z, zds, t, i;
@@ -1019,7 +1013,7 @@ function longR(a, b) {
   var d = b >> 4;
   var bb = b & 0xf;
   var mask = (1 << bb) - 1;
-  if (l <= d) { return new Long(); }
+  if (l <= d) { return new Long; }
   var c = new Long(l - d, a._sn);
   var cd = c._ds;
   var cl = cd.length;
@@ -1048,56 +1042,194 @@ function longAddZero(a, b) {
 
 Long.prototype = {
   constructor: Long,
-  /** @see longToString */
-  toString: function(base) { return longToString(this, base); },
-  /** @see longValue */
+
+  /**
+   * @param {number} a
+   * @returns {string}
+   * @see longToString
+   */
+  toString: function(a) { return longToString(this, a); },
+
+  /**
+   * @see longValue
+   * @returns {number}
+   */
   valueOf: function() { return longValue(this); },
+
+  /** @returns {Array.<number>} */
   getDigits: function() { return this._ds; },
+  /** @returns {boolean} */
   getSign: function() { return this._sn; },
-  /** @see longClone */
+
+  /**
+   * @returns {Long}
+   * @see longClone
+   */
   clone: function() { return longClone(this); },
-  /** @see longAddZero */
+
+  /**
+   * @param {number} a
+   * @returns {Long}
+   * @see longAddZero
+   */
   addzero: function(a) { return longAddZero(this, a); },
+
+  /**
+   * @param {number} a
+   * @returns {Long}
+   * @see longR
+   */
   rshift: function(a) { return longR(this, a); },
+
+  /**
+   * @param {number} a
+   * @returns {Long}
+   * @see longL
+   */
   lshift: function(a) { return longL(this, a); },
-  /** @see longHalf */
+
+  /**
+   * @returns {Long}
+   * @see longHalf
+   */
   half: function() { return longHalf(this); },
-  /** @see longDouble */
+
+  /**
+   * @returns {Long}
+   * @see longDouble
+   */
   dbl: function() { return longDouble(this); },
-  isOdd: function() { return (this._ds[0] & 1); },
+
+  /** @returns {boolean} */
+  isOdd: function() { return !!(this._ds[0] & 1); },
+  /** @returns {boolean} */
   isEven: function() { return !(this._ds[0] & 1); },
+  /** @returns {boolean} */
   isNonZero: function() { return (this._ds.length > 1 || this._ds[0]); },
-  /** @see longSqrt */
+
+  /**
+   * @returns {Long}
+   * @see longSqrt
+   */
   sqrt: function() { return longSqrt(this); },
-  /** @see longPow */
+
+  /**
+   * @param {number} a
+   * @returns {Long}
+   * @see longPow
+   */
   pow: function(a) { return longPow(this, a); },
-  /** @see longGcd */
+
+  /**
+   * @param {number} a
+   * @returns {Long}
+   * @see longGcd
+   */
   gcd: function(a) { return longGcd(this, a); },
+
+  /** @returns {number} */
   _len_: function() { return this._ds.length; },
-  /** @see longAdd */
+
+  /**
+   * @param {Long} a
+   * @returns {Long}
+   * @see longAdd
+   */
   add: function(a) { return longAdd(this, a); },
-  /** @see longSub */
+
+  /**
+   * @param {Long} a
+   * @returns {Long}
+   * @see longSub
+   */
   sub: function(a) { return longSub(this, a); },
-  /** @see longMul */
+
+  /**
+   * @param {Long} a
+   * @returns {Long}
+   * @see longMul
+   */
   mul: function(a) { return longMul(this, a); },
-  /** @see longDivmod */
+
+  /**
+   * @param {Long} a
+   * @returns {Long}
+   * @see longDivmod
+   */
   div: function(a) { return longDivmod(this, a, false); },
-  /** @see longDivmod */
+
+  /**
+   * @param {Long} a
+   * @returns {Long}
+   * @see longDivmod
+   */
   mod: function(a) { return longDivmod(this, a, true); },
+
+  /**
+   * @param {object} a
+   * @returns {Long}
+   */
   _add_: function(a) { return longAdd(this, longint(a)); },
+
+  /**
+   * @param {object} a
+   * @returns {Long}
+   */
   _sub_: function(a) { return longSub(this, longint(a)); },
+
+  /**
+   * @param {object} a
+   * @returns {Long}
+   */
   _mul_: function(a) { return longMul(this, longint(a)); },
+
+  /**
+   * @param {object} a
+   * @returns {Long}
+   */
   _div_: function(a) { return longDivmod(this, longint(a), false); },
+
+  /**
+   * @param {object} a
+   * @returns {Long}
+   */
   _mod_: function(a) { return longDivmod(this, longint(a), true); },
-  /** @see longCmp */
+
+  /**
+   * @param {object} a
+   * @returns {number}
+   * @see longCmp
+   */
   _cmp_: function(a) { return longCmp(this, longint(a)); },
-  /** @see longEq */
+
+  /**
+   * @param {object} a
+   * @returns {Long}
+   * @see longEq
+   */
   _eq_: function(a) { return longEq(this, a); },
-  /** @see longEqual */
+
+  /**
+   * @param {Long} a
+   * @returns {Long}
+   * @see longEqual
+   */
   _equal_: function(a) { return longEqual(this, a); },
+
+  /** @returns {number} */
   _co_: function() { return 0.5; },
-  /** @see longAbs */
+
+  /**
+   * @param {Long} a
+   * @returns {Long}
+   * @see longAbs
+   */
   _abs_: function() { return longAbs(this); },
-  /** @see longNeg */
+
+  /**
+   * @param {Long} a
+   * @returns {Long}
+   * @see longNeg
+   */
   _neg_: function() { return longNeg(this); }
 };

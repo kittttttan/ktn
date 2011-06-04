@@ -12,7 +12,7 @@ if (typeof window !== 'undefined') {
 }
 
 function basic() {
-  var a = frac(1024, 78);
+  var a = fracNum(1024, 78);
   var b = fracStr('-123/777');
   return ['a = ',a, '\nb = ',b,
          '\na + b = ',fracAdd(a, b), '\na - b = ',fracSub(a, b),
@@ -28,9 +28,9 @@ function basic() {
  */
 function exp(a) {
   a = a || 10;
-  var i = 2, e = frac(2), b = frac(1);
+  var i = 2, e = fracNum(2), b = fracNum(1);
   for (; i < a; i++) {
-       b = fracMul(b, frac(1, i));
+       b = fracMul(b, fracNum(1, i, true));
        e = fracAdd(e, b);
   }
   return e;

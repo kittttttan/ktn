@@ -1,4 +1,4 @@
-# JavaScript Library for Mathematics.
+# JavaScript Libraries for Mathematics.
 <https://github.com/kittttttan/mathlibjs>
 
 * long.js - Big Integer
