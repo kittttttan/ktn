@@ -3,3 +3,4 @@
 
 * long.js - Big Integer
 * fraction.js - Fraction
+* decimal.js - Decimal

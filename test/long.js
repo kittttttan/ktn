@@ -1,3 +1,4 @@
+"use strict";
 /**
  * Execute this file with v8 or Rhino,
  * or open long.htm with the web browser. 

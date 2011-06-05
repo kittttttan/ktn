@@ -5,6 +5,8 @@
  * @author kittttttan
  * @url http://kittttttan.web.fc2.com/work/mathjs.html
  */
+ 
+//"use strict";
 
 /**
  * Long Fraction
@@ -38,7 +40,7 @@ var FRAC_ONE = new Fraction(longNum(1), longNum(1), true);
  * @constant
  * @type {Fraction}
  */
-var FRAC_ZERO = new Fraction(new Long(), longNum(1), true);
+var FRAC_ZERO = new Fraction(new Long, longNum(1), true);
 
 /**
  * Convert Number to Fraction.
@@ -73,7 +75,7 @@ function fracStr(a) {
  */
 function frac(a, b) {
   if (!arguments.length) {
-    return new Fraction(new Long(), longNum(1), true);
+    return new Fraction(new Long, longNum(1), true);
   }
   if (arguments.length === 1) {
     if (a instanceof Fraction) { return a.clone(); }
@@ -83,7 +85,7 @@ function frac(a, b) {
   if (!b) {
     throw new Error(['ZeroDivisionError:frac(',a,',',b,')'].join(''));
   }
-  if (!a) { return new Fraction(new Long(), longNum(1), true); }
+  if (!a) { return new Fraction(new Long, longNum(1), true); }
   return new Fraction(longint(a), longint(b));
 }
 
@@ -97,7 +99,7 @@ function fracCancel(a, b) {
   a = longDivmod(a, g, false);
   b = longDivmod(b, g, false);
   if (!b._sn) {
-    a._sn = a._sn ? false : true;
+    a._sn = !a._sn;
     b._sn = true;
   }
   return [a, b];
@@ -325,7 +327,7 @@ Fraction.prototype = {
   },
 
   /** @returns {number} */
-  _co_: function() { return 1; },
+  _co_: function() { return 2; },
 
   /**
    * @param {Fraction} a

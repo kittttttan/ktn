@@ -24,6 +24,8 @@
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *   GNU General Public License for more details.
  */
+ 
+//"use strict";
 
 /**
  * Big integer.
@@ -1217,7 +1219,7 @@ Long.prototype = {
   _equal_: function(a) { return longEqual(this, a); },
 
   /** @returns {number} */
-  _co_: function() { return 0.5; },
+  _co_: function() { return 1; },
 
   /**
    * @param {Long} a

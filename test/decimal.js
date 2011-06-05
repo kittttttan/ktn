@@ -10,15 +10,16 @@ if (typeof window !== 'undefined') {
 } else if (typeof load !== 'undefined') {
   load('../long.js');
   load('../fraction.js');
+  load('../decimal.js');
 }
 
 function basic() {
-  var a = fracNum(1024, 78);
-  var b = fracStr('-123/777');
+  var a = decimal(1, 2);
+  var b = new Decimal(longNum(777), -2);
   return ['a = ',a, '\nb = ',b,
-         '\na + b = ',fracAdd(a, b), '\na - b = ',fracSub(a, b),
-         '\na * b = ',fracMul(a, b), '\na / b = ',fracDiv(a, b)
-         ].join('');
+          '\na + b = ',decAdd(a,b), '\na - b = ',decSub(a,b),
+          '\na * b = ',decMul(a,b), '\na / b = ',decDiv(a,b)
+          ].join('');
 }
 
 /**
@@ -43,7 +44,7 @@ function main() {
   print(basic());
   var e = exp(20);
   print('e ~= ' + e.toString());
-  print('  ~= ' + e.valueOf());
+  print('  ~= ' + decFrac(e, 30).toString());
 
   print('\nTime: '+ (new Date - d) + 'ms');
 }
