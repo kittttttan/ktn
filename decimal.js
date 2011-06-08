@@ -4,8 +4,14 @@
  * @requires Long
  * @author kittttttan
  * @url http://kittttttan.web.fc2.com/work/mathjs.html
+ * @example
+ *    var a = decNum(7, -3); // => 0.007
+ *    var b = decStr('100.1'); // => 100.1
+ *    decMul(a, b); // => 0.7007
  */
+
 //"use strict";
+
 /**
  * Decimal
  * @class

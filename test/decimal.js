@@ -1,7 +1,7 @@
 "use strict";
 /**
  * Execute this file with v8 or Rhino,
- * or open fraction.htm with the web browser. 
+ * or open decimal.htm with the web browser. 
  */
 if (typeof window !== 'undefined') {
   var print = function(a) {

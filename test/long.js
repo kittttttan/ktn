@@ -38,7 +38,7 @@ function fib(a) {
   var c = longNum(1);
   var d;
   for (var i = 0; i < a; i++) {
-    d = b.clone();
+    d = longClone(b);
     b = longAdd(b, c);
     c = d;
   }

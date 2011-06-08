@@ -1,6 +1,6 @@
 /**
  * @fileOverview Big Integer in JavaScript.
- * @version 2011-06-04
+ * @version 2011-06-08
  * @author kittttttan
  * @url http://kittttttan.web.fc2.com/work/mathjs.html
  * @example
@@ -24,7 +24,7 @@
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *   GNU General Public License for more details.
  */
- 
+
 //"use strict";
 
 /**
@@ -32,31 +32,37 @@
  * @class Big integer
  * @property {Array.<number>} _ds Digits
  * @property {boolean} _sn Sign +, -
- * @param {number} len
- * @param {boolean} sign
  */
-function Long(len, sign) {
-  len |= 0;
-  if (len < 1) {
-    this._sn = true;
-    this._ds = [0];
-  } else {
-    this._sn = sign ? true : false;
-    this._ds = [];
-    this._ds.length = len;
+function Long() {
+  this._ds = [0];
+  this._sn = true;
+}
+
+/**
+ * Set length.
+ * @private
+ * @param {number} a Length
+ * @param {boolean} b Sign
+ */
+function longAlloc(a, b) {
+  var c = new Long;
+  if (!b) {
+    c._sn = false;
   }
+  c._ds.length = a;
+  return c;
 }
 
 /**
  * Assign zero to initialize.
  * @private
  * @param {Long} a
+ * @param {number} b
  * @returns {Long}
  */
-function longFillZero(a) {
+function longFillZero(a, b) {
   var ds = a._ds;
-  var l = ds.length;
-  while (l--) { ds[l] = 0; }
+  while (b--) { ds[b] = 0; }
   return a;
 }
 
@@ -66,20 +72,16 @@ function longFillZero(a) {
  * @returns {Long}
  */
 function longNum(a) {
+  var b = new Long;
   if (a < 0) {
     a = -a;
-    var sign = false;
-  } else {
-    sign = true;
+    b._sn = false;
   }
   a &= 0x7fffffff;
-  if (a <= 0xffff) {
-    var b = new Long(1, sign);
-    b._ds[0] = a;
-  } else {
-    b = new Long(2, sign);
-    b._ds[0] = a & 0xffff;
-    b._ds[1] = (a >>> 16) & 0xffff;
+  b._ds[0] = a & 0xffff;
+  var c = a >>> 16;
+  if (c) {
+    b._ds[1] = c & 0xffff;
   }
   return b;
 }
@@ -160,8 +162,8 @@ function longStr(a, b) {
     len = (a.length - a_i) << 2;
   }
   len = (len >>> 4) + 1;
-  var z = new Long(len, sign);
-  longFillZero(z);
+  var z = longAlloc(len, sign);
+  longFillZero(z, len);
   var zds = z._ds;
   var num;
   var i;
@@ -215,7 +217,8 @@ function longStr(a, b) {
  * @returns {Long}
  */
 function longClone(a) {
-  var b = new Long(a._ds.length, a._sn);
+  var b = new Long;
+  b._sn = a._sn;
   b._ds = Array.prototype.concat.call(a._ds);
   return b;
 }
@@ -399,7 +402,7 @@ function longAddAbs(a, b, sign) {
   }
   var ads = a._ds;
   var bds = b._ds;
-  z = new Long(bds.length + 1, sign);
+  z = longAlloc(bds.length + 1, sign);
   var zds = z._ds;
   var i = 0;
   var len = ads.length;
@@ -438,7 +441,7 @@ function longSubAbs(a, b, sign) {
   var bds = b._ds;
   var al = ads.length;
   var bl = bds.length;
-  var z = new Long(al, sign);
+  var z = longAlloc(al, sign);
   var zds = z._ds;
   var i = 0;
   var c = 0;
@@ -504,7 +507,7 @@ function longSub(a, b) {
  * @returns {Long} a * b
  */
 function karatsuba(a, b) {
-  var z = new Long(4, a._sn === b._sn);
+  var z = longAlloc(4, a._sn === b._sn);
   var zds = z._ds;
   var ads = a._ds;
   var bds = b._ds;
@@ -534,8 +537,8 @@ function longTc(a, b) {
   var al = ads.length;
   var bl = bds.length; // al >= bl
   var l = (al << 1) - 1;
-  var z = new Long(l, a._sn === b._sn);
-  longFillZero(z);
+  var z = longAlloc(l, a._sn === b._sn);
+  longFillZero(z, l);
   var zds = z._ds;
   var w = [];
   var i = al;
@@ -591,8 +594,8 @@ function longMul(a, b) {
   if (al === 2 && bl === 2) { return karatsuba(a, b); }
   if (al > 29 && bl > 29) { return al > bl ? longTc(a, b) : longTc(b, a); }
   var j = al + bl + 1;
-  var z = new Long(j, a._sn === b._sn);
-  longFillZero(z);
+  var z = longAlloc(j, a._sn === b._sn);
+  longFillZero(z, j);
   var zds = z._ds;
   var i, n, dd, ee;
   for (i = 0; i < al; i++) {
@@ -658,9 +661,9 @@ function longDivmod(a, b, modulo) {
     return longNorm(z);
   }
 
-  z = new Long(albl ? na + 2 : na + 1, a._sn === b._sn);
-  longFillZero(z);
+  z = longAlloc(albl ? na + 2 : na + 1, a._sn === b._sn);
   zds = z._ds;
+  longFillZero(z, zds.length);
   dd = 0x10000 / (bds[nb - 1] + 1) & 0xffff;
 
   var j, bb, tds, num;
@@ -782,9 +785,9 @@ function longMod(a, b) {
 function longSquare(a) {
   var ads = a._ds;
   var al = ads.length;
-  var s = new Long((al << 1) + 1, true);
-  longFillZero(s);
+  var s = longAlloc((al << 1) + 1);
   var sds = s._ds;
+  longFillZero(s, sds.length);
   var i = 0;
   var j;
   var carry;
@@ -853,11 +856,10 @@ function longPow(a, b) {
  * @returns {Long}
  */
 function longRandom(a) {
-  a |= 0;
-  var r = new Long(a, true);
+  var r = longAlloc(a, true);
   var rds = r._ds;
-  while (a--) {
-    rds[a] = Math.random() * 0xffff | 0;
+  for (var i = 0; i < a + 1; i++) {
+    rds[i] = Math.random() * 0xffff | 0;
   }
   return longNorm(r);
 }
@@ -986,10 +988,10 @@ function longL(a, b) {
   var ad = a._ds;
   var l = ad.length;
   var d = b >> 4;
+  var cl = l + d + 1;
   var bb = b & 0xf;
-  var c = new Long(l + d + 1, a._sn);
+  var c = longAlloc(cl, a._sn);
   var cd = c._ds;
-  var cl = cd.length;
   var i = 0;
   for (;i < d; i++) { cd[i] = 0; }
   var t;
@@ -1016,9 +1018,9 @@ function longR(a, b) {
   var bb = b & 0xf;
   var mask = (1 << bb) - 1;
   if (l <= d) { return new Long; }
-  var c = new Long(l - d, a._sn);
+  var cl = l - d;
+  var c = longAlloc(cl, a._sn);
   var cd = c._ds;
-  var cl = cd.length;
   var i = 0;
   for (; i < cl - 1; i++) {
     cd[i] = ((ad[i + d + 1] & mask) << (16 - bb)) + (ad[i + d] >> bb);
