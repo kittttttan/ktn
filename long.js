@@ -1,6 +1,6 @@
 /**
  * @fileOverview Big Integer in JavaScript.
- * @version 2011-06-08
+ * @version 2011-06-12
  * @author kittttttan
  * @url http://kittttttan.web.fc2.com/work/mathjs.html
  * @example
@@ -117,11 +117,13 @@ function longNorm(a) {
 
 /**
  * Converts string to Long.
- * @param {string} a For example '-9' or '0xFF' etc.
+ * @param {string} a For example '-9' or 'FF' etc.
  * @param {number} b Base 2, 8, 10 or 16
  * @returns {Long}
  */
-function longStr(a, b) {
+function longStr(a, /** @default 10 */b) {
+  b = b || 10;
+  if (b === 16) { return longByte(a.slice(0,-1)); }
   var a_i = 0;
   var sign = true;
   a += '@';	// Terminator;
@@ -131,33 +133,12 @@ function longStr(a, b) {
     a_i += 1;
     sign = false;
   }
+  // Ignore following zeros. '00102' is regarded as '102'.
+  while (a.charAt(a_i) === '0') { a_i += 1; }
   if (a.charAt(a_i) === '@') { return new Long; }
-  if (!b) {
-    if (a.charAt(a_i) === '0') {
-      var c = a.charAt(a_i + 1);
-      switch (c) {
-        case 'x': case 'X': b = 16; break;
-        case 'b': case 'B': b = 2; break;
-        default: b = 8; break;
-      }
-    } else {
-      b = 10;
-    }
-  }
   if (b === 8) {
-    while (a.charAt(a_i) === '0') { a_i += 1; }
     var len = 3 * (a.length - a_i);
   } else {
-    // b === 10, 2 or 16
-    if (b === 16 && a.charAt(a_i) === '0' &&
-        (a.charAt(a_i + 1) === 'x' || a.charAt(a_i + 1) === 'X')) {
-      a_i += 2;
-    }
-    if (b === 2 && a.charAt(a_i) === '0' &&
-        (a.charAt(a_i + 1) === 'b' || a.charAt(a_i + 1) === 'B')) {
-      a_i += 2;
-    }
-    while (a.charAt(a_i) === '0') { a_i += 1; }
     if (a.charAt(a_i) === '@') { a_i -= 1; }
     len = (a.length - a_i) << 2;
   }
@@ -165,49 +146,61 @@ function longStr(a, b) {
   var z = longAlloc(len, sign);
   longFillZero(z, len);
   var zds = z._ds;
-  var num;
   var i;
   var blen = 1;
   while (true) {
     c = a.charAt(a_i);
     a_i += 1;
     if (c === '@') { break; }
-    switch (c) {
-      case '0': c = 0; break;
-      case '1': c = 1; break;
-      case '2': c = 2; break;
-      case '3': c = 3; break;
-      case '4': c = 4; break;
-      case '5': c = 5; break;
-      case '6': c = 6; break;
-      case '7': c = 7; break;
-      case '8': c = 8; break;
-      case '9': c = 9; break;
-      case 'a': case 'A': c = 10; break;
-      case 'b': case 'B': c = 11; break;
-      case 'c': case 'C': c = 12; break;
-      case 'd': case 'D': c = 13; break;
-      case 'e': case 'E': c = 14; break;
-      case 'f': case 'F': c = 15; break;
-      default: c = b; break;
-    }
-    if (c >= b) { break; }
+    c |= 0;
     i = 0;
-    num = c;
     while (true) {
       while (i < blen) {
-        num += zds[i] * b;
-        zds[i] = num & 0xffff;
+        c += zds[i] * b;
+        zds[i] = c & 0xffff;
         i += 1;
-        num >>>= 16;
+        c >>>= 16;
       }
-      if (num) {
+      if (c) {
         blen += 1;
       } else {
         break;
       }
     }
   }
+  return longNorm(z);
+}
+
+/**
+ * Converts hex to Long.
+ * @param {string} a For example 'ff' or '-123456789abcdef' etc.
+ * @throws {Error} ValueError
+ * @returns {Long}
+ */
+function longByte(a) {
+  if (!a) { return new Long; }
+  if (a.charAt(0) === '-') {
+    if (!a.charAt(1)) { return new Long; }
+    var s = false;
+    a = a.substring(1);
+  } else {
+    s = true;
+  }
+  var b = [];
+  var t = a.slice(-4);
+  var n;
+  while (t) {
+    n = parseInt(t, 16);
+    if (isNaN(n)) {
+      throw new Error('longByte('+arguments[0]+'):ValueError');
+    }
+    b.push(n);
+    a = a.slice(0, -4);
+    t = a.slice(-4);
+  }
+  var z = new Long;
+  z._sn = s;
+  z._ds = b;
   return longNorm(z);
 }
 
@@ -887,22 +880,15 @@ function longGcd(a, b) {
  */
 function longToString(a, /** @default 10 */b) {
   b = b || 10;
+  if (b === 2 || b === 16) { return longToByte(a, b); }
   var i = a._ds.length;
   if (i < 2 && !a._ds[0]) { return '0'; }
   var j;
   var hbase;
   switch (b) {
-    case 16:
-      j = (i << 2) + 2;
-      hbase = 0x10000;
-      break;
     case 8:
       j = (i << 4) + 2;
       hbase = 0x1000;
-      break;
-    case 2:
-      j = (i << 4) + 2;
-      hbase = 0x10;
       break;
     case 10: default:
       j = (i * 241 / 50 | 0) + 2;
@@ -911,7 +897,7 @@ function longToString(a, /** @default 10 */b) {
   }
   var t = longClone(a);
   var ds = t._ds;
-  var digits = '0123456789abcdef';
+  var digits = '0123456789';
   var k;
   var num;
   var c;
@@ -930,8 +916,7 @@ function longToString(a, /** @default 10 */b) {
       c = num % b;
       s = digits.charAt(c) + s;
       j -= 1;
-      num /= b;
-      num |= 0;
+      num = num / b | 0;
       if (!i && !num) { break; }
     }
   }
@@ -940,6 +925,33 @@ function longToString(a, /** @default 10 */b) {
   if (i) { s = s.substring(i, s.length); }
   if (!a._sn) { s = '-' + s; }
   return s;
+}
+
+/**
+ * Convert Long to String.
+ * @param {Long} a
+ * @param {number} b Base 2 or 16
+ * @returns {string}
+ */
+function longToByte(a, /** @default 16 */b) {
+  //b = b || 16;
+  if (b !== 2) { b = 16; }
+  var ds = a._ds;
+  var i = ds.length - 1;
+  var s = a._sn ? [] : ['-'];
+  s.push(ds[i].toString(b));
+  if (b === 2) {
+    var z = '0000000000000000';
+    var l = -16;
+  } else {
+    z = '0000';
+    l = -4;
+  }
+  while (i) {
+    i -= 1;
+    s.push((z + ds[i].toString(b)).slice(l));
+  }
+  return s.join('');
 }
 
 /**
