@@ -15,7 +15,7 @@ if (typeof window !== 'undefined') {
 
 function basic() {
   var a = decimal(1, 2);
-  var b = new Decimal(longNum(777), -2);
+  var b = decStr('0.0777');
   return ['a = ',a, '\nb = ',b,
           '\na + b = ',decAdd(a,b), '\na - b = ',decSub(a,b),
           '\na * b = ',decMul(a,b), '\na / b = ',decDiv(a,b)

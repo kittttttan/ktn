@@ -1,6 +1,6 @@
 /**
  * @fileOverview Big Integer in JavaScript.
- * @version 2011-06-12
+ * @version 2011-06-18
  * @author kittttttan
  * @url http://kittttttan.web.fc2.com/work/mathjs.html
  * @example
@@ -152,7 +152,7 @@ function longStr(a, /** @default 10 */b) {
     c = a.charAt(a_i);
     a_i += 1;
     if (c === '@') { break; }
-    c |= 0;
+    c = parseInt(c, 10);
     i = 0;
     while (true) {
       while (i < blen) {
@@ -222,13 +222,13 @@ function longClone(a) {
  * @returns {Long}
  */
 function longint(a) {
-  if (typeof(a) === 'object') {
+  if (typeof a === 'object') {
     return (a instanceof Long) ? longClone(a) : new Long;
   }
-  if (typeof(a) === 'string') {
+  if (typeof a === 'string') {
     return longStr(a);
   }
-  if (typeof(a) === 'number') {
+  if (typeof a === 'number') {
     if (-2147483647 <= a && a <= 2147483647) {
       return longNum(a);
     }
@@ -248,7 +248,7 @@ function longint(a) {
       a2 -= np;
     } else {
       // '.' is not found
-      a2 |= 0;
+      a2 = parseInt(a2, 10);
     }
     while (a2-- > 0) { a1 += '0'; }
     return longStr(a1);
@@ -852,7 +852,7 @@ function longRandom(a) {
   var r = longAlloc(a, true);
   var rds = r._ds;
   for (var i = 0; i < a + 1; i++) {
-    rds[i] = Math.random() * 0xffff | 0;
+    rds[i] = parseInt(Math.random() * 0xffff, 10);
   }
   return longNorm(r);
 }
@@ -891,7 +891,7 @@ function longToString(a, /** @default 10 */b) {
       hbase = 0x1000;
       break;
     case 10: default:
-      j = (i * 241 / 50 | 0) + 2;
+      j = parseInt(i * 241 / 50, 10) + 2;
       hbase = 10000;
       break;
   }
@@ -907,7 +907,7 @@ function longToString(a, /** @default 10 */b) {
     num = 0;
     while (k--) {
       num = (num << 16) + ds[k];
-      ds[k] = num / hbase | 0;
+      ds[k] = parseInt(num / hbase, 10);
       num %= hbase;
     }
     if (!ds[i-1]) { i -= 1; }
@@ -916,7 +916,7 @@ function longToString(a, /** @default 10 */b) {
       c = num % b;
       s = digits.charAt(c) + s;
       j -= 1;
-      num = num / b | 0;
+      num = parseInt(num / b, 10);
       if (!i && !num) { break; }
     }
   }

@@ -1,6 +1,6 @@
 /**
  * @fileOverview Decimal in JavaScript.
- * @version 2011-03-19
+ * @version 2011-06-18
  * @requires Long
  * @author kittttttan
  * @url http://kittttttan.web.fc2.com/work/mathjs.html
@@ -34,18 +34,13 @@ function decStr(str) {
   var index = str.indexOf('.');
   if (index < 0) {
     // '.' is not found
-    var trim = str.substring(0, index) + str.substring(index + 1);
-    var i = 0;
-    var l = trim.length;
-    for (; i < l; i++) {
-      if (trim.charAt(i) !== '0') {
-        trim = trim.substring(i);
-        break;
-      }
-    }
-    return new Decimal(longStr(trim), index - str.length + 1);
+    return new Decimal(longStr(str), 0);
   }
-  return new Decimal(longStr(str), 0);
+  var trim = str.substring(0, index) + str.substring(index + 1);
+  var i = 0;
+  while (trim.charAt(i) === '0') { i += 1; }
+  if (i) { trim = trim.substring(i); }
+  return new Decimal(longStr(trim), index - str.length + 1);
 }
 
 /**
@@ -80,7 +75,7 @@ function decimal(l, e) {
   }
   if (arguments.length === 1) {
     if (l instanceof Decimal) { return l.clone(); }
-    if (typeof(l) === "string") { return decStr(l); }
+    if (typeof l === "string") { return decStr(l); }
     return new Decimal(longint(l), 0);
   }
   return new Decimal(longint(l), e | 0);
@@ -268,10 +263,11 @@ function decSetLength(a, n) {
 function decTrim(a) {
   var str = a._l.toString();
   var i = str.length - 1;
-  for (; i >= 0; i--) {
-    if (str.charAt(i) === '0') { a._e += 1; }
-    else { str = str.substring(0, i + 1); break; }
+  while (i >= 0 && str.charAt(i) === '0') {
+    a._e += 1;
+    i -= 1;
   }
+  str = str.substring(0, i + 1);
   a._l = longStr(str);
   return a;
 }

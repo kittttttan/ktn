@@ -83,7 +83,7 @@ function frac(a, b) {
   }
   if (arguments.length === 1) {
     if (a instanceof Fraction) { return a.clone(); }
-    if (typeof(a) === "string") { return fracStr(a); }
+    if (typeof a === "string") { return fracStr(a); }
     return new Fraction(longint(a), longNum(1), true);
   }
   if (!b) {
