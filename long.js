@@ -852,7 +852,7 @@ function longRandom(a) {
   var r = longAlloc(a, true);
   var rds = r._ds;
   for (var i = 0; i < a + 1; i++) {
-    rds[i] = parseInt(Math.random() * 0xffff, 10);
+    rds[i] = Math.random() * 0xffff | 0;
   }
   return longNorm(r);
 }
@@ -891,7 +891,7 @@ function longToString(a, /** @default 10 */b) {
       hbase = 0x1000;
       break;
     case 10: default:
-      j = parseInt(i * 241 / 50, 10) + 2;
+      j = (i * 241 / 50 | 0) + 2;
       hbase = 10000;
       break;
   }
@@ -907,7 +907,7 @@ function longToString(a, /** @default 10 */b) {
     num = 0;
     while (k--) {
       num = (num << 16) + ds[k];
-      ds[k] = parseInt(num / hbase, 10);
+      ds[k] = num / hbase | 0;
       num %= hbase;
     }
     if (!ds[i-1]) { i -= 1; }
@@ -916,7 +916,7 @@ function longToString(a, /** @default 10 */b) {
       c = num % b;
       s = digits.charAt(c) + s;
       j -= 1;
-      num = parseInt(num / b, 10);
+      num = num / b | 0;
       if (!i && !num) { break; }
     }
   }

@@ -12,8 +12,8 @@ if (typeof window !== 'undefined') {
 }
 
 function basic() {
-  var r1 = parseInt(Math.random() * 3, 10) + 2;
-  var r2 = parseInt(Math.random() * 3, 10) + 2;
+  var r1 = (Math.random() * 3 | 0) + 2;
+  var r2 = (Math.random() * 3 | 0) + 2;
   var a = longRandom(r1);
   var b = longRandom(r2);
   return [
