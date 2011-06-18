@@ -3,7 +3,7 @@
  * @version 2011-03-20
  * @requires Long
  * @author kittttttan
- * @url http://kittttttan.web.fc2.com/work/mathjs.html
+ * @url http://kittttttan.web.fc2.com/math/mathjs.html
  * @example
  *    var a = fracNum(2, 3);  // => (2/3)
  *    var b = fracStr('-3/12'); // => (-1/4)

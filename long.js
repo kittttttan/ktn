@@ -2,7 +2,7 @@
  * @fileOverview Big Integer in JavaScript.
  * @version 2011-06-18
  * @author kittttttan
- * @url http://kittttttan.web.fc2.com/work/mathjs.html
+ * @url http://kittttttan.web.fc2.com/math/mathjs.html
  * @example
  *   var a = longStr("12345678909876543210"); // from String
  *   var b = longNum(7777777);  // from Number
