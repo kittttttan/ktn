@@ -34,15 +34,35 @@ function fact(a) {
 }
 
 function fib(a) {
-  var b = longNum(1);
+  var b = longNum(0);
   var c = longNum(1);
-  var d;
-  for (var i = 0; i < a; i++) {
+  for (var i = 0, d; i < a; i++) {
     d = longClone(b);
     b = longAdd(b, c);
     c = d;
   }
   return b;
+}
+
+function square(a) {
+  for (var i = 0, t; i < a; i++) {
+    t = longRandom(i);
+    print(longEqual(longMul(t, t), longSquare(t)));
+  }
+}
+
+function tc(a) {
+  for (var i = 0, t; i < a; i++) {
+    t = longRandom(i);
+    print(longEqual(longMul(t, t), longTc(t, t)));
+  }
+}
+
+function kara(a) {
+  for (var i = 0, t; i < a; i++) {
+    t = longRandom(2);
+    print(longEqual(longMul(t, t), karatsuba(t, t)));
+  }
 }
 
 function main() {
