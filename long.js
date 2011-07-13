@@ -1,6 +1,6 @@
 /**
  * @fileOverview Big Integer in JavaScript.
- * @version 2011-06-18
+ * @version 2011-07-13
  * @author kittttttan
  * @url http://kittttttan.web.fc2.com/math/mathjs.html
  * @example
@@ -291,9 +291,9 @@ function longEq(a, b) {
   var ads = a._ds;
   var bds = b._ds;
   if (a._sn !== b._sn) { return false; }
+  var l = ads.length;
   if (l !== bds.length) { return false; }
   var i = 0;
-  var l = ads.length;
   for (; i < l; i++) {
     if (ads[i] !== bds[i]) { return false; }
   }
@@ -312,9 +312,9 @@ function longEqual(a, b) {
   var ads = a._ds;
   var bds = b._ds;
   if (a._sn !== b._sn) { return false; }
+  var l = ads.length;
   if (l !== bds.length) { return false; }
   var i = 0;
-  var l = ads.length;
   for (; i < l; i++) {
     if (ads[i] !== bds[i]) { return false; }
   }
@@ -519,7 +519,7 @@ function karatsuba(a, b) {
 }
 
 /**
- * Multiplication for big.
+ * Multiplication for big. (buggy)
  * @param {Long} a
  * @param {Long} b
  * @returns {Long} a * b
@@ -585,7 +585,7 @@ function longMul(a, b) {
   var al = ads.length;
   var bl = bds.length;
   if (al === 2 && bl === 2) { return karatsuba(a, b); }
-  if (al > 29 && bl > 29) { return al > bl ? longTc(a, b) : longTc(b, a); }
+  //if (al > 29 && bl > 29) { return al > bl ? longTc(a, b) : longTc(b, a); }
   var j = al + bl + 1;
   var z = longAlloc(j, a._sn === b._sn);
   longFillZero(z, j);
@@ -778,7 +778,7 @@ function longMod(a, b) {
 function longSquare(a) {
   var ads = a._ds;
   var al = ads.length;
-  var s = longAlloc((al << 1) + 1);
+  var s = longAlloc((al << 1) + 1, true);
   var sds = s._ds;
   longFillZero(s, sds.length);
   var i = 0;
@@ -851,7 +851,7 @@ function longPow(a, b) {
 function longRandom(a) {
   var r = longAlloc(a, true);
   var rds = r._ds;
-  for (var i = 0; i < a + 1; i++) {
+  for (var i = 0; i < a; i++) {
     rds[i] = Math.random() * 0xffff | 0;
   }
   return longNorm(r);
