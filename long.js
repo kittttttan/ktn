@@ -1,6 +1,6 @@
 /**
  * @fileOverview Big Integer in JavaScript.
- * @version 2011-07-13
+ * @version 2011-07-24
  * @author kittttttan
  * @url http://kittttttan.web.fc2.com/math/mathjs.html
  * @example
@@ -263,7 +263,7 @@ function longint(a) {
  */
 function longNeg(a) {
   var z = longClone(a);
-  z._sn = z._sn ? false : true;
+  z._sn = !z._sn;
   return z;
 }
 
@@ -920,9 +920,7 @@ function longToString(a, /** @default 10 */b) {
       if (!i && !num) { break; }
     }
   }
-  i = 0;
-  while (s[i] === '0') { i += 1; }
-  if (i) { s = s.substring(i, s.length); }
+  s = s.replace(/^0+/, '');
   if (!a._sn) { s = '-' + s; }
   return s;
 }
