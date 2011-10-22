@@ -106,9 +106,9 @@ var LONG_ZERO = new Long;
  * @returns {Long}
  */
 function longNorm(a) {
-  var ds = a._ds;
-  var len = ds.length;
-  do { len -= 1; } while (len && !ds[len]);
+  var ds = a._ds,
+      len = ds.length;
+  do { --len; } while (len && !ds[len]);
   ds.length = len + 1;
   // -0 -> +0
   if (!ds[0] && !len) { a._sn = true; }
@@ -123,38 +123,38 @@ function longNorm(a) {
  */
 function longStr(a, /** @default 10 */b) {
   b = b || 10;
-  if (b === 16) { return longByte(a.slice(0,-1)); }
-  var a_i = 0;
-  var sign = true;
+  if (b === 16) { return longByte(a.slice(0, -1)); }
+  var a_i = 0,
+      sign = true;
   a += '@';	// Terminator;
   if (a.charAt(a_i) === '+') {
-    a_i += 1;
+    ++a_i;
   } else if (a.charAt(a_i) === '-') {
-    a_i += 1;
+    ++a_i;
     sign = false;
   }
   // Ignore following zeros. '00102' is regarded as '102'.
-  while (a.charAt(a_i) === '0') { a_i += 1; }
+  while (a.charAt(a_i) === '0') { ++a_i; }
   if (a.charAt(a_i) === '@') { return new Long; }
   if (b === 8) {
     var len = 3 * (a.length - a_i);
   } else {
-    if (a.charAt(a_i) === '@') { a_i -= 1; }
+    if (a.charAt(a_i) === '@') { --a_i; }
     len = (a.length - a_i) << 2;
   }
   len = (len >>> 4) + 1;
   var z = longAlloc(len, sign);
   longFillZero(z, len);
-  var zds = z._ds;
-  var i;
-  var blen = 1;
-  while (true) {
+  var zds = z._ds,
+      i,
+      blen = 1;
+  while (1) {
     c = a.charAt(a_i);
-    a_i += 1;
+    ++a_i;
     if (c === '@') { break; }
     c = parseInt(c, 10);
     i = 0;
-    while (true) {
+    while (1) {
       while (i < blen) {
         c += zds[i] * b;
         zds[i] = c & 0xffff;
@@ -162,7 +162,7 @@ function longStr(a, /** @default 10 */b) {
         c >>>= 16;
       }
       if (c) {
-        blen += 1;
+        ++blen;
       } else {
         break;
       }
@@ -186,9 +186,9 @@ function longByte(a) {
   } else {
     s = true;
   }
-  var b = [];
-  var t = a.slice(-4);
-  var n;
+  var b = [],
+      t = a.slice(-4),
+      n;
   while (t) {
     n = parseInt(t, 16);
     if (isNaN(n)) {
@@ -238,17 +238,17 @@ function longint(a) {
       // 'e' is no found
       return longStr(a);
     }
-    var a1 = a.substr(0, i);
-    var a2 = a.substr(i + 2, a.length - (i + 2));
-    var fpt = a1.indeaOf('.', 0);
-    if (fpt >= 0) {
+    var a1 = a.substr(0, i),
+        a2 = a.substr(i + 2, a.length - (i + 2)),
+        fpt = a1.indeaOf('.', 0);
+    if (fpt < 0) {
+      // '.' is not found
+      a2 = parseInt(a2, 10);
+    } else {
       // '.' is found
       var np = a1.length - (fpt + 1);
       a1 = a1.substr(0, fpt) + a1.substr(fpt + 1, np);
       a2 -= np;
-    } else {
-      // '.' is not found
-      a2 = parseInt(a2, 10);
     }
     while (a2-- > 0) { a1 += '0'; }
     return longStr(a1);
@@ -288,13 +288,12 @@ function longEq(a, b) {
   if (a === b) { return true; }
   a = longint(a);
   b = longint(b);
-  var ads = a._ds;
-  var bds = b._ds;
   if (a._sn !== b._sn) { return false; }
-  var l = ads.length;
+  var ads = a._ds,
+      bds = b._ds,
+      l = ads.length;
   if (l !== bds.length) { return false; }
-  var i = 0;
-  for (; i < l; i++) {
+  for (var i = 0; i < l; i++) {
     if (ads[i] !== bds[i]) { return false; }
   }
   return true;
@@ -309,13 +308,12 @@ function longEq(a, b) {
 function longEqual(a, b) {
   if (a === b) { return true; }
   if (!(a instanceof Long) || !(b instanceof Long)) { return false; }
-  var ads = a._ds;
-  var bds = b._ds;
   if (a._sn !== b._sn) { return false; }
-  var l = ads.length;
+  var ads = a._ds,
+      bds = b._ds,
+      l = ads.length;
   if (l !== bds.length) { return false; }
-  var i = 0;
-  for (; i < l; i++) {
+  for (var i = 0; i < l; i++) {
     if (ads[i] !== bds[i]) { return false; }
   }
   return true;
@@ -332,12 +330,12 @@ function longEqual(a, b) {
  */
 function longAbsCmp(a, b) {
   if (a === b) { return 0; }
-  var ads = a._ds;
-  var bds = b._ds;
-  var al = ads.length;
+  var ads = a._ds,
+      bds = b._ds,
+      al = ads.length;
   if (al < bds.length) { return -1; }
   if (al > bds.length) { return 1; }
-  do { al -= 1; } while (al && ads[al] === bds[al]);
+  do { --al; } while (al && ads[al] === bds[al]);
   if (!al && ads[0] === bds[0]) { return 0; }
   return ads[al] > bds[al] ? 1 : -1;
 }
@@ -353,9 +351,9 @@ function longAbsCmp(a, b) {
  */
 function longCmp(a, b) {
   if (a === b) { return 0; }
-  var ads = a._ds;
-  var bds = b._ds;
-  var al = ads.length;
+  var ads = a._ds,
+      bds = b._ds,
+      al = ads.length;
   if (a._sn !== b._sn) { return a._sn ? 1 : -1; }
   if (al < bds.length) { return a._sn ? -1 : 1; }
   if (al > bds.length) { return a._sn ? 1 : -1; }
@@ -371,9 +369,9 @@ function longCmp(a, b) {
  * @returns {number}
  */
 function longValue(a) {
-  var d = 0.0;
-  var ds = a._ds;
-  var i = ds.length;
+  var d = 0.0,
+      ds = a._ds,
+      i = ds.length;
   while (i--) { d = ds[i] + 65536.0 * d; }
   if (!a._sn) { d = -d; }
   return d;
@@ -393,13 +391,13 @@ function longAddAbs(a, b, sign) {
     //swap a,b
     var z = a; a = b; b = z;
   }
-  var ads = a._ds;
-  var bds = b._ds;
+  var ads = a._ds,
+      bds = b._ds;
   z = longAlloc(bds.length + 1, sign);
-  var zds = z._ds;
-  var i = 0;
-  var len = ads.length;
-  var num = 0;
+  var zds = z._ds,
+      i = 0,
+      len = ads.length,
+      num = 0;
   for (; i < len; i++) {
     num += ads[i] + bds[i];
     zds[i] = num & 0xffff;
@@ -409,12 +407,12 @@ function longAddAbs(a, b, sign) {
   while (num && i < len) {
     num += bds[i];
     zds[i] = num & 0xffff;
-    i += 1;
+    ++i;
     num >>>= 16;
   }
   while (i < len) {
     zds[i] = bds[i];
-    i += 1;
+    ++i;
   }
   zds[i] = num & 0xffff;
   return longNorm(z);
@@ -430,14 +428,14 @@ function longAddAbs(a, b, sign) {
  *    -||a| - |b|| (else)
  */
 function longSubAbs(a, b, sign) {
-  var ads = a._ds;
-  var bds = b._ds;
-  var al = ads.length;
-  var bl = bds.length;
-  var z = longAlloc(al, sign);
-  var zds = z._ds;
-  var i = 0;
-  var c = 0;
+  var ads = a._ds,
+      bds = b._ds,
+      al = ads.length,
+      bl = bds.length,
+      z = longAlloc(al, sign),
+      zds = z._ds,
+      i = 0,
+      c = 0;
   for (; i < bl; i++) {
     c = ads[i] - bds[i] - c;
     if (c < 0) {
@@ -486,7 +484,7 @@ function longAdd(a, b) {
 function longSub(a, b) {
   if (a._sn === b._sn) {
     if (longAbsCmp(a, b) < 0) {
-        return longSubAbs(b, a, b._sn ? false : true);
+        return longSubAbs(b, a, !b._sn);
     }
     return longSubAbs(a, b, a._sn);
   }
@@ -500,10 +498,10 @@ function longSub(a, b) {
  * @returns {Long} a * b
  */
 function karatsuba(a, b) {
-  var z = longAlloc(4, a._sn === b._sn);
-  var zds = z._ds;
-  var ads = a._ds;
-  var bds = b._ds;
+  var z = longAlloc(4, a._sn === b._sn),
+      zds = z._ds,
+      ads = a._ds,
+      bds = b._ds;
   zds[0] = ads[0] * bds[0];
   zds[2] = ads[1] * bds[1];
   zds[1] = zds[0] + zds[2] - (ads[1] - ads[0]) * (bds[1] - bds[0]);
@@ -525,16 +523,16 @@ function karatsuba(a, b) {
  * @returns {Long} a * b
  */
 function longTc(a, b) {
-  var ads = a._ds;
-  var bds = b._ds;
-  var al = ads.length;
-  var bl = bds.length; // al >= bl
-  var l = (al << 1) - 1;
-  var z = longAlloc(l, a._sn === b._sn);
+  var ads = a._ds,
+      bds = b._ds,
+      al = ads.length,
+      bl = bds.length, // al >= bl
+      l = (al << 1) - 1,
+      z = longAlloc(l, a._sn === b._sn);
   longFillZero(z, l);
-  var zds = z._ds;
-  var w = [];
-  var i = al;
+  var zds = z._ds,
+      w = [],
+      i = al;
   while (i-- > bl) {
     bds[i] = 0;
   }
@@ -544,14 +542,14 @@ function longTc(a, b) {
   }
 
   var bt = function(sub, sup) {
-    var i, sum = 0;
-    for (i = sub; i <= sup; i++) {
+    var sum = 0;
+    for (var i = sub; i <= sup; i++) {
       sum += w[i];
     }
     while (sub < sup) {
       sum -= (ads[sup] - ads[sub]) * (bds[sup] - bds[sub]);
-      sup -= 1;
-      sub += 1;
+      --sup;
+      ++sub;
     }
     return sum;
   };
@@ -580,18 +578,16 @@ function longTc(a, b) {
  */
 function longMul(a, b) {
   // if (longEqual(a, b)) {return longSquare(a);}
-  var ads = a._ds;
-  var bds = b._ds;
-  var al = ads.length;
-  var bl = bds.length;
+  var ads = a._ds,
+      bds = b._ds,
+      al = ads.length,
+      bl = bds.length;
   if (al === 2 && bl === 2) { return karatsuba(a, b); }
   //if (al > 29 && bl > 29) { return al > bl ? longTc(a, b) : longTc(b, a); }
-  var j = al + bl + 1;
-  var z = longAlloc(j, a._sn === b._sn);
+  var j = al + bl + 1,
+      z = longAlloc(j, a._sn === b._sn);
   longFillZero(z, j);
-  var zds = z._ds;
-  var i, n, dd, ee;
-  for (i = 0; i < al; i++) {
+  for (var i = 0, n, dd, ee, zds = z._ds; i < al; i++) {
     dd = ads[i]; 
     if (!dd) { continue; }
     n = 0;
@@ -617,10 +613,10 @@ function longMul(a, b) {
  *    a / b (else)
  */
 function longDivmod(a, b, modulo) {
-  var ads = a._ds;
-  var bds = b._ds;
-  var na = ads.length;
-  var nb = bds.length;
+  var ads = a._ds,
+      bds = b._ds,
+      na = ads.length,
+      nb = bds.length;
   if (nb < 2 && !bds[0]) {
     //return a;
     throw new Error(
@@ -664,7 +660,8 @@ function longDivmod(a, b, modulo) {
     bb = longClone(b);
     tds = bb._ds;
 
-    for (j = 0, num = 0; j < nb; j++) {
+    j = num = 0;
+    for (; j < nb; j++) {
       num += bds[j] * dd;
       tds[j] = num & 0xffff;
       num >>>= 16;
@@ -672,7 +669,8 @@ function longDivmod(a, b, modulo) {
 
     bds = tds;
 
-    for (j = 0, num = 0; j < na; j++) {
+    j = num = 0;
+    for (; j < na; j++) {
       num += ads[j] * dd;
       zds[j] = num & 0xffff;
       num >>>= 16;
@@ -709,7 +707,7 @@ function longDivmod(a, b, modulo) {
       num += zds[j - nb + i] - t;
       while (num) {
         i = num = 0;
-        q -= 1;
+        --q;
 
         do {
           ee = num + bds[i];
@@ -718,7 +716,7 @@ function longDivmod(a, b, modulo) {
           num >>= 16;
         } while (++i < nb);
 
-        num -= 1;
+        --num;
       }
     }
     zds[j] = q;
@@ -776,16 +774,12 @@ function longMod(a, b) {
  * @returns {Long} a * a
  */
 function longSquare(a) {
-  var ads = a._ds;
-  var al = ads.length;
-  var s = longAlloc((al << 1) + 1, true);
-  var sds = s._ds;
+  var ads = a._ds,
+      al = ads.length,
+      s = longAlloc((al << 1) + 1, true),
+      sds = s._ds;
   longFillZero(s, sds.length);
-  var i = 0;
-  var j;
-  var carry;
-  var wai;
-  for (; i < al; i++) {
+  for (var i = 0, j, carry, wai; i < al; i++) {
     carry = sds[i << 1] + ads[i] * ads[i];
     sds[i << 1] = carry & 0xffff;
     carry >>>= 16;
@@ -799,8 +793,8 @@ function longSquare(a) {
       carry += sds[i + al];
       sds[i + al] = carry & 0xffff;
       carry >>>= 16;
+      if (carry) { sds[i + al + 1] += carry & 0xffff; }
     }
-    if (carry) { sds[i + al + 1] += carry & 0xffff; }
   }
   return longNorm(s);
 }
@@ -811,8 +805,8 @@ function longSquare(a) {
  * @returns {Long} <code>&radic;</code>a
  */
 function longSqrt(a){
-  var b = longClone(a);
-  var c = longNum(1);
+  var b = longClone(a),
+      c = longNum(1);
   while (longCmp(b, c) > 0) {
     longHalf(b);
     longDouble(c);
@@ -849,8 +843,8 @@ function longPow(a, b) {
  * @returns {Long}
  */
 function longRandom(a) {
-  var r = longAlloc(a, true);
-  var rds = r._ds;
+  var r = longAlloc(a, true),
+      rds = r._ds;
   for (var i = 0; i < a; i++) {
     rds[i] = Math.random() * 0xffff | 0;
   }
@@ -883,8 +877,7 @@ function longToString(a, /** @default 10 */b) {
   if (b === 2 || b === 16) { return longToByte(a, b); }
   var i = a._ds.length;
   if (i < 2 && !a._ds[0]) { return '0'; }
-  var j;
-  var hbase;
+  var j, hbase;
   switch (b) {
     case 8:
       j = (i << 4) + 2;
@@ -895,13 +888,13 @@ function longToString(a, /** @default 10 */b) {
       hbase = 10000;
       break;
   }
-  var t = longClone(a);
-  var ds = t._ds;
-  var digits = '0123456789';
-  var k;
-  var num;
-  var c;
-  var s = '';
+  var t = longClone(a),
+      ds = t._ds,
+      digits = '0123456789',
+      k,
+      num,
+      c,
+      s = '';
   while (i && j) {
     k = i;
     num = 0;
@@ -910,12 +903,12 @@ function longToString(a, /** @default 10 */b) {
       ds[k] = num / hbase | 0;
       num %= hbase;
     }
-    if (!ds[i-1]) { i -= 1; }
+    if (!ds[i - 1]) { --i; }
     k = 4;
     while (k--) {
       c = num % b;
       s = digits.charAt(c) + s;
-      j -= 1;
+      --j;
       num = num / b | 0;
       if (!i && !num) { break; }
     }
@@ -934,19 +927,19 @@ function longToString(a, /** @default 10 */b) {
 function longToByte(a, /** @default 16 */b) {
   //b = b || 16;
   if (b !== 2) { b = 16; }
-  var ds = a._ds;
-  var i = ds.length - 1;
-  var s = a._sn ? [] : ['-'];
+  var ds = a._ds,
+      i = ds.length - 1,
+      s = a._sn ? [] : ['-'],
+      z, l;
   s.push(ds[i].toString(b));
   if (b === 2) {
-    var z = '0000000000000000';
-    var l = -16;
+    z = '0000000000000000';
+    l = -16;
   } else {
     z = '0000';
     l = -4;
   }
-  while (i) {
-    i -= 1;
+  while (i--) {
     s.push((z + ds[i].toString(b)).slice(l));
   }
   return s.join('');
@@ -958,10 +951,9 @@ function longToByte(a, /** @default 16 */b) {
  * @returns {Long} a >> 1
  */
 function longHalf(a) {
-  var ds = a._ds;
-  var i = 0;
-  var l = ds.length - 1;
-  for (; i < l; i++) {
+  var ds = a._ds,
+      l = ds.length - 1;
+  for (var i = 0; i < l; i++) {
     ds[i] = (((ds[i + 1] & 1) << 16) + ds[i]) >>> 1;
   }
   ds[l] >>>= 1;
@@ -974,12 +966,10 @@ function longHalf(a) {
  * @returns {Long} a << 1
  */
 function longDouble(a) {
-  var ds = a._ds;
-  var l = ds.length;
-  var i = 0;
-  var d = 0;
-  var t;
-  for (; i < l; i++) {
+  var ds = a._ds,
+      l = ds.length,
+      d = 0;
+  for (var i = 0, t; i < l; i++) {
     t = (ds[i] << 1) + d;
     ds[i] = t & 0xffff;
     d = t >>> 16;
@@ -995,18 +985,18 @@ function longDouble(a) {
  * @returns {Long}
  */
 function longL(a, b) {
-  var ad = a._ds;
-  var l = ad.length;
-  var d = b >> 4;
-  var cl = l + d + 1;
-  var bb = b & 0xf;
-  var c = longAlloc(cl, a._sn);
-  var cd = c._ds;
-  var i = 0;
+  var ad = a._ds,
+      l = ad.length,
+      d = b >> 4,
+      cl = l + d + 1,
+      bb = b & 0xf,
+      c = longAlloc(cl, a._sn),
+      cd = c._ds,
+      i = 0,
+      carry = 0;
   for (;i < d; i++) { cd[i] = 0; }
-  var t;
-  var carry = 0;
-  for (i = 0; i < l; i++) {
+  i = 0;
+  for (var t; i < l; i++) {
     t = (ad[i] << bb) + carry;
     cd[i + d] = t & 0xffff;
     carry = t >> 16;
@@ -1022,16 +1012,16 @@ function longL(a, b) {
  * @returns {Long}
  */
 function longR(a, b) {
-  var ad = a._ds;
-  var l = ad.length;
-  var d = b >> 4;
-  var bb = b & 0xf;
-  var mask = (1 << bb) - 1;
+  var ad = a._ds,
+      l = ad.length,
+      d = b >> 4,
+      bb = b & 0xf,
+      mask = (1 << bb) - 1;
   if (l <= d) { return new Long; }
-  var cl = l - d;
-  var c = longAlloc(cl, a._sn);
-  var cd = c._ds;
-  var i = 0;
+  var cl = l - d,
+      c = longAlloc(cl, a._sn),
+      cd = c._ds,
+      i = 0;
   for (; i < cl - 1; i++) {
     cd[i] = ((ad[i + d + 1] & mask) << (16 - bb)) + (ad[i + d] >> bb);
   }
@@ -1046,8 +1036,8 @@ function longR(a, b) {
  * @returns {Long} a * 10<sup>n</sup>
  */
 function longAddZero(a, b) {
-  var zeros = '';
-  var z = '0';
+  var zeros = '',
+      z = '0';
   for (; b > 0; b >>>= 1, z += z) {
     if (b & 1) { zeros += z; }
   }

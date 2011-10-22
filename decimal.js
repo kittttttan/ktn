@@ -38,7 +38,7 @@ function decStr(str) {
   }
   var trim = str.substring(0, index) + str.substring(index + 1);
   var i = 0;
-  while (trim.charAt(i) === '0') { i += 1; }
+  while (trim.charAt(i) === '0') { ++i; }
   if (i) { trim = trim.substring(i); }
   return new Decimal(longStr(trim), index - str.length + 1);
 }
@@ -110,14 +110,13 @@ function decClone(a) {
  */
 function decToString(a) {
   if (a._e < 0) {
-    var str = a._l.toString();
-    var n = -a._e - str.length;
+    var str = a._l.toString(),
+        n = -a._e - str.length;
     if (n < 0) {
       return str.slice(0, a._e) + '.' + str.slice(a._e);
     }
     var zeros = '';
-    var z = '0';
-    for (; n > 0; n >>>= 1, z += z) {
+    for (var z = '0'; n > 0; n >>>= 1, z += z) {
       if (n & 1) { zeros += z; }
     }
     return '0.'+ zeros + str;
@@ -207,10 +206,10 @@ function decMul(a, b) {
  */
 function decDiv(a, b, c) {
   c = c || 20;
-  var diff = a._l.toString().length - b._l.toString().length;
-  var e = a._e - b._e;
-  var f = b._e;
-  var arr = [];
+  var diff = a._l.toString().length - b._l.toString().length,
+      e = a._e - b._e,
+      f = b._e,
+      arr = [];
   if (diff < 0) {
     return new Decimal(longDiv(a._l.addzero(c - diff + 1 - f), b._l),
                                -c + diff - 1 + e + f).trim();
@@ -240,15 +239,14 @@ function decFloor(a) {
  * @returns {Decimal}
  */
 function decSetLength(a, n) {
-  var str = a._l.toString();
-  var diff = n - str.length;
+  var str = a._l.toString(),
+      diff = n - str.length;
   if (diff < 0) {
     a._l = longStr(str.substring(0, n));
     a._e -= diff;
   } else {
     var zeros = '';
-    var z = '0';
-    for (; diff > 0; diff >>>= 1, z += z) {
+    for (var z = '0'; diff > 0; diff >>>= 1, z += z) {
       if (diff & 1) { zeros += z; }
     }
     a._l = longStr(str + zeros);
@@ -261,8 +259,8 @@ function decSetLength(a, n) {
  * @returns {Decimal}
  */
 function decTrim(a) {
-  var str = a._l.toString();
-  var i = str.length - 1;
+  var str = a._l.toString(),
+      i = str.length - 1;
   while (i >= 0 && str.charAt(i) === '0') {
     a._e += 1;
     i -= 1;

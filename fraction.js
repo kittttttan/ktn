@@ -204,9 +204,7 @@ function fracEqual(a, b) {
  *   -1 (a < b)
  */
 function fracCmp(a, b) {
-  var c = longMul(a._n, b._d);
-  var d = longMul(a._d, b._n);
-  return cmp(c, d);
+  return cmp(longMul(a._n, b._d), longMul(a._d, b._n));
 }
 
 /**
