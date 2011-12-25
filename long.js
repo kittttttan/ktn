@@ -1,12 +1,13 @@
 /**
  * @fileOverview Big Integer in JavaScript.
- * @version 2011-07-24
+ * @version 2011-12-25
  * @author kittttttan
  * @url http://kittttttan.web.fc2.com/math/mathjs.html
  * @example
- *   var a = longStr("12345678909876543210"); // from String
- *   var b = longNum(7777777);  // from Number
- *   longMul(a, b);  // => 96021937474622850618244170
+ *   var a = longStr("12345678909876543210");
+ *   var b = longNum(7777777);
+ *   var c = longMul(a, b);
+ *   // c.toString() == '96021937474622850618244170'
  * @license
  * Based on:
  *   BigInt.js - Arbitrary size integer math package for JavaScript
@@ -30,60 +31,60 @@
 /**
  * Big integer.
  * @class Big integer
- * @property {Array.<number>} _ds Digits
- * @property {boolean} _sn Sign +, -
+ * @property {Array.<number>} _d Digits [d0, d1, ..., dn]
+ * @property {boolean} _s Sign +, -. true means +.
  */
 function Long() {
-  this._ds = [0];
-  this._sn = true;
+  this._d = [0];
+  this._s = true;
 }
 
 /**
  * Set length.
  * @private
- * @param {number} a Length
- * @param {boolean} b Sign
+ * @param {number} length
+ * @param {boolean} sign
  */
-function longAlloc(a, b) {
-  var c = new Long;
-  if (!b) {
-    c._sn = false;
+function longAlloc(length, sign) {
+  var a = new Long;
+  if (!sign) {
+    a._s = false;
   }
-  c._ds.length = a;
-  return c;
+  a._d.length = length;
+  return a;
 }
 
 /**
  * Assign zero to initialize.
  * @private
  * @param {Long} a
- * @param {number} b
+ * @param {number} b Length
  * @returns {Long}
  */
 function longFillZero(a, b) {
-  var ds = a._ds;
-  while (b--) { ds[b] = 0; }
+  var d = a._d;
+  while (b--) { d[b] = 0; }
   return a;
 }
 
 /**
  * Convert integer to Long.
- * @param {number} a
+ * @param {number} n
  * @returns {Long}
  */
-function longNum(a) {
-  var b = new Long;
-  if (a < 0) {
-    a = -a;
-    b._sn = false;
+function longNum(n) {
+  var a = new Long;
+  if (n < 0) {
+    n = -n;
+    a._s = false;
   }
-  a &= 0x7fffffff;
-  b._ds[0] = a & 0xffff;
-  var c = a >>> 16;
-  if (c) {
-    b._ds[1] = c & 0xffff;
+  n &= 0x7fffffff;
+  a._d[0] = n & 0xffff;
+  n >>>= 16;
+  if (n) {
+    a._d[1] = n & 0xffff;
   }
-  return b;
+  return a;
 }
 
 /**
@@ -101,68 +102,68 @@ var LONG_ONE = longNum(1);
 var LONG_ZERO = new Long;
 
 /**
- * Delete zeros.
+ * Delete following zeros. [2, 0, 1, 0, 0] -> [2, 0, 1]
  * @param {Long} a
  * @returns {Long}
  */
 function longNorm(a) {
-  var ds = a._ds,
-      len = ds.length;
-  do { --len; } while (len && !ds[len]);
-  ds.length = len + 1;
+  var d = a._d,
+      l = d.length;
+  do { --l; } while (l && !d[l]);
+  d.length = l + 1;
   // -0 -> +0
-  if (!ds[0] && !len) { a._sn = true; }
+  if (!l) { a._s = true; }
   return a;
 }
 
 /**
  * Converts string to Long.
- * @param {string} a For example '-9' or 'FF' etc.
- * @param {number} b Base 2, 8, 10 or 16
+ * @param {string} str For example '-9' or 'FF' etc.
+ * @param {number} base 2, 8, 10 or 16
  * @returns {Long}
  */
-function longStr(a, /** @default 10 */b) {
-  b = b || 10;
-  if (b === 16) { return longByte(a.slice(0, -1)); }
-  var a_i = 0,
-      sign = true;
-  a += '@';	// Terminator;
-  if (a.charAt(a_i) === '+') {
-    ++a_i;
-  } else if (a.charAt(a_i) === '-') {
-    ++a_i;
+function longStr(str, /** @default 10 */base) {
+  if (base === 16) { return longByte(str); }
+  if (!base) { base = 10; }
+
+  var index = 0, sign = true;
+  if (str.charAt(index) === '+') {
+    ++index;
+  } else if (str.charAt(index) === '-') {
+    ++index;
     sign = false;
   }
   // Ignore following zeros. '00102' is regarded as '102'.
-  while (a.charAt(a_i) === '0') { ++a_i; }
-  if (a.charAt(a_i) === '@') { return new Long; }
-  if (b === 8) {
-    var len = 3 * (a.length - a_i);
+  while (str.charAt(index) === '0') { ++index; }
+  if (!str.charAt(index)) { return new Long; }
+  
+  var len = 0;
+  if (base === 8) {
+    len = 3 * (str.length + 1 - index);
   } else {
-    if (a.charAt(a_i) === '@') { --a_i; }
-    len = (a.length - a_i) << 2;
+    if (!str.charAt(index)) { --index; }
+    len = (str.length + 1 - index) << 2;
   }
   len = (len >>> 4) + 1;
+
   var z = longAlloc(len, sign);
   longFillZero(z, len);
-  var zds = z._ds,
-      i,
-      blen = 1;
-  while (1) {
-    c = a.charAt(a_i);
-    ++a_i;
-    if (c === '@') { break; }
-    c = parseInt(c, 10);
+
+  var zd = z._d, c, i = 0, bl = 1, n = 0;
+  for (;;) {
+    c = str.charAt(index);
+    ++index;
+    if (!c) { break; }
+    n = parseInt(c, 10);
     i = 0;
-    while (1) {
-      while (i < blen) {
-        c += zds[i] * b;
-        zds[i] = c & 0xffff;
-        i += 1;
-        c >>>= 16;
+    for (;;) {
+      for (; i < bl; i++) {
+        n += zd[i] * base;
+        zd[i] = n & 0xffff;
+        n >>>= 16;
       }
-      if (c) {
-        ++blen;
+      if (n) {
+        ++bl;
       } else {
         break;
       }
@@ -173,34 +174,32 @@ function longStr(a, /** @default 10 */b) {
 
 /**
  * Converts hex to Long.
- * @param {string} a For example 'ff' or '-123456789abcdef' etc.
- * @throws {Error} ValueError
+ * @param {string} str For example 'ff' or '-123456789abcdef' etc.
  * @returns {Long}
  */
-function longByte(a) {
-  if (!a) { return new Long; }
-  if (a.charAt(0) === '-') {
-    if (!a.charAt(1)) { return new Long; }
-    var s = false;
-    a = a.substring(1);
-  } else {
-    s = true;
+function longByte(str) {
+  if (!str) { return new Long; }
+
+  var s = true;
+  if (str.charAt(0) === '-') {
+    if (!str.charAt(1)) { return new Long; }
+    s = false;
+    str = str.substring(1);
   }
-  var b = [],
-      t = a.slice(-4),
-      n;
-  while (t) {
+  
+  var d = [], t, n = 0;
+  for (;;) {
+    t = str.slice(-4);
+    if (!t) { break; }
     n = parseInt(t, 16);
-    if (isNaN(n)) {
-      throw new Error('longByte('+arguments[0]+'):ValueError');
-    }
-    b.push(n);
-    a = a.slice(0, -4);
-    t = a.slice(-4);
+    if (isNaN(n)) { break; }
+    d.push(n);
+    str = str.slice(0, -4);
   }
+
   var z = new Long;
-  z._sn = s;
-  z._ds = b;
+  z._s = s;
+  z._d = d;
   return longNorm(z);
 }
 
@@ -211,8 +210,8 @@ function longByte(a) {
  */
 function longClone(a) {
   var b = new Long;
-  b._sn = a._sn;
-  b._ds = Array.prototype.concat.call(a._ds);
+  b._s = a._s;
+  b._d = Array.prototype.concat.call(a._d);
   return b;
 }
 
@@ -223,7 +222,8 @@ function longClone(a) {
  */
 function longint(a) {
   if (typeof a === 'object') {
-    return (a instanceof Long) ? longClone(a) : new Long;
+    if (a instanceof Long) { return longClone(a); }
+    return new Long;
   }
   if (typeof a === 'string') {
     return longStr(a);
@@ -233,11 +233,13 @@ function longint(a) {
       return longNum(a);
     }
     a += '';
+
     var i = a.indexOf('e', 0);
     if (i < 0) {
       // 'e' is no found
       return longStr(a);
     }
+
     var a1 = a.substr(0, i),
         a2 = a.substr(i + 2, a.length - (i + 2)),
         fpt = a1.indeaOf('.', 0);
@@ -245,12 +247,11 @@ function longint(a) {
       // '.' is not found
       a2 = parseInt(a2, 10);
     } else {
-      // '.' is found
       var np = a1.length - (fpt + 1);
       a1 = a1.substr(0, fpt) + a1.substr(fpt + 1, np);
       a2 -= np;
     }
-    while (a2-- > 0) { a1 += '0'; }
+    for (; a2 > 0; --a2) { a1 += '0'; }
     return longStr(a1);
   }
   return new Long;
@@ -263,7 +264,7 @@ function longint(a) {
  */
 function longNeg(a) {
   var z = longClone(a);
-  z._sn = !z._sn;
+  if (z.isNonZero()) { z._s = !z._s; }
   return z;
 }
 
@@ -274,7 +275,7 @@ function longNeg(a) {
  */
 function longAbs(a){
   var z = longClone(a);
-  z._sn = true;
+  z._s = true;
   return z;
 }
 
@@ -288,13 +289,13 @@ function longEq(a, b) {
   if (a === b) { return true; }
   a = longint(a);
   b = longint(b);
-  if (a._sn !== b._sn) { return false; }
-  var ads = a._ds,
-      bds = b._ds,
-      l = ads.length;
-  if (l !== bds.length) { return false; }
+  if (a._s !== b._s) { return false; }
+  var ad = a._d,
+      bd = b._d,
+      l = ad.length;
+  if (l !== bd.length) { return false; }
   for (var i = 0; i < l; i++) {
-    if (ads[i] !== bds[i]) { return false; }
+    if (ad[i] !== bd[i]) { return false; }
   }
   return true;
 }
@@ -308,13 +309,13 @@ function longEq(a, b) {
 function longEqual(a, b) {
   if (a === b) { return true; }
   if (!(a instanceof Long) || !(b instanceof Long)) { return false; }
-  if (a._sn !== b._sn) { return false; }
-  var ads = a._ds,
-      bds = b._ds,
-      l = ads.length;
-  if (l !== bds.length) { return false; }
+  if (a._s !== b._s) { return false; }
+  var ad = a._d,
+      bd = b._d,
+      l = ad.length;
+  if (l !== bd.length) { return false; }
   for (var i = 0; i < l; i++) {
-    if (ads[i] !== bds[i]) { return false; }
+    if (ad[i] !== bd[i]) { return false; }
   }
   return true;
 }
@@ -325,19 +326,19 @@ function longEqual(a, b) {
  * @param {Long} b
  * @returns {number} <br>
  *    -1 (|a| < |b|)<br>
- *     0 (|a| == |b|)<br>
+ *     0 (|a| = |b|)<br>
  *     1 (|a| > |b|)
  */
 function longAbsCmp(a, b) {
   if (a === b) { return 0; }
-  var ads = a._ds,
-      bds = b._ds,
-      al = ads.length;
-  if (al < bds.length) { return -1; }
-  if (al > bds.length) { return 1; }
-  do { --al; } while (al && ads[al] === bds[al]);
-  if (!al && ads[0] === bds[0]) { return 0; }
-  return ads[al] > bds[al] ? 1 : -1;
+  var ad = a._d,
+      bd = b._d,
+      al = ad.length;
+  if (al < bd.length) { return -1; }
+  if (al > bd.length) { return 1; }
+  do { --al; } while (al && ad[al] === bd[al]);
+  if (!al && ad[0] === bd[0]) { return 0; }
+  return ad[al] > bd[al] ? 1 : -1;
 }
 
 /**
@@ -346,21 +347,21 @@ function longAbsCmp(a, b) {
  * @param {Long} b
  * @returns {number} <br>
  *    -1 (a < b)<br>
- *     0 (a == b)<br>
+ *     0 (a = b)<br>
  *     1 (a > b)
  */
 function longCmp(a, b) {
   if (a === b) { return 0; }
-  var ads = a._ds,
-      bds = b._ds,
-      al = ads.length;
-  if (a._sn !== b._sn) { return a._sn ? 1 : -1; }
-  if (al < bds.length) { return a._sn ? -1 : 1; }
-  if (al > bds.length) { return a._sn ? 1 : -1; }
-  do { al -= 1; } while (al && ads[al] === bds[al]);
-  if (!al && ads[0] === bds[0]) { return a._sn - b._sn; }
-  if (ads[al] > bds[al]) { return a._sn ? 1 : -1; }
-  return a._sn ? -1 : 1;
+  var ad = a._d,
+      bd = b._d,
+      al = ad.length;
+  if (a._s !== b._s) { return a._s ? 1 : -1; }
+  if (al < bd.length) { return a._s ? -1 : 1; }
+  if (al > bd.length) { return a._s ? 1 : -1; }
+  do { --al; } while (al && ad[al] === bd[al]);
+  if (!al && ad[0] === bd[0]) { return a._s - b._s; }
+  if (ad[al] > bd[al]) { return a._s ? 1 : -1; }
+  return a._s ? -1 : 1;
 }
 
 /**
@@ -369,12 +370,12 @@ function longCmp(a, b) {
  * @returns {number}
  */
 function longValue(a) {
-  var d = 0.0,
-      ds = a._ds,
-      i = ds.length;
-  while (i--) { d = ds[i] + 65536.0 * d; }
-  if (!a._sn) { d = -d; }
-  return d;
+  var f = 0.0,
+      d = a._d,
+      i = d.length;
+  while (i--) { f = d[i] + 65536.0 * f; }
+  if (!a._s) { f = -f; }
+  return f;
 }
 
 /**
@@ -387,34 +388,31 @@ function longValue(a) {
  *  -(|a| + |b|) (else)
  */
 function longAddAbs(a, b, sign) {
-  if (a._ds.length > b._ds.length) {
-    //swap a,b
-    var z = a; a = b; b = z;
+  if (a._d.length < b._d.length) {
+    return longAddAbs(b, a, sign);
   }
-  var ads = a._ds,
-      bds = b._ds;
-  z = longAlloc(bds.length + 1, sign);
-  var zds = z._ds,
+  var ad = a._d,
+      bd = b._d,
+      al = ad.length,
+      bl = bd.length,
+      z = longAlloc(bl + 1, sign),
+      zd = z._d,
       i = 0,
-      len = ads.length,
       num = 0;
-  for (; i < len; i++) {
-    num += ads[i] + bds[i];
-    zds[i] = num & 0xffff;
+  for (; i < bl; ++i) {
+    num += ad[i] + bd[i];
+    zd[i] = num & 0xffff;
     num >>>= 16;
   }
-  len = bds.length;
-  while (num && i < len) {
-    num += bds[i];
-    zds[i] = num & 0xffff;
-    ++i;
+  for (; num && i < al; ++i) {
+    num += ad[i];
+    zd[i] = num & 0xffff;
     num >>>= 16;
   }
-  while (i < len) {
-    zds[i] = bds[i];
-    ++i;
+  for (; i < al; ++i) {
+    zd[i] = ad[i];
   }
-  zds[i] = num & 0xffff;
+  zd[i] = num & 0xffff;
   return longNorm(z);
 }
 
@@ -428,31 +426,31 @@ function longAddAbs(a, b, sign) {
  *    -||a| - |b|| (else)
  */
 function longSubAbs(a, b, sign) {
-  var ads = a._ds,
-      bds = b._ds,
-      al = ads.length,
-      bl = bds.length,
+  var ad = a._d,
+      bd = b._d,
+      al = ad.length,
+      bl = bd.length,
       z = longAlloc(al, sign),
-      zds = z._ds,
+      zd = z._d,
       i = 0,
       c = 0;
   for (; i < bl; i++) {
-    c = ads[i] - bds[i] - c;
+    c = ad[i] - bd[i] - c;
     if (c < 0) {
-      zds[i] = c & 0xffff;
+      zd[i] = c & 0xffff;
       c = 1;
     } else {
-      zds[i] = c;
+      zd[i] = c;
       c = 0;
     }
-  } 
+  }
   for (; i < al; i++) { 
-    c = ads[i] - c;
+    c = ad[i] - c;
     if (c < 0) {
-      zds[i] = c & 0xffff;
+      zd[i] = c & 0xffff;
       c = 1;
     } else {
-      zds[i] = c;
+      zd[i] = c;
       c = 0;
     }
   }
@@ -466,13 +464,13 @@ function longSubAbs(a, b, sign) {
  * @returns {Long} a + b
  */
 function longAdd(a, b) {
-  if (a._sn !== b._sn) {
+  if (a._s !== b._s) {
     if (longAbsCmp(a, b) < 0) {
-      return longSubAbs(b, a, b._sn);
+      return longSubAbs(b, a, b._s);
     }
-    return longSubAbs(a, b, a._sn);
+    return longSubAbs(a, b, a._s);
   }
-  return longAddAbs(a, b, a._sn);
+  return longAddAbs(a, b, a._s);
 }
 
 /**
@@ -482,37 +480,35 @@ function longAdd(a, b) {
  * @returns {Long} a - b
  */
 function longSub(a, b) {
-  if (a._sn === b._sn) {
+  if (a._s === b._s) {
     if (longAbsCmp(a, b) < 0) {
-        return longSubAbs(b, a, !b._sn);
+        return longSubAbs(b, a, !b._s);
     }
-    return longSubAbs(a, b, a._sn);
+    return longSubAbs(a, b, a._s);
   }
-  return longAddAbs(a, b, a._sn);
+  return longAddAbs(a, b, a._s);
 }
 
 /**
  * Multiply with Karatsuba Method.
- * @param {Long} a a._ds.length === 2
- * @param {Long} b b._ds.length === 2
+ * @param {Long} a a._d.length === 2
+ * @param {Long} b b._d.length === 2
  * @returns {Long} a * b
  */
 function karatsuba(a, b) {
-  var z = longAlloc(4, a._sn === b._sn),
-      zds = z._ds,
-      ads = a._ds,
-      bds = b._ds;
-  zds[0] = ads[0] * bds[0];
-  zds[2] = ads[1] * bds[1];
-  zds[1] = zds[0] + zds[2] - (ads[1] - ads[0]) * (bds[1] - bds[0]);
-  zds[1] += zds[0] >>> 16;
-  zds[2] += zds[1] >>> 16;
-  zds[3] = zds[2] >>> 16;
-  //zds[4] = zds[3] >>> 16;
-  zds[0] &= 0xffff;
-  zds[1] &= 0xffff;
-  zds[2] &= 0xffff;
-  //zds[3] &= 0xffff;
+  var z = longAlloc(4, a._s === b._s),
+      zd = z._d,
+      ad = a._d,
+      bd = b._d;
+  zd[0] = ad[0] * bd[0];
+  zd[2] = ad[1] * bd[1];
+  zd[1] = zd[0] + zd[2] - (ad[1] - ad[0]) * (bd[1] - bd[0]);
+  zd[1] += zd[0] >>> 16;
+  zd[2] += zd[1] >>> 16;
+  zd[3] = zd[2] >>> 16;
+  zd[0] &= 0xffff;
+  zd[1] &= 0xffff;
+  zd[2] &= 0xffff;
   return longNorm(z);
 }
 
@@ -523,22 +519,25 @@ function karatsuba(a, b) {
  * @returns {Long} a * b
  */
 function longTc(a, b) {
-  var ads = a._ds,
-      bds = b._ds,
-      al = ads.length,
-      bl = bds.length, // al >= bl
+  if (a._d.length < b._d.length) {
+    return longTc(b, a);
+  }
+  var ad = a._d,
+      bd = b._d,
+      al = ad.length,
+      bl = bd.length, // al >= bl
       l = (al << 1) - 1,
-      z = longAlloc(l, a._sn === b._sn);
+      z = longAlloc(l, a._s === b._s);
   longFillZero(z, l);
-  var zds = z._ds,
+  var zd = z._d,
       w = [],
       i = al;
   while (i-- > bl) {
-    bds[i] = 0;
+    bd[i] = 0;
   }
   i = al;
   while (i--) {
-    w[i] = ads[i] * bds[i];
+    w[i] = ad[i] * bd[i];
   }
 
   var bt = function(sub, sup) {
@@ -547,7 +546,7 @@ function longTc(a, b) {
       sum += w[i];
     }
     while (sub < sup) {
-      sum -= (ads[sup] - ads[sub]) * (bds[sup] - bds[sub]);
+      sum -= (ad[sup] - ad[sub]) * (bd[sup] - bd[sub]);
       --sup;
       ++sub;
     }
@@ -555,18 +554,18 @@ function longTc(a, b) {
   };
 
   for (i = 0; i < al; i++) {
-    zds[i] = bt(0, i);
+    zd[i] = bt(0, i);
   }
   for (i = 1; i < al; i++) {
-    zds[i + al - 1] = bt(i, al - 1);
+    zd[i + al - 1] = bt(i, al - 1);
   }
   var j = 0;
   for (i = 0; i < l; i++) {
-    zds[i] += j;
-    j = zds[i] >>> 16;
-    zds[i] &= 0xffff;
+    zd[i] += j;
+    j = zd[i] >>> 16;
+    zd[i] &= 0xffff;
   }
-  zds[i] = j;
+  zd[i] = j;
   return longNorm(z);
 }
 
@@ -578,172 +577,168 @@ function longTc(a, b) {
  */
 function longMul(a, b) {
   // if (longEqual(a, b)) {return longSquare(a);}
-  var ads = a._ds,
-      bds = b._ds,
-      al = ads.length,
-      bl = bds.length;
+  var ad = a._d,
+      bd = b._d,
+      al = ad.length,
+      bl = bd.length;
   if (al === 2 && bl === 2) { return karatsuba(a, b); }
-  //if (al > 29 && bl > 29) { return al > bl ? longTc(a, b) : longTc(b, a); }
+  // if (al > 29 && bl > 29) { return longTc(a, b); }
   var j = al + bl + 1,
-      z = longAlloc(j, a._sn === b._sn);
+      z = longAlloc(j, a._s === b._s);
   longFillZero(z, j);
-  for (var i = 0, n, dd, ee, zds = z._ds; i < al; i++) {
-    dd = ads[i]; 
-    if (!dd) { continue; }
+  for (var i = 0, n, d, e, zd = z._d; i < al; i++) {
+    d = ad[i]; 
+    if (!d) { continue; }
     n = 0;
     for (j = 0; j < bl; j++) {
-      ee = n + dd * bds[j];
-      n = zds[i + j] + ee;
-      if (ee) { zds[i + j] = n & 0xffff; }
+      e = n + d * bd[j];
+      n = zd[i + j] + e;
+      if (e) { zd[i + j] = n & 0xffff; }
       n >>>= 16;
     }
-    if (n) { zds[i + j] = n; }
+    if (n) { zd[i + j] = n; }
   }
   return longNorm(z);
 }
 
 /**
- * Division or Modulo.
+ * Division or Mod.
  * @param {Long} a
  * @param {Long} b
- * @param {boolean} modulo If true then mod, else div.
- * @throws {Error} ZeroDivisionError
+ * @param {boolean} modulus If true then mod, else div.
  * @returns {Long} <br>
- *    a % b (modulo == true)<br>
+ *    a % b (modulus == true)<br>
  *    a / b (else)
  */
-function longDivmod(a, b, modulo) {
-  var ads = a._ds,
-      bds = b._ds,
-      na = ads.length,
-      nb = bds.length;
-  if (nb < 2 && !bds[0]) {
-    //return a;
-    throw new Error(
-        ['ZeroDivisionError:longDivmod(',a,',',b,',',modulo,')'].join(''));
+function longDivmod(a, b, modulus) {
+  var ad = a._d,
+      bd = b._d,
+      na = ad.length,
+      nb = bd.length;
+  if (nb < 2 && !bd[0]) {
+    // zero division
+    if (modulus || na < 2 && !ad[0]) { return NaN; }
+    if (a._s === b._s) { return Infinity; }
+    return -Infinity;
   }
 
   var albl = na === nb;
-  if (na < nb || (albl && ads[na - 1] < bds[nb - 1])) {
-    if (modulo) { return longNorm(a); }
+  if (na < nb || (albl && ad[na - 1] < bd[nb - 1])) {
+    if (modulus) { return longNorm(a); }
     return new Long;
   }
 
-  var dd, z, zds, t, i;
+  var dd = 0, z, zd, t = 0, i = 0;
   if (nb === 1) {
-    dd = bds[0];
+    dd = bd[0];
     z = longClone(a);
-    zds = z._ds;
-    t = 0;
+    zd = z._d;
     i = na;
     while (i--) {
-      t *= 0x10000;
-      t += zds[i];
-      zds[i] = (t / dd) & 0xffff;
+      t = t * 0x10000 + zd[i];
+      zd[i] = (t / dd) & 0xffff;
       t %= dd;
     }
-    z._sn = a._sn === b._sn;
-    if (modulo) {
-      if (!a._sn) { return longNum(-t); }
+    z._s = a._s === b._s;
+    if (modulus) {
+      if (!a._s) { return longNum(-t); }
       return longNum(t);
     }
     return longNorm(z);
   }
 
-  z = longAlloc(albl ? na + 2 : na + 1, a._sn === b._sn);
-  zds = z._ds;
-  longFillZero(z, zds.length);
-  dd = 0x10000 / (bds[nb - 1] + 1) & 0xffff;
+  z = longAlloc(albl ? na + 2 : na + 1, a._s === b._s);
+  zd = z._d;
+  longFillZero(z, zd.length);
+  dd = 0x10000 / (bd[nb - 1] + 1) & 0xffff;
 
-  var j, bb, tds, num;
-  if (dd !== 1) {
-    bb = longClone(b);
-    tds = bb._ds;
-
-    j = num = 0;
-    for (; j < nb; j++) {
-      num += bds[j] * dd;
-      tds[j] = num & 0xffff;
-      num >>>= 16;
-    }
-
-    bds = tds;
-
-    j = num = 0;
-    for (; j < na; j++) {
-      num += ads[j] * dd;
-      zds[j] = num & 0xffff;
-      num >>>= 16;
-    }
-
-    zds[j] = num & 0xffff;
-
-  } else {
-    //zds[na] = 0;
+  var j = 0, bb, td, num = 0;
+  if (dd === 1) {
+    //zd[na] = 0;
     j = na;
-    while (j--) { zds[j] = ads[j]; }
+    while (j--) { zd[j] = ad[j]; }
+  } else {
+    bb = longClone(b);
+    td = bb._d;
+
+    for (; j < nb; j++) {
+      num += bd[j] * dd;
+      td[j] = num & 0xffff;
+      num >>>= 16;
+    }
+
+    bd = td;
+    j = num = 0;
+
+    for (; j < na; j++) {
+      num += ad[j] * dd;
+      zd[j] = num & 0xffff;
+      num >>>= 16;
+    }
+
+    zd[j] = num & 0xffff;
   }
 
-  var q, ee;
+  var q = 0, ee = 0;
   j = albl ? na + 1 : na;
   do {
-    if (zds[j] === bds[nb - 1]) {
+    if (zd[j] === bd[nb - 1]) {
       q = 0xffff;
     } else {
-      q = (zds[j] * 0x10000 + zds[j - 1]) / bds[nb - 1] & 0xffff;
+      q = (zd[j] * 0x10000 + zd[j - 1]) / bd[nb - 1] & 0xffff;
     }
 
     if (q) {
       i = num = t = 0;
       do {
-        t += bds[i] * q;
+        t += bd[i] * q;
         ee = (t & 0xffff) - num;
-        num = zds[j - nb + i] - ee;
-        if (ee) { zds[j - nb + i] = num & 0xffff; }
+        num = zd[j - nb + i] - ee;
+        if (ee) { zd[j - nb + i] = num & 0xffff; }
         num >>= 16;
         t >>>= 16;
       } while (++i < nb);
 
-      num += zds[j - nb + i] - t;
+      num += zd[j - nb + i] - t;
       while (num) {
         i = num = 0;
         --q;
 
         do {
-          ee = num + bds[i];
-          num = zds[j - nb + i] + ee;
-          if (ee) { zds[j - nb + i] = num & 0xffff; }
+          ee = num + bd[i];
+          num = zd[j - nb + i] + ee;
+          if (ee) { zd[j - nb + i] = num & 0xffff; }
           num >>= 16;
         } while (++i < nb);
 
         --num;
       }
     }
-    zds[j] = q;
+    zd[j] = q;
   } while (--j >= nb);
 
-  if (modulo) {
+  if (modulus) {
     var mod = longClone(z);
     if (dd) {
-      zds = mod._ds;
+      zd = mod._d;
       t = 0;
       i = nb;
       while (i--) {
-        t = t * 0x10000 + zds[i];
-        zds[i] = (t / dd) & 0xffff;
+        t = t * 0x10000 + zd[i];
+        zd[i] = (t / dd) & 0xffff;
         t %= dd;
       }
     }
-    zds.length = nb;
-    mod._sn = a._sn;
+    zd.length = nb;
+    mod._s = a._s;
     return longNorm(mod);
   }
 
   var div = longClone(z);
-  zds = div._ds;
+  zd = div._d;
   j = (albl ? na + 2 : na + 1) - nb;
-  for (i = 0; i < j; i++) { zds[i] = zds[i + nb]; }
-  zds.length = i;
+  for (i = 0; i < j; i++) { zd[i] = zd[i + nb]; }
+  zd.length = i;
   return longNorm(div);
 }
 
@@ -774,26 +769,27 @@ function longMod(a, b) {
  * @returns {Long} a * a
  */
 function longSquare(a) {
-  var ads = a._ds,
-      al = ads.length,
+  var ad = a._d,
+      al = ad.length,
       s = longAlloc((al << 1) + 1, true),
-      sds = s._ds;
-  longFillZero(s, sds.length);
-  for (var i = 0, j, carry, wai; i < al; i++) {
-    carry = sds[i << 1] + ads[i] * ads[i];
-    sds[i << 1] = carry & 0xffff;
+      sd = s._d,
+      i = 0, j = 0, carry = 0, wai = 0;
+  longFillZero(s, sd.length);
+  for (; i < al; i++) {
+    carry = sd[i << 1] + ad[i] * ad[i];
+    sd[i << 1] = carry & 0xffff;
     carry >>>= 16;
-    wai = ads[i] << 1;
+    wai = ad[i] << 1;
     for (j = i + 1; j < al; j++) {
-      carry += sds[i + j] + ads[j] * wai;
-      sds[i + j] = carry & 0xffff;
+      carry += sd[i + j] + ad[j] * wai;
+      sd[i + j] = carry & 0xffff;
       carry >>>= 16;
     }
     if (carry) {
-      carry += sds[i + al];
-      sds[i + al] = carry & 0xffff;
+      carry += sd[i + al];
+      sd[i + al] = carry & 0xffff;
       carry >>>= 16;
-      if (carry) { sds[i + al + 1] += carry & 0xffff; }
+      if (carry) { sd[i + al + 1] += carry & 0xffff; }
     }
   }
   return longNorm(s);
@@ -823,18 +819,18 @@ function longSqrt(a){
  * Pow.
  * @param {Long} a
  * @param {number} b
- * @returns {Long} a<sup>b</sup>
+ * @returns {Long|number} a<sup>b</sup>
  */
 function longPow(a, b) {
   if (!b) { return longNum(1); }
-  if (b > 0) {
+  if (b > 0 && b === (b|0)) {
     var result = longNum(1);
     for (; b > 0; b >>= 1, a = longMul(a, a)) {
       if (b & 1) { result = longMul(result, a); }
     }
     return result;
   }
-  return undefined;
+  return Math.pow(longValue(a), b);
 }
 
 /**
@@ -844,9 +840,9 @@ function longPow(a, b) {
  */
 function longRandom(a) {
   var r = longAlloc(a, true),
-      rds = r._ds;
+      rd = r._d;
   for (var i = 0; i < a; i++) {
-    rds[i] = Math.random() * 0xffff | 0;
+    rd[i] = Math.random() * 0x10000 | 0;
   }
   return longNorm(r);
 }
@@ -873,48 +869,45 @@ function longGcd(a, b) {
  * @returns {string}
  */
 function longToString(a, /** @default 10 */b) {
-  b = b || 10;
+  if (!b) { b = 10; }
   if (b === 2 || b === 16) { return longToByte(a, b); }
-  var i = a._ds.length;
-  if (i < 2 && !a._ds[0]) { return '0'; }
-  var j, hbase;
-  switch (b) {
-    case 8:
-      j = (i << 4) + 2;
-      hbase = 0x1000;
-      break;
-    case 10: default:
-      j = (i * 241 / 50 | 0) + 2;
-      hbase = 10000;
-      break;
+
+  var i = a._d.length;
+  if (i < 2 && !a._d[0]) { return '0'; }
+
+  var j = 0, hbase = 10000;
+  if (b === 8) {
+    j = (i << 4) + 2;
+    hbase = 0x1000;
+  } else {
+    j = (i * 241 / 50 | 0) + 2;
   }
+
   var t = longClone(a),
-      ds = t._ds,
+      d = t._d,
+      k = 0,
+      n = 0,
       digits = '0123456789',
-      k,
-      num,
-      c,
       s = '';
   while (i && j) {
     k = i;
-    num = 0;
+    n = 0;
     while (k--) {
-      num = (num << 16) + ds[k];
-      ds[k] = num / hbase | 0;
-      num %= hbase;
+      n = (n << 16) + d[k];
+      d[k] = n / hbase | 0;
+      n %= hbase;
     }
-    if (!ds[i - 1]) { --i; }
+    if (!d[i - 1]) { --i; }
     k = 4;
     while (k--) {
-      c = num % b;
-      s = digits.charAt(c) + s;
+      s = digits.charAt(n % b) + s;
       --j;
-      num = num / b | 0;
-      if (!i && !num) { break; }
+      n = n / b | 0;
+      if (!i && !n) { break; }
     }
   }
   s = s.replace(/^0+/, '');
-  if (!a._sn) { s = '-' + s; }
+  if (!a._s) { s = '-' + s; }
   return s;
 }
 
@@ -925,24 +918,23 @@ function longToString(a, /** @default 10 */b) {
  * @returns {string}
  */
 function longToByte(a, /** @default 16 */b) {
-  //b = b || 16;
-  if (b !== 2) { b = 16; }
-  var ds = a._ds,
-      i = ds.length - 1,
-      s = a._sn ? [] : ['-'],
-      z, l;
-  s.push(ds[i].toString(b));
+  var d = a._d,
+      i = d.length - 1,
+      s = a._s ? '' : '-',
+      z, l = 0;
   if (b === 2) {
     z = '0000000000000000';
     l = -16;
   } else {
+    b = 16;
     z = '0000';
     l = -4;
   }
+  s += ds[i].toString(b);
   while (i--) {
-    s.push((z + ds[i].toString(b)).slice(l));
+    s += (z + ds[i].toString(b)).slice(l);
   }
-  return s.join('');
+  return s;
 }
 
 /**
@@ -951,12 +943,12 @@ function longToByte(a, /** @default 16 */b) {
  * @returns {Long} a >> 1
  */
 function longHalf(a) {
-  var ds = a._ds,
-      l = ds.length - 1;
+  var d = a._d,
+      l = d.length - 1;
   for (var i = 0; i < l; i++) {
-    ds[i] = (((ds[i + 1] & 1) << 16) + ds[i]) >>> 1;
+    d[i] = (((d[i + 1] & 1) << 16) + d[i]) >>> 1;
   }
-  ds[l] >>>= 1;
+  d[l] >>>= 1;
   return longNorm(a);
 }
 
@@ -966,15 +958,15 @@ function longHalf(a) {
  * @returns {Long} a << 1
  */
 function longDouble(a) {
-  var ds = a._ds,
-      l = ds.length,
-      d = 0;
-  for (var i = 0, t; i < l; i++) {
-    t = (ds[i] << 1) + d;
-    ds[i] = t & 0xffff;
-    d = t >>> 16;
+  var d = a._d,
+      l = d.length,
+      c = 0;
+  for (var i = 0, t = 0; i < l; i++) {
+    t = (d[i] << 1) + c;
+    d[i] = t & 0xffff;
+    c = t >>> 16;
   }
-  if (d) { ds[l] = d; }
+  if (c) { d[l] = c; }
   return longNorm(a);
 }
 
@@ -985,18 +977,18 @@ function longDouble(a) {
  * @returns {Long}
  */
 function longL(a, b) {
-  var ad = a._ds,
+  var ad = a._d,
       l = ad.length,
       d = b >> 4,
       cl = l + d + 1,
       bb = b & 0xf,
-      c = longAlloc(cl, a._sn),
-      cd = c._ds,
+      c = longAlloc(cl, a._s),
+      cd = c._d,
       i = 0,
-      carry = 0;
-  for (;i < d; i++) { cd[i] = 0; }
-  i = 0;
-  for (var t; i < l; i++) {
+      carry = 0,
+      t = 0;
+  for (; i < d; i++) { cd[i] = 0; }
+  for (i = 0; i < l; i++) {
     t = (ad[i] << bb) + carry;
     cd[i + d] = t & 0xffff;
     carry = t >> 16;
@@ -1012,15 +1004,16 @@ function longL(a, b) {
  * @returns {Long}
  */
 function longR(a, b) {
-  var ad = a._ds,
+  var ad = a._d,
       l = ad.length,
       d = b >> 4,
       bb = b & 0xf,
       mask = (1 << bb) - 1;
   if (l <= d) { return new Long; }
+
   var cl = l - d,
-      c = longAlloc(cl, a._sn),
-      cd = c._ds,
+      c = longAlloc(cl, a._s),
+      cd = c._d,
       i = 0;
   for (; i < cl - 1; i++) {
     cd[i] = ((ad[i + d + 1] & mask) << (16 - bb)) + (ad[i + d] >> bb);
@@ -1041,7 +1034,7 @@ function longAddZero(a, b) {
   for (; b > 0; b >>>= 1, z += z) {
     if (b & 1) { zeros += z; }
   }
-  return longStr(a.toString() + zeros);
+  return longStr(longToString(a) + zeros);
 }
 
 Long.prototype = {
@@ -1061,9 +1054,9 @@ Long.prototype = {
   valueOf: function() { return longValue(this); },
 
   /** @returns {Array.<number>} */
-  getDigits: function() { return this._ds; },
+  getDigits: function() { return this._d; },
   /** @returns {boolean} */
-  getSign: function() { return this._sn; },
+  getSign: function() { return this._s; },
 
   /**
    * @returns {Long}
@@ -1105,11 +1098,11 @@ Long.prototype = {
   dbl: function() { return longDouble(this); },
 
   /** @returns {boolean} */
-  isOdd: function() { return !!(this._ds[0] & 1); },
+  isOdd: function() { return !!(this._d[0] & 1); },
   /** @returns {boolean} */
-  isEven: function() { return !(this._ds[0] & 1); },
+  isEven: function() { return !(this._d[0] & 1); },
   /** @returns {boolean} */
-  isNonZero: function() { return (this._ds.length > 1 || this._ds[0]); },
+  isNonZero: function() { return (this._d.length > 1 || this._d[0]); },
 
   /**
    * @returns {Long}
@@ -1119,7 +1112,7 @@ Long.prototype = {
 
   /**
    * @param {number} a
-   * @returns {Long}
+   * @returns {Long|number}
    * @see longPow
    */
   pow: function(a) { return longPow(this, a); },
@@ -1132,7 +1125,7 @@ Long.prototype = {
   gcd: function(a) { return longGcd(this, a); },
 
   /** @returns {number} */
-  _len_: function() { return this._ds.length; },
+  _len_: function() { return this._d.length; },
 
   /**
    * @param {Long} a
