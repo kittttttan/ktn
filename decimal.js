@@ -1,7 +1,6 @@
 /**
  * @fileOverview Decimal in JavaScript.
- * @version 2011-06-18
- * @requires Long
+ * @version 2011-12-25
  * @author kittttttan
  * @url http://kittttttan.web.fc2.com/math/mathjs.html
  * @example
@@ -11,6 +10,10 @@
  */
 
 //"use strict";
+/** @requires Long */
+if (typeof Long === 'undefined') {
+  throw 'Decimal requires Long';
+}
 
 /**
  * Decimal
@@ -38,7 +41,7 @@ function decStr(str) {
   }
   var trim = str.substring(0, index) + str.substring(index + 1);
   var i = 0;
-  while (trim.charAt(i) === '0') { ++i; }
+  while (trim.charAt(i) === '0') { i++; }
   if (i) { trim = trim.substring(i); }
   return new Decimal(longStr(trim), index - str.length + 1);
 }
@@ -54,16 +57,6 @@ function decNum(a, b) {
 }
 
 /**
- * Convert Fraction to Decimal.
- * @param {Fraction} a
- * @param {number} b
- * @returns {Decimal}
- */
-function decFrac(a, b) {
-  return decDiv(new Decimal(a._n, 0), new Decimal(a._d, 0), b);
-}
-
-/**
  * Convert anything to Decimal.
  * @param {object} l
  * @param {object} e
@@ -71,7 +64,7 @@ function decFrac(a, b) {
  */
 function decimal(l, e) {
   if (!arguments.length) {
-    return new Decimal(new Long, 0);
+    return new Decimal(new Long(), 0);
   }
   if (arguments.length === 1) {
     if (l instanceof Decimal) { return l.clone(); }
@@ -150,14 +143,6 @@ function decValue(a) {
 
 /**
  * @param {Decimal} a
- * @returns {number}
- */
-function decLength(a) {
-  return a._l.toString().length;
-}
-
-/**
- * @param {Decimal} a
  * @param {Decimal} b
  * @returns {Decimal}
  */
@@ -215,6 +200,16 @@ function decDiv(a, b, c) {
                                -c + diff - 1 + e + f).trim();
   }
   return new Decimal(longDiv(a._l.addzero(c - f), b._l), -c + e + f).trim();
+}
+
+/**
+ * Convert Fraction to Decimal.
+ * @param {Fraction} a
+ * @param {number} b
+ * @returns {Decimal}
+ */
+function decFrac(a, b) {
+  return decDiv(new Decimal(a._n, 0), new Decimal(a._d, 0), b);
 }
 
 /**
@@ -287,8 +282,6 @@ Decimal.prototype = {
   valueOf: function() { return decValue(this); },
   /** @returns {number} */
   _co_: function() { return 3; },
-  /** @returns {number} */
-  _len_: function() { return decLength(this); },
 
   /** @returns {number} */
   dot : function() { return decDot(this); },

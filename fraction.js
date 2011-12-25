@@ -1,7 +1,6 @@
 /**
  * @fileOverview Fraction in JavaScript.
- * @version 2011-03-20
- * @requires Long
+ * @version 2011-12-25
  * @author kittttttan
  * @url http://kittttttan.web.fc2.com/math/mathjs.html
  * @example
@@ -11,6 +10,26 @@
  */
 
 //"use strict";
+/** @requires Long */
+if (typeof Long === 'undefined') {
+  throw 'Fraction requires Long';
+}
+
+/**
+ * @param {Long} a
+ * @param {Long} b
+ * @returns {Array.<Long>}
+ */
+function fracCancel(a, b) {
+  var g = longGcd(a, b);
+  a = longDivmod(a, g, false);
+  b = longDivmod(b, g, false);
+  if (!b._sn) {
+    a._sn = !a._sn;
+    b._sn = true;
+  }
+  return [a, b];
+}
 
 /**
  * Long Fraction
@@ -44,7 +63,7 @@ var FRAC_ONE = new Fraction(longNum(1), longNum(1), true);
  * @constant
  * @type {Fraction}
  */
-var FRAC_ZERO = new Fraction(new Long, longNum(1), true);
+var FRAC_ZERO = new Fraction(new Long(), longNum(1), true);
 
 /**
  * Convert Number to Fraction.
@@ -79,7 +98,7 @@ function fracStr(a) {
  */
 function frac(a, b) {
   if (!arguments.length) {
-    return new Fraction(new Long, longNum(1), true);
+    return new Fraction(new Long(), longNum(1), true);
   }
   if (arguments.length === 1) {
     if (a instanceof Fraction) { return a.clone(); }
@@ -87,26 +106,12 @@ function frac(a, b) {
     return new Fraction(longint(a), longNum(1), true);
   }
   if (!b) {
-    throw new Error(['ZeroDivisionError:frac(',a,',',b,')'].join(''));
+    if (!a) { return NaN; }
+    if (a < 0) { return -Infinity; }
+    return Infinity;
   }
-  if (!a) { return new Fraction(new Long, longNum(1), true); }
+  if (!a) { return new Fraction(new Long(), longNum(1), true); }
   return new Fraction(longint(a), longint(b));
-}
-
-/**
- * @param {Long} a
- * @param {Long} b
- * @returns {Array.<Long>}
- */
-function fracCancel(a, b) {
-  var g = longGcd(a, b);
-  a = longDivmod(a, g, false);
-  b = longDivmod(b, g, false);
-  if (!b._sn) {
-    a._sn = !a._sn;
-    b._sn = true;
-  }
-  return [a, b];
 }
 
 /**
@@ -178,8 +183,8 @@ function fracNeg(a) {
  * @returns {boolean} a == b
  */
 function fracEq(a, b) {
-  f = frac(a);
-  g = frac(b);
+  a = frac(a);
+  b = frac(b);
   if (longEq(a._n, b._n) && longEq(a._d, b._d)) { return true; }
   return false;
 }
@@ -204,7 +209,7 @@ function fracEqual(a, b) {
  *   -1 (a < b)
  */
 function fracCmp(a, b) {
-  return cmp(longMul(a._n, b._d), longMul(a._d, b._n));
+  return longCmp(longMul(a._n, b._d), longMul(a._d, b._n));
 }
 
 /**
@@ -241,14 +246,6 @@ function fracValue(a) {
   return a._n.valueOf() / a._d.valueOf();
 }
 
-/**
- * @param {Fraction} a
- * @returns {number}
- */
-function fracLength(a) {
-  return a.toString().length;
-}
-
 Fraction.prototype = {
   constructor: Fraction,
 
@@ -276,12 +273,6 @@ Fraction.prototype = {
    * @see fracTex
    */
   _tex_: function(){ return fracTex(this); },
-
-  /**
-   * @returns {number}
-   * @see fracLength
-   */
-  _len_: function() { return fracLength(this); },
 
   /**
    * @returns {Fraction}
@@ -322,8 +313,9 @@ Fraction.prototype = {
    */
   _inv_: function() {
     if (!this._n.isNonZero()) {
-      throw new Error(
-          ['ZeroDivisionError:Fraction(',this._d,',',this._n,')'].join(''));
+      if (!this._d.isNonZero()) { return NaN; }
+      if (this._d._s) { return Infinity; }
+      return -Infinity;
     }
     return new Fraction(this._d, this._n, true);
   },

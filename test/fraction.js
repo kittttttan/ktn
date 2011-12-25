@@ -1,8 +1,8 @@
-"use strict";
 /**
  * Execute this file with v8 or Rhino,
  * or open fraction.htm with the web browser. 
  */
+"use strict";
 if (typeof window !== 'undefined') {
   var print = function(a) {
     document.writeln(a);
@@ -38,7 +38,7 @@ function exp(a) {
 }
 
 function main() {
-  var d = new Date;
+  var d = +new Date;
 
   print(basic());
   var e = exp(20);
