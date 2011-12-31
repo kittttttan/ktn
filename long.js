@@ -179,14 +179,12 @@ function longStr(str, /** @default 10 */base) {
   var z = longAlloc(len, sign);
   longFillZero(z, len);
 
-  var c, i, n, zd = z._d, bl = 1;
-  for (;;) {
+  for (var c, n, zd = z._d, bl = 1;;) {
     c = str.charAt(index);
     index++;
     if (!c) { break; }
     n = parseInt(c, 10);
-    i = 0;
-    for (;;) {
+    for (var i = 0;;) {
       for (; i < bl; i++) {
         n += zd[i] * base;
         zd[i] = n & 0xffff;
@@ -425,10 +423,10 @@ function longL(a, b) {
       c = longAlloc(cl, a._s),
       cd = c._d,
       i = 0,
-      carry = 0,
-      t = 0;
+      carry = 0;
   for (; i < d; i++) { cd[i] = 0; }
-  for (i = 0; i < l; i++) {
+  i = 0;
+  for (var t = 0; i < l; i++) {
     t = (ad[i] << bb) + carry;
     cd[i + d] = t & 0xffff;
     carry = t >> 16;
@@ -723,11 +721,11 @@ function longDivmod(a, b, modulus) {
       zd[i] = (t / dd) & 0xffff;
       t %= dd;
     }
-    z._s = a._s === b._s;
     if (modulus) {
       if (!a._s) { return longNum(-t); }
       return longNum(t);
     }
+    z._s = a._s === b._s;
     return longNorm(z);
   }
 
@@ -736,14 +734,12 @@ function longDivmod(a, b, modulus) {
   longFillZero(z, zd.length);
   dd = 0x10000 / (bd[nb - 1] + 1) & 0xffff;
 
-  var j = 0, bb, td, num = 0;
+  var j = 0, num = 0;
   if (dd === 1) {
-    //zd[na] = 0;
     j = na;
     while (j--) { zd[j] = ad[j]; }
   } else {
-    bb = longClone(b);
-    td = bb._d;
+    var bb = longClone(b), td = bb._d;
 
     for (; j < nb; j++) {
       num += bd[j] * dd;
@@ -801,10 +797,10 @@ function longDivmod(a, b, modulus) {
     zd[j] = q;
   } while (--j >= nb);
 
+  var div = longClone(z);
+  zd = div._d;
   if (modulus) {
-    var mod = longClone(z);
     if (dd) {
-      zd = mod._d;
       t = 0;
       i = nb;
       while (i--) {
@@ -814,15 +810,12 @@ function longDivmod(a, b, modulus) {
       }
     }
     zd.length = nb;
-    mod._s = a._s;
-    return longNorm(mod);
+    div._s = a._s;
+    return longNorm(div);
   }
 
-  var div = longClone(z);
-  zd = div._d;
-  j = (albl ? na + 2 : na + 1) - nb;
-  for (i = 0; i < j; i++) { zd[i] = zd[i + nb]; }
-  zd.length = i;
+  zd.length = i = (albl ? na + 2 : na + 1) - nb;
+  while (i--) { zd[i] = zd[i + nb]; }
   return longNorm(div);
 }
 
@@ -847,35 +840,38 @@ function longMod(a, b) {
 }
 
 /**
- * Fast squaring. (buggy)
- * @ignore
+ * Fast squaring.
  * @param {Long} a
  * @returns {Long} a * a
  */
 function longSquare(a) {
-  var ad = a._d,
-      al = ad.length,
-      s = longAlloc((al << 1) + 1, true),
-      sd = s._d,
-      i = 0, j = 0, carry = 0, wai = 0;
-  longFillZero(s, sd.length);
-  for (; i < al; i++) {
-    carry = sd[i << 1] + ad[i] * ad[i];
-    sd[i << 1] = carry & 0xffff;
-    carry >>>= 16;
-    wai = ad[i] << 1;
-    for (j = i + 1; j < al; j++) {
-      carry += sd[i + j] + ad[j] * wai;
-      sd[i + j] = carry & 0xffff;
-      carry >>>= 16;
+  var x = a._d,
+      t = x.length,
+      s = longAlloc((t << 1), true),
+      w = s._d;
+  longFillZero(s, w.length);
+
+  for (var i = 0, j = 1, uv = 0, u = 0, v = 0, c = 0; i < t; i++) {
+    uv = w[i << 1] + x[i] * x[i];
+    u = uv >>> 16;
+    v = uv & 0xffff;
+    w[i << 1] = v;
+    c = u;
+    for (j = i + 1; j < t; j++) {
+      // uv = w[i + j] + (x[j] * x[i] << 1) + c
+      // can overflow.
+      uv = x[j] * x[i];
+      u = (uv >>> 16) << 1;
+      v = (uv & 0xffff) << 1;
+      v += w[i + j] + c;
+      u += v >>> 16;
+      v &= 0xffff;
+      w[i + j] = v;
+      c = u;
     }
-    if (carry) {
-      carry += sd[i + al];
-      sd[i + al] = carry & 0xffff;
-      carry >>>= 16;
-      if (carry) { sd[i + al + 1] += carry & 0xffff; }
-    }
+    w[i + t] = u;
   }
+
   return longNorm(s);
 }
 
@@ -909,7 +905,7 @@ function longPow(a, b) {
   if (!b) { return longNum(1); }
   if (b > 0 && b === (b|0)) {
     var result = longNum(1);
-    for (; b > 0; b >>= 1, a = longMul(a, a)) {
+    for (; b > 0; b >>= 1, a = longSquare(a)) {
       if (b & 1) { result = longMul(result, a); }
     }
     return result;
@@ -1102,6 +1098,12 @@ Long.prototype = {
   isEven: function() { return !(this._d[0] & 1); },
   /** @returns {boolean} */
   isNonZero: function() { return (this._d.length > 1 || this._d[0]); },
+
+  /**
+   * @returns {Long}
+   * @see longSquare
+   */
+  square: function() { return longSquare(this); },
 
   /**
    * @returns {Long}

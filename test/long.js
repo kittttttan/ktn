@@ -1,8 +1,8 @@
-"use strict";
 /**
  * Execute this file with v8 or Rhino,
  * or open long.htm with the web browser. 
  */
+"use strict";
 if (typeof window !== 'undefined') {
   var print = function(a) {
     document.writeln(a);
@@ -11,9 +11,13 @@ if (typeof window !== 'undefined') {
   load('../long.js');
 }
 
+/**
+ * Basic operations
+ * @returns {string}
+ */
 function basic() {
   var r1 = (Math.random() * 4 | 0) + 3,
-      r2 = (Math.random() * 4 | 0) + 3,
+      r2 = (Math.random() * 4 | 0) + 1,
       a = longRandom(r1),
       b = longRandom(r2);
   return [
@@ -25,12 +29,63 @@ function basic() {
       ].join('');
 }
 
-// failed
+/**
+ * Factorial
+ * @param {number} a
+ * @returns {Long} a!
+ */
+function fact(a) {
+  var f = longNum(1);
+  for (var i = 2; i < a + 1; i++) {
+    f = longMul(f, longNum(i));
+  }
+  return f;
+}
+
+/**
+ * Calculates fibonacchi number simply
+ * @param {number} a
+ * @returns {Long} <var>a</var>th fibonacchi number
+ */
+function fib(a) {
+  var b = longNum(0);
+  for (var i = 0, c = longNum(1), d; i < a; i++) {
+    d = longClone(b);
+    b = longAdd(b, c);
+    c = d;
+  }
+  return b;
+}
+
+/**
+ * test for longSquare
+ */
 function square(a) {
   for (var i = 1, t; i < a; i++) {
     t = longRandom(i);
     print(longEqual(longMul(t, t), longSquare(t)));
   }
+}
+
+/**
+ * Compares performance longMul vs longSquare
+ */
+function sqvsmul(a) {
+  var nums = [];
+  for (var i = 0; i < a; i++) {
+    nums[i] = longRandom(i + 1);
+  }
+  var t0 = +new Date;
+  for (i = 0; i < a; i++) {
+    longMul(nums[i], nums[i]);
+  }
+  var t1 = +new Date;
+  for (i = 0; i < a; i++) {
+    longSquare(nums[i], nums[i]);
+  }
+  var t2 = +new Date;
+  print('mul: '+ (t1 - t0) +'ms\nsq:  '+ (t2 - t1) +'ms\n     '
+      + (100*(t2 - t1)/(t1 - t0)).toFixed(2) +'%');
 }
 
 // failed
@@ -49,24 +104,11 @@ function kara(a) {
   }
 }
 
-function fact(a) {
-  var f = longNum(1);
-  for (var i = 2; i < a + 1; i++) {
-    f = longMul(f, longNum(i));
-  }
-  return f;
-}
-
-function fib(a) {
-  var b = longNum(0), c = longNum(1);
-  for (var i = 0, d; i < a; i++) {
-    d = longClone(b);
-    b = longAdd(b, c);
-    c = d;
-  }
-  return b;
-}
-
+/**
+ * Computes pi
+ * @param {number}
+ * @returns {Long}
+ */
 function pi(a) {
   if (!a) { a = 1; }
   var n = longPow(longNum(10), a);
@@ -88,7 +130,10 @@ function pi(a) {
     return a;
   }
 
-  return longL(longSub(longL(arctan(longNum(5)), 2), arctan(longNum(239))), 2).toString();
+  var a5 = arctan(longNum(5)), a239 = arctan(longNum(239));
+  //print(a5);
+  //print(a239);
+  return longL(longSub(longL(a5, 2), a239), 2).toString();
 }
 
 function main() {
