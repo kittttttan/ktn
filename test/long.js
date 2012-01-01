@@ -88,19 +88,25 @@ function sqvsmul(a) {
       + (100*(t2 - t1)/(t1 - t0)).toFixed(2) +'%');
 }
 
-// failed
+/**
+ * test for longTc
+ */
 function tc(a) {
-  for (var i = 1, t; i < a; i++) {
-    t = longRandom(i);
-    print(longEqual(longMul(t, t), longTc(t, t)));
+  for (var i = 1, b, c; i < a; i++) {
+    b = longRandom(i);
+    c = longRandom(i);
+    print(longEqual(longMul(b, c), longTc(b, c)));
   }
 }
 
-// failed
+/**
+ * test for karatsuba
+ */
 function kara(a) {
-  for (var i = 0, t; i < a; i++) {
-    t = longRandom(2);
-    print(longEqual(longMul(t, t), karatsuba(t, t)));
+  for (var i = 0, b, c; i < a; i++) {
+    b = longRandom(2);
+    c = longRandom(2);
+    print(longEqual(longMul(b, c), karatsuba(b, c)));
   }
 }
 

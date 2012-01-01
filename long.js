@@ -572,7 +572,8 @@ function longSub(a, b) {
 }
 
 /**
- * Multiply with Karatsuba Method.
+ * Multiply with Karatsuba Method. (buggy)
+ * @ignore
  * @param {Long} a a._d.length === 2
  * @param {Long} b b._d.length === 2
  * @returns {Long} a * b
@@ -662,7 +663,7 @@ function longMul(a, b) {
       bd = b._d,
       al = ad.length,
       bl = bd.length;
-  if (al === 2 && bl === 2) { return karatsuba(a, b); }
+  // if (al === 2 && bl === 2) { return karatsuba(a, b); }
   // if (al > 29 && bl > 29) { return longTc(a, b); }
   var j = al + bl + 1,
       z = longAlloc(j, a._s === b._s);
