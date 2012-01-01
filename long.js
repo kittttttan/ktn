@@ -1,6 +1,6 @@
 /**
  * @fileOverview Big Integer in JavaScript.
- * @version 2011-12-25
+ * @version 2012-01-01
  * @author kittttttan
  * @url http://kittttttan.web.fc2.com/math/mathjs.html
  * @example
@@ -596,6 +596,7 @@ function karatsuba(a, b) {
 
 /**
  * Multiplication for big. (buggy)
+ * @ignore
  * @param {Long} a
  * @param {Long} b
  * @returns {Long} a * b
@@ -623,16 +624,14 @@ function longTc(a, b) {
   }
 
   var bt = function(sub, sup) {
-    var sum = 0;
-    for (var i = sub; i <= sup; i++) {
-      sum += w[i];
+    var s0 = 0, i = sub, j = sup;
+    for (; i < j; i++, j--) {
+      s0 += w[i] + w[j] - (ad[j] - ad[i]) * (bd[j] - bd[i]);
     }
-    while (sub < sup) {
-      sum -= (ad[sup] - ad[sub]) * (bd[sup] - bd[sub]);
-      sup--;
-      sub++;
+    if (i === j) {
+      s0 += w[i];
     }
-    return sum;
+    return s0;
   };
 
   for (i = 0; i < al; i++) {
@@ -814,8 +813,9 @@ function longDivmod(a, b, modulus) {
     return longNorm(div);
   }
 
-  zd.length = i = (albl ? na + 2 : na + 1) - nb;
-  while (i--) { zd[i] = zd[i + nb]; }
+  j = (albl ? na + 2 : na + 1) - nb;
+  for (i = 0; i < j; i++) { zd[i] = zd[i + nb]; }
+  zd.length = j;
   return longNorm(div);
 }
 
@@ -847,7 +847,7 @@ function longMod(a, b) {
 function longSquare(a) {
   var x = a._d,
       t = x.length,
-      s = longAlloc((t << 1), true),
+      s = longAlloc(t << 1, true),
       w = s._d;
   longFillZero(s, w.length);
 
