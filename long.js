@@ -157,9 +157,8 @@ function longStr(str, /** @default 10 */base) {
   if (base === 16) { return longByte(str); }
   if (!base) { base = 10; }
 
-  var index = 0, sign, len;
+  var index = 0, sign = true, len;
   if (str.charAt(index) === '+') {
-    sign = true;
     index++;
   } else if (str.charAt(index) === '-') {
     sign = false;
@@ -572,83 +571,44 @@ function longSub(a, b) {
 }
 
 /**
- * Multiply with Karatsuba Method. (buggy)
- * @ignore
- * @param {Long} a a._d.length === 2
- * @param {Long} b b._d.length === 2
- * @returns {Long} a * b
+ * Get length of bit
+ * @param {Long} a
+ * @returns {number}
  */
-function karatsuba(a, b) {
-  var z = longAlloc(4, a._s === b._s),
-      zd = z._d,
-      ad = a._d,
-      bd = b._d;
-  zd[0] = ad[0] * bd[0];
-  zd[2] = ad[1] * bd[1];
-  zd[1] = zd[0] + zd[2] - (ad[1] - ad[0]) * (bd[1] - bd[0]);
-  zd[1] += zd[0] >>> 16;
-  zd[2] += zd[1] >>> 16;
-  zd[3] = zd[2] >>> 16;
-  zd[0] &= 0xffff;
-  zd[1] &= 0xffff;
-  zd[2] &= 0xffff;
-  return longNorm(z);
+function longBitLength(a) {
+  var ad = a._d;
+  return ad[ad.length - 1].toString(2).length + ((ad.length - 1) << 4);
 }
 
 /**
- * Multiplication for big. (buggy)
- * @ignore
- * @param {Long} a
- * @param {Long} b
- * @returns {Long} a * b
+ * Multiply with Karatsuba Method.
+ * @param {Long} x
+ * @param {Long} y
+ * @returns {Long} x * y
  */
-function longTc(a, b) {
-  if (a._d.length < b._d.length) {
-    return longTc(b, a);
-  }
-  var ad = a._d,
-      bd = b._d,
-      al = ad.length,
-      bl = bd.length, // al >= bl
-      l = (al << 1) - 1,
-      z = longAlloc(l, a._s === b._s);
-  longFillZero(z, l);
-  var zd = z._d,
-      w = [],
-      i = al;
-  while (i-- > bl) {
-    bd[i] = 0;
-  }
-  i = al;
-  while (i--) {
-    w[i] = ad[i] * bd[i];
-  }
+function longK(x, y) {
+  var N = longBitLength(x),
+      l = longBitLength(y);
+  if (N < l) { N = l; }
+  if (N < 2001) { return longMul(x, y); }
 
-  var bt = function(sub, sup) {
-    var s0 = 0, i = sub, j = sup;
-    for (; i < j; i++, j--) {
-      s0 += w[i] + w[j] - (ad[j] - ad[i]) * (bd[j] - bd[i]);
-    }
-    if (i === j) {
-      s0 += w[i];
-    }
-    return s0;
-  };
+  // number of bits divided by 2, rounded up
+  N = (N >>> 1) + (N & 1);
 
-  for (i = 0; i < al; i++) {
-    zd[i] = bt(0, i);
-  }
-  for (i = 1; i < al; i++) {
-    zd[i + al - 1] = bt(i, al - 1);
-  }
-  var j = 0;
-  for (i = 0; i < l; i++) {
-    zd[i] += j;
-    j = zd[i] >>> 16;
-    zd[i] &= 0xffff;
-  }
-  zd[i] = j;
-  return longNorm(z);
+  // x = a + b 2^N, y = c + d 2^N
+  var b = longR(x, N),
+      a = longSub(x, longL(b, N)),
+      d = longR(y, N),
+      c = longSub(y, longL(d, N)),
+      ac = longK(a, c),
+      bd = longK(b, d),
+      abcd = longK(longAdd(a, b), longAdd(c, d));
+  // xy
+  // = (a + 2^N b) (c + 2^N d)
+  // = ac + 2^N ((a + b) (c + d) - ac - bd) + 2^(N + 1) bd
+  return longAdd(
+      longAdd(ac, longL(longSub(longSub(abcd, ac), bd), N)),
+      longL(bd, N << 1));
 }
 
 /**
@@ -658,14 +618,13 @@ function longTc(a, b) {
  * @returns {Long} a * b
  */
 function longMul(a, b) {
-  // if (longEqual(a, b)) {return longSquare(a);}
+  // if (longEqual(a, b)) { return longSquare(a); }
   var ad = a._d,
       bd = b._d,
       al = ad.length,
       bl = bd.length;
-  // if (al === 2 && bl === 2) { return karatsuba(a, b); }
-  // if (al > 29 && bl > 29) { return longTc(a, b); }
-  var j = al + bl + 1,
+  // if (al > 125 && bl > 125) { return longK(a, b); }
+  var j = al + bl,
       z = longAlloc(j, a._s === b._s);
   longFillZero(z, j);
   for (var i = 0, n, d, e, zd = z._d; i < al; i++) {
@@ -1080,18 +1039,6 @@ Long.prototype = {
    * @see longL
    */
   lshift: function(a) { return longL(this, a); },
-
-  /**
-   * @returns {Long}
-   * @see longHalf
-   */
-  half: function() { return longHalf(this); },
-
-  /**
-   * @returns {Long}
-   * @see longDouble
-   */
-  dbl: function() { return longDouble(this); },
 
   /** @returns {boolean} */
   isOdd: function() { return !!(this._d[0] & 1); },

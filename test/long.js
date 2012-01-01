@@ -8,7 +8,7 @@ if (typeof window !== 'undefined') {
     document.writeln(a);
   };
 } else if (typeof load !== 'undefined') {
-  load('../long.js');
+  load('../long_.js');
 }
 
 /**
@@ -89,25 +89,35 @@ function sqvsmul(a) {
 }
 
 /**
- * test for longTc
+ * test for longK
  */
-function tc(a) {
-  for (var i = 1, b, c; i < a; i++) {
-    b = longRandom(i);
-    c = longRandom(i);
-    print(longEqual(longMul(b, c), longTc(b, c)));
+function kara(a) {
+  for (var i = 0, b, c; i < a; i++) {
+    b = longRandom(i + 20);
+    c = longRandom(i + 20);
+    print(longEqual(longMul(b, c), longK(b, c)));
   }
 }
 
 /**
- * test for karatsuba
+ * Compares performance longMul vs longK
  */
-function kara(a) {
-  for (var i = 0, b, c; i < a; i++) {
-    b = longRandom(2);
-    c = longRandom(2);
-    print(longEqual(longMul(b, c), karatsuba(b, c)));
+function kvsmul(a) {
+  var nums = [];
+  for (var i = 0; i < a; i++) {
+    nums[i] = longRandom(i + 20);
   }
+  var t0 = +new Date;
+  for (i = 0; i < a; i++) {
+    longMul(nums[i], nums[i]);
+  }
+  var t1 = +new Date;
+  for (i = 0; i < a; i++) {
+    longK(nums[i], nums[i]);
+  }
+  var t2 = +new Date;
+  print('mul:  '+ (t1 - t0) +'ms\nkara: '+ (t2 - t1) +'ms\n      '
+      + (100*(t2 - t1)/(t1 - t0)).toFixed(2) +'%');
 }
 
 /**
@@ -119,7 +129,7 @@ function pi(a) {
   if (!a) { a = 1; }
   var n = longPow(longNum(10), a);
 
-  function arctan(m) {
+  function arccot(m) {
     var c = n, a = longDiv(c, m), b = longClone(a), m2 = longMul(m, m),
         k = longNum(1), s = true, l2 = longNum(2);
     while (c.isNonZero()) {
@@ -136,7 +146,7 @@ function pi(a) {
     return a;
   }
 
-  var a5 = arctan(longNum(5)), a239 = arctan(longNum(239));
+  var a5 = arccot(longNum(5)), a239 = arccot(longNum(239));
   //print(a5);
   //print(a239);
   return longL(longSub(longL(a5, 2), a239), 2).toString();
