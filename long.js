@@ -1,6 +1,6 @@
 /**
  * @fileOverview Big Integer in JavaScript.
- * @version 2012-01-01
+ * @version 2012-01-02
  * @author kittttttan
  * @url http://kittttttan.web.fc2.com/math/mathjs.html
  * @example
@@ -903,6 +903,42 @@ function longGcd(a, b) {
 }
 
 /**
+ * Greatest Common Divisor.
+ * @param {Long} a
+ * @param {Long} b
+ * @returns {Long}
+ */
+function longGcdBin(a, b) {
+  if (longAbsCmp(a, b) > -1) { return longGcdBin(b, a); }
+
+  var g = longNum(1);
+  while (!(a._d[0] & 1) && !(b._d[0] & 1)) {
+    a = longHalf(a);
+    b = longHalf(b);
+    g = longDouble(g);
+  }
+  
+  var t;
+  while (a.isNonZero()) {
+    while (!(a._d[0] & 1)) {
+      a = longHalf(a);
+    }
+    while (!(b._d[0] & 1)) {
+      b = longHalf(b);
+    }
+    t = longHalf(longSub(a, b));
+    if (longAbsCmp(a, b) > -1) {
+      a = t;
+      //a = longClone(t);
+    } else {
+      b = t;
+    }
+  }
+  
+  return longMul(g, b);
+}
+
+/**
  * Convert Long to String.
  * @param {Long} a
  * @param {number} b Base 2 or 16
@@ -1069,9 +1105,9 @@ Long.prototype = {
   /**
    * @param {number} a
    * @returns {Long}
-   * @see longGcd
+   * @see longGcdBin
    */
-  gcd: function(a) { return longGcd(this, a); },
+  gcd: function(a) { return longGcdBin(this, a); },
 
   /**
    * @param {Long} a

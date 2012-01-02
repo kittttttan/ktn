@@ -24,8 +24,8 @@ function basic() {
       '    a = ',a, '\n    b = ',b, '\na + b = ',longAdd(a,b),
       '\na - b = ',longSub(a,b), '\na * b = ',longMul(a,b),
       '\na / b = ',longDiv(a,b), '\na % b = ',longMod(a,b),
-      '\na ^ 2 = ',longPow(a,2), '\na^0.5 = ',longPow(a, 0.5), ' ~ ',longSqrt(a),
-      '\na >> 2 = ',longR(a,2), '\ngcd(a, b) = ',longGcd(a,b)
+      '\na ^ 2 = ',longSquare(a), '\na^0.5 = ',longPow(a, 0.5), ' ~ ',longSqrt(a),
+      '\na >> 2 = ',longR(a,2), '\ngcd(a, b) = ',longGcdBin(a,b)
       ].join('');
 }
 
@@ -103,20 +103,54 @@ function kara(a) {
  * Compares performance longMul vs longK
  */
 function kvsmul(a) {
-  var nums = [];
+  var m = [], n = [];
   for (var i = 0; i < a; i++) {
-    nums[i] = longRandom(i + 20);
+    m[i] = longRandom(i + 20);
+    n[i] = longRandom(i + 20);
   }
   var t0 = +new Date;
   for (i = 0; i < a; i++) {
-    longMul(nums[i], nums[i]);
+    longMul(m[i], n[i]);
   }
   var t1 = +new Date;
   for (i = 0; i < a; i++) {
-    longK(nums[i], nums[i]);
+    longK(m[i], n[i]);
   }
   var t2 = +new Date;
   print('mul:  '+ (t1 - t0) +'ms\nkara: '+ (t2 - t1) +'ms\n      '
+      + (100*(t2 - t1)/(t1 - t0)).toFixed(2) +'%');
+}
+
+/**
+ * test for longGcdBin
+ */
+function gcd(a) {
+  for (var i = 0, b, c; i < a; i++) {
+    b = longRandom(i + 20);
+    c = longRandom(i + 20);
+    print(longEqual(longGcd(b, c), longGcdBin(b, c)));
+  }
+}
+
+/**
+ * Compares performance longGcd vs longGcdBin
+ */
+function gcdvsbin(a) {
+  var m = [], n = [];
+  for (var i = 0; i < a; i++) {
+    m[i] = longRandom(i + 20);
+    n[i] = longRandom(i + 20);
+  }
+  var t0 = +new Date;
+  for (i = 0; i < a; i++) {
+    longGcd(m[i], n[i]);
+  }
+  var t1 = +new Date;
+  for (i = 0; i < a; i++) {
+    longGcdBin(m[i], n[i]);
+  }
+  var t2 = +new Date;
+  print('gcd: '+ (t1 - t0) +'ms\nbin: '+ (t2 - t1) +'ms\n      '
       + (100*(t2 - t1)/(t1 - t0)).toFixed(2) +'%');
 }
 
