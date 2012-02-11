@@ -75,15 +75,15 @@ function sqvsmul(a) {
   for (var i = 0; i < a; i++) {
     nums[i] = longRandom(i + 1);
   }
-  var t0 = +new Date;
+  var t0 = Date.now();
   for (i = 0; i < a; i++) {
     longMul(nums[i], nums[i]);
   }
-  var t1 = +new Date;
+  var t1 = Date.now();
   for (i = 0; i < a; i++) {
     longSquare(nums[i], nums[i]);
   }
-  var t2 = +new Date;
+  var t2 = Date.now();
   print('mul: '+ (t1 - t0) +'ms\nsq:  '+ (t2 - t1) +'ms\n     '
       + (100*(t2 - t1)/(t1 - t0)).toFixed(2) +'%');
 }
@@ -108,15 +108,15 @@ function kvsmul(a) {
     m[i] = longRandom(i + 20);
     n[i] = longRandom(i + 20);
   }
-  var t0 = +new Date;
+  var t0 = Date.now();
   for (i = 0; i < a; i++) {
     longMul(m[i], n[i]);
   }
-  var t1 = +new Date;
+  var t1 = Date.now();
   for (i = 0; i < a; i++) {
     longK(m[i], n[i]);
   }
-  var t2 = +new Date;
+  var t2 = Date.now();
   print('mul:  '+ (t1 - t0) +'ms\nkara: '+ (t2 - t1) +'ms\n      '
       + (100*(t2 - t1)/(t1 - t0)).toFixed(2) +'%');
 }
@@ -141,15 +141,15 @@ function gcdvsbin(a) {
     m[i] = longRandom(i + 20);
     n[i] = longRandom(i + 20);
   }
-  var t0 = +new Date;
+  var t0 = Date.now();
   for (i = 0; i < a; i++) {
     longGcd(m[i], n[i]);
   }
-  var t1 = +new Date;
+  var t1 = Date.now();
   for (i = 0; i < a; i++) {
     longGcdBin(m[i], n[i]);
   }
-  var t2 = +new Date;
+  var t2 = Date.now();
   print('gcd: '+ (t1 - t0) +'ms\nbin: '+ (t2 - t1) +'ms\n      '
       + (100*(t2 - t1)/(t1 - t0)).toFixed(2) +'%');
 }
@@ -187,7 +187,7 @@ function pi(a) {
 }
 
 function main() {
-  var d = +new Date;
+  var d = Date.now();
 
   print('-- basic operations --');
   print(basic());
@@ -204,7 +204,7 @@ function main() {
   print('pi(77) = ');
   print(pi(77));
 
-  print('\nTime: '+ (new Date - d) + 'ms');
+  print('\nTime: '+ (Date.now() - d) + 'ms');
 }
 
 main();

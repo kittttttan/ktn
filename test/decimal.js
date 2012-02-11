@@ -39,14 +39,14 @@ function exp(a) {
 }
 
 function main() {
-  var d = +new Date;
+  var d = Date.now();
 
   print(basic());
   var e = exp(20);
   print('e ~= ' + e.toString());
   print('  ~= ' + decFrac(e, 30).toString());
 
-  print('\nTime: '+ (new Date - d) + 'ms');
+  print('\nTime: '+ (Date.now() - d) + 'ms');
 }
 
 main();
