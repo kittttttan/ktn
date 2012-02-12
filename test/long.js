@@ -1,14 +1,23 @@
-/**
- * Execute this file with v8 or Rhino,
- * or open long.htm with the web browser. 
- */
+(function(G) {
 "use strict";
+
+// Init: define print & load module
+var print, _T, _S = '',
+    long;
 if (typeof window !== 'undefined') {
-  var print = function(a) {
-    document.writeln(a);
-  };
+  // browser
+  print = function(a) { _S += a + '\n'; };
+  _T = G.document.getElementById('log');
+  long = Long;
 } else if (typeof load !== 'undefined') {
-  load('../long_.js');
+  // V8
+  print = G.print;
+  load('../lib/long.js');
+  long = Long;
+} else if (typeof require !== 'undefined') {
+  // node
+  print = console.log;
+  long = require('../lib/long.js').Long;
 }
 
 /**
@@ -18,14 +27,14 @@ if (typeof window !== 'undefined') {
 function basic() {
   var r1 = (Math.random() * 4 | 0) + 3,
       r2 = (Math.random() * 4 | 0) + 1,
-      a = longRandom(r1),
-      b = longRandom(r2);
+      a = long.random(r1),
+      b = long.random(r2);
   return [
-      '    a = ',a, '\n    b = ',b, '\na + b = ',longAdd(a,b),
-      '\na - b = ',longSub(a,b), '\na * b = ',longMul(a,b),
-      '\na / b = ',longDiv(a,b), '\na % b = ',longMod(a,b),
-      '\na ^ 2 = ',longSquare(a), '\na^0.5 = ',longPow(a, 0.5), ' ~ ',longSqrt(a),
-      '\na >> 2 = ',longR(a,2), '\ngcd(a, b) = ',longGcdBin(a,b)
+      '    a = ',a, '\n    b = ',b, '\na + b = ',a.add(b),
+      '\na - b = ',a.sub(b), '\na * b = ',a.mul(b),
+      '\na / b = ',a.div(b), '\na % b = ',a.mod(b),
+      '\na ^ 2 = ',a.pow(2), '\na^0.5 = ',a.pow(0.5), ' ~ ',a.sqrt(),
+      '\na >> 2 = ',a.rshift(2), '\ngcd(a, b) = ',a.gcd(b),
       ].join('');
 }
 
@@ -35,9 +44,9 @@ function basic() {
  * @returns {Long} a!
  */
 function fact(a) {
-  var f = longNum(1);
+  var f = long.num(1);
   for (var i = 2; i < a + 1; i++) {
-    f = longMul(f, longNum(i));
+    f = f.mul(long.num(i));
   }
   return f;
 }
@@ -48,10 +57,10 @@ function fact(a) {
  * @returns {Long} <var>a</var>th fibonacchi number
  */
 function fib(a) {
-  var b = longNum(0);
-  for (var i = 0, c = longNum(1), d; i < a; i++) {
-    d = longClone(b);
-    b = longAdd(b, c);
+  var b = long.num(0);
+  for (var i = 0, c = long.num(1), d; i < a; i++) {
+    d = b.clone();
+    b = b.add(c);
     c = d;
   }
   return b;
@@ -59,29 +68,31 @@ function fib(a) {
 
 /**
  * test for longSquare
+ * @param {number} a
  */
 function square(a) {
   for (var i = 1, t; i < a; i++) {
-    t = longRandom(i);
-    print(longEqual(longMul(t, t), longSquare(t)));
+    t = long.random(i);
+    print(t.mul(t).equal(t.square()));
   }
 }
 
 /**
  * Compares performance longMul vs longSquare
+ * @param {number} a
  */
 function sqvsmul(a) {
   var nums = [];
   for (var i = 0; i < a; i++) {
-    nums[i] = longRandom(i + 1);
+    nums[i] = long.random(i + 1);
   }
   var t0 = Date.now();
   for (i = 0; i < a; i++) {
-    longMul(nums[i], nums[i]);
+    nums[i].mul(nums[i]);
   }
   var t1 = Date.now();
   for (i = 0; i < a; i++) {
-    longSquare(nums[i], nums[i]);
+    nums[i].square();
   }
   var t2 = Date.now();
   print('mul: '+ (t1 - t0) +'ms\nsq:  '+ (t2 - t1) +'ms\n     '
@@ -90,23 +101,25 @@ function sqvsmul(a) {
 
 /**
  * test for longK
+ * @param {number} a
  */
 function kara(a) {
   for (var i = 0, b, c; i < a; i++) {
-    b = longRandom(i + 20);
-    c = longRandom(i + 20);
+    b = long.random(i + 20);
+    c = long.random(i + 20);
     print(longEqual(longMul(b, c), longK(b, c)));
   }
 }
 
 /**
  * Compares performance longMul vs longK
+ * @param {number} a
  */
 function kvsmul(a) {
   var m = [], n = [];
   for (var i = 0; i < a; i++) {
-    m[i] = longRandom(i + 20);
-    n[i] = longRandom(i + 20);
+    m[i] = long.random(i + 20);
+    n[i] = long.random(i + 20);
   }
   var t0 = Date.now();
   for (i = 0; i < a; i++) {
@@ -123,23 +136,25 @@ function kvsmul(a) {
 
 /**
  * test for longGcdBin
+ * @param {number} a
  */
 function gcd(a) {
   for (var i = 0, b, c; i < a; i++) {
-    b = longRandom(i + 20);
-    c = longRandom(i + 20);
+    b = long.random(i + 20);
+    c = long.random(i + 20);
     print(longEqual(longGcd(b, c), longGcdBin(b, c)));
   }
 }
 
 /**
  * Compares performance longGcd vs longGcdBin
+ * @param {number} a
  */
 function gcdvsbin(a) {
   var m = [], n = [];
   for (var i = 0; i < a; i++) {
-    m[i] = longRandom(i + 20);
-    n[i] = longRandom(i + 20);
+    m[i] = long.random(i + 20);
+    n[i] = long.random(i + 20);
   }
   var t0 = Date.now();
   for (i = 0; i < a; i++) {
@@ -161,50 +176,50 @@ function gcdvsbin(a) {
  */
 function pi(a) {
   if (!a) { a = 1; }
-  var n = longPow(longNum(10), a);
+  var n = long.num(10).pow(a);
 
   function arccot(m) {
-    var c = n, a = longDiv(c, m), b = longClone(a), m2 = longMul(m, m),
-        k = longNum(1), s = true, l2 = longNum(2);
+    var c = n, a = c.div(m), b = a.clone(), m2 = m.square(),
+        k = long.num(1), s = true, l2 = long.num(2);
     while (c.isNonZero()) {
-      b = longDiv(b, m2);
-      k = longAdd(k, l2);
-      c = longDiv(b, k);
+      b = b.div(m2);
+      k = k.add(l2);
+      c = b.div(k);
       s = !s;
       if (s) {
-        a = longAdd(a, c);
+        a = a.add(c);
       } else {
-        a = longSub(a, c);
+        a = a.sub(c);
       }
     }
     return a;
   }
 
-  var a5 = arccot(longNum(5)), a239 = arccot(longNum(239));
+  var a5 = arccot(long.num(5)), a239 = arccot(long.num(239));
   //print(a5);
   //print(a239);
-  return longL(longSub(longL(a5, 2), a239), 2).toString();
+  return a5.lshift(2).sub(a239).lshift(2);
 }
 
-function main() {
-  var d = Date.now();
+// Test
+var d = Date.now();
 
-  print('-- basic operations --');
-  print(basic());
+print('-- basic operations --');
+print(basic());
 
-  print('\n-- fibonacchi --');
-  print('fib(77) = ');
-  print(fib(77));
+print('\n-- fibonacchi --');
+print('fib(77) = ');
+print(fib(77).toString());
 
-  print('\n-- factorial --');
-  print('77! = ');
-  print(fact(77));
+print('\n-- factorial --');
+print('77! = ');
+print(fact(77).toString());
 
-  print('\n-- pi --');
-  print('pi(77) = ');
-  print(pi(77));
+print('\n-- pi --');
+print('pi(77) = ');
+print(pi(77).toString());
 
-  print('\nTime: '+ (Date.now() - d) + 'ms');
-}
+print('\nTime: '+ (Date.now() - d) + 'ms');
 
-main();
+if (_T) { _T.value = _S; }
+}(this));

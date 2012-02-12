@@ -1,0 +1,27 @@
+{
+  "name": "mathlibjs",
+  "version": "0.0.1",
+  "description": "JavaScript Libraries for Mathematics.",
+  "keywords": ["math", "big integer", "fraction", "decimal"],
+  "engines": ["v8", "node", "rhino"],
+  "main": "./lib/long.js",
+  "directories" : {
+    "lib" : "./lib"
+  },
+  "scripts": {
+    "test": "node ./test/long.js"
+  },
+  "homepage": "https://github.com/kittttttan/mathlibjs",
+  "repositories": [
+    {
+      "type": "git",
+      "url": "git://github.com/kittttttan/mathlibjs.git" 
+    } 
+  ],
+  "maintainers": [
+    {
+      "name": "kittttttan",
+      "web": "http://kittttttan.web.fc2.com" 
+    }
+  ]
+}
