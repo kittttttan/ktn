@@ -1,3 +1,13 @@
 *_compiled.js
 *_.js
 *_.htm
+
+Debug/
+Release/
+ipch/
+*.vcxproj*
+*.sdf
+*.sln
+*.suo
+*.o
+*.exe

@@ -1,6 +1,14 @@
-# JavaScript Libraries for Mathematics.
-<https://github.com/kittttttan/mathlibjs>
+# mathktn - Mathematics Libraries
+<https://github.com/kittttttan/mathktn>
 
-* long.js - Big Integer
-* fraction.js - Fraction
-* decimal.js - Decimal
+## JavaScript
+
+* long.js
+* fraction.js
+* decimal.js
+
+## C++
+
+tested on Visual C++ 2010 Express
+
+* long.cpp
