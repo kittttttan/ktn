@@ -38,11 +38,13 @@ ULong::ULong(int64_t u) {
 	if (u > 0xffff) {
 		l_ = 2;
 		d_ = new int64_t[2];
+		if (!d_) { fprintf(stderr, "Failed new int64_t[2]"); return; }
 		d_[0] = u & 0xffff;
 		d_[1] = u >> 16;
 	} else {
 		l_ = 1;
 		d_ = new int64_t[1];
+		if (!d_) { fprintf(stderr, "Failed new int64_t[1]"); return; }
 		d_[0] = u;
 	}
 }
@@ -59,11 +61,12 @@ ULong::ULong(const char *s, int base) {
 		return;
 	}
 
-	int len, length = strlen(s);
+	int length = strlen(s);
+	int len = length + 1 - index;
 	if (base == 8) {
-		len = 3 * (length + 1 - index);
+		len *= 3;
 	} else {
-		len = (length + 1 - index) << 2;
+		len <<= 2;
 	}
 	len = (len >> 4) + 1;
 
@@ -141,6 +144,7 @@ ULong& ULong::operator=(const ULong& b) {
 	if (l_ < b.l_) {
 		if (d_) { delete [] d_; }
 		d_ = new int64_t[b.l_];
+		if (!d_) { fprintf(stderr, "Failed new int64_t[%d]", b.l_); return *this; }
 	}
 	l_ = b.l_;
 	for (int i = 0; i < l_; ++i) {
@@ -184,7 +188,11 @@ std::string ULong::str(int base) {
 	}
 
 	char* c = new char[length];
-	if (!c) { std::string s; return s; }
+	if (!c) {
+		fprintf(stderr, "Failed new char[%d]", length);
+		std::string s;
+		return s;
+	}
 
 	cstr(c, base);
 	std::string s(c);
@@ -228,7 +236,8 @@ void ULong::cstr(char *s, int base) {
 		if (t.d_[i - 1] == 0) { --i; }
 		k = 4;
 		while (k--) {
-			s[index++] = digits[n % base];
+			s[index] = digits[n % base];
+			++index;
 			--j;
 			n /= base;
 			if (i == 0 && n == 0) { break; }
@@ -243,11 +252,11 @@ void ULong::cstr(char *s, int base) {
  * output
  * @param base 2, 10, 16
  */
-void ULong::out(int base) {
+void ULong::out(int base, bool br) {
 	if (base == 2) {
 		int i = l_ - 1, j = 16;
-		int64_t t;
 		bool f = false;
+		int64_t t;
 		while (j--) {
 			t = (d_[i] >> j) & 1;
 			if (f) {
@@ -266,7 +275,7 @@ void ULong::out(int base) {
 				}
 			}
 		}
-		puts("");
+		if (br) { puts(""); }
 
 		return;
 	}
@@ -278,14 +287,15 @@ void ULong::out(int base) {
 				printf("%04x", d_[i]);
 			}
 		}
-		puts("");
+		if (br) { puts(""); }
 
 		return;
 	}
 	char *c = (l_ > 1) ? new char[(l_ * 241 / 50) + 3] : new char[20];
-	if (!c) { return; }
+	if (!c) { fprintf(stderr, "Failed new char[]"); return; }
 	cstr(c, 10);
-	puts(c);
+	printf(c);
+	if (br) { puts(""); }
 	delete [] c;
 }
 
@@ -356,12 +366,11 @@ ULong ULong::operator-(const ULong& b) const {
 
 ULong ULong::operator<<(int64_t n) const {
 	int d = static_cast<int>(n >> 4);
-	int i;
 	ULong c;
 	c.alloc(l_ + d + 1, false);
-	for (i = 0; i < d; ++i) { c.d_[i] = 0; }
-	i = 0;
+	for (int i = 0; i < d; ++i) { c.d_[i] = 0; }
 	int64_t b = n & 0xf, carry = 0;
+	int i = 0;
 	for (int64_t t = 0; i < l_; ++i) {
 		t = (d_[i] << b) + carry;
 		c.d_[i + d] = t & 0xffff;
@@ -375,12 +384,11 @@ ULong ULong::operator<<(int64_t n) const {
 ULong ULong::operator>>(int64_t n) const {
 	int d = static_cast<int>(n >> 4);
 	if (l_ <= d) { return ZERO; }
-	int64_t b = n & 0xf;
-	int64_t mask = (1 << b) - 1;
 	ULong c;
 	c.alloc(l_ - d, false);
-	int i;
-	for (i = 0; i < l_ - d - 1; ++i) {
+	int64_t b = n & 0xf;
+	int i = 0;
+	for (int64_t mask = (1 << b) - 1; i < l_ - d - 1; ++i) {
 		c.d_[i] = ((d_[i + d + 1] & mask) << (16 - b)) + (d_[i + d] >> b);
 	}
 	c.d_[i] = d_[i + d] >> b;

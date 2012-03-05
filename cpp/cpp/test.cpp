@@ -3,6 +3,7 @@
 #include <ctime>
 
 #include "long.h"
+#include "fraction.h"
 
 using namespace std;
 using namespace mathktn;
@@ -46,6 +47,18 @@ void longBasic() {
 	printf("a %% b = "); (a % b).out();
 	printf("++a = "); (++a).out();
 	printf("a-- = "); (a--).out();
+}
+
+void fractionBasic() {
+	Fraction a(154, 6), b(11, 5);
+
+	puts("** Test for Fraction **");
+	printf("a = "); a.out();
+	printf("b = "); b.out();
+	printf("a + b = "); (a + b).out();
+	printf("a - b = "); (a - b).out();
+	printf("a * b = "); (a * b).out();
+	printf("a / b = "); (a / b).out();
 }
 
 ULong fib(int n) {
@@ -117,8 +130,9 @@ int main(int argc, char** argv) {
 
 	srand(static_cast<unsigned int>(time(NULL)));
 
-	ulongBasic();
-	longBasic();
+	//ulongBasic();
+	//longBasic();
+	fractionBasic();
 
 	//fib(77).out();
 	//fact(77).out();

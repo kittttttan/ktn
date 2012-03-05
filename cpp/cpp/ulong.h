@@ -12,7 +12,7 @@ friend std::ostream& operator<<(std::ostream& os, ULong l);
 public:
 	std::string str(int base=10);
 	void cstr(char *s, int base=10);
-	void out(int base=10);
+	void out(int base=10, bool br=true);
 	void debug();
 
 	static ULong random(int n);

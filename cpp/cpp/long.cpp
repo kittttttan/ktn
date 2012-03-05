@@ -28,8 +28,14 @@ Long::Long(const Long& l) {
 	u_ = l.u_;
 }
 
-Long::Long(int64_t u) : u_(u), s_(true) {
-
+Long::Long(int64_t a) {
+	if (a < 0) {
+		s_ = false;
+		u_ = ULong(-a);
+	} else {
+		s_ = true;
+		u_ = ULong(a);
+	}
 }
 
 Long::Long(const char *s, int base) {
@@ -102,12 +108,10 @@ std::string Long::str(int base) {
 }
 
 void Long::cstr(char *s, int base) {
-	if (s_) {
-		u_.cstr(s, base);
-	} else {
+	if (!s_) {
 		*s++ = '-';
-		u_.cstr(s, base);
 	}
+	u_.cstr(s, base);
 }
 
 void Long::out(int base) {
@@ -127,53 +131,42 @@ int Long::cmp(const Long& b) const {
 
 Long Long::operator+(const Long& a) const {
 	if (s_ == a.s_) {
-		Long n(u_ + a.u_, s_);
-		return n;
+		return Long(u_ + a.u_, s_);
 	}
 	if (u_.cmp(a.u_) < 0) {
-		Long n(a.u_ - u_, a.s_);
-		return n;
+		return Long(a.u_ - u_, a.s_);
 	}
-	Long n(u_ - a.u_, s_);
-	return n;
+	return Long(u_ - a.u_, s_);
 }
 
 Long Long::operator-(const Long& a) const {
 	if (s_ != a.s_) {
-		Long n(u_ + a.u_, s_);
-		return n;
+		return Long(u_ + a.u_, s_);
 	}
 	if (u_.cmp(a.u_) < 0) {
-		Long n(a.u_ - u_, !a.s_);
-		return n;
+		return Long(a.u_ - u_, !a.s_);
 	}
-	Long n(u_ - a.u_, s_);
-	return n;
+	return Long(u_ - a.u_, s_);
 }
 
 Long Long::operator*(const Long& a) const {
-	Long n(u_ * a.u_, s_ == a.s_);
-	return n;
+	return Long(u_ * a.u_, s_ == a.s_);
 }
 
 Long Long::operator/(const Long& a) const {
-	Long n(u_ / a.u_, s_ == a.s_);
-	return n;
+	return Long(u_ / a.u_, s_ == a.s_);
 }
 
 Long Long::operator%(const Long& a) const {
-	Long n(u_ % a.u_, s_);
-	return n;
+	return Long(u_ % a.u_, s_);
 }
 
 Long Long::operator<<(int64_t n) const {
-	Long tmp(u_ << n, true);
-	return tmp;
+	return Long(u_ << n, true);
 }
 
 Long Long::operator>>(int64_t n) const {
-	Long tmp(u_ >> n, true);
-	return tmp;
+	return Long(u_ >> n, true);
 }
 
 Long& Long::operator<<=(int64_t n) {

@@ -19,7 +19,7 @@ public:
 
 	Long();
 	Long(const Long& l);
-	explicit Long(int64_t u);
+	explicit Long(int64_t a);
 	explicit Long(const ULong& u, bool s=true);
 	explicit Long(const char *s, int base);
 	~Long();
