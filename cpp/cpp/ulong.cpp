@@ -117,6 +117,10 @@ bool ULong::operator!() const {
 	return l_ < 2 && d_[0] == 0;
 }
 
+ULong ULong::operator+() const {
+	return *this;
+}
+
 ULong& ULong::operator++() {
 	*this = *this + ONE;
 	return *this;

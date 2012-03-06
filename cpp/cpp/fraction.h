@@ -26,6 +26,8 @@ public:
 	~Fraction();
 
 	bool operator!() const;
+	Fraction operator+() const;
+	Fraction operator-() const;
 	Fraction& operator++();
 	Fraction operator++(int);
 	Fraction& operator--();

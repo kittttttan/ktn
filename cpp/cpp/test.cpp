@@ -50,7 +50,7 @@ void longBasic() {
 }
 
 void fractionBasic() {
-	Fraction a(154, 6), b(11, 5);
+	Fraction a(154, 6), b(-11, 5);
 
 	puts("** Test for Fraction **");
 	printf("a = "); a.out();

@@ -34,6 +34,7 @@ public:
 	~ULong();
 
 	bool operator!() const;
+	ULong operator+() const;
 	ULong& operator++();
 	ULong operator++(int);
 	ULong& operator--();

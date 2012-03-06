@@ -90,6 +90,17 @@ bool Fraction::operator!() const {
 	return !n_;
 }
 
+Fraction Fraction::operator+() const {
+	return *this;
+}
+
+Fraction Fraction::operator-() const {
+	Fraction n(*this);
+	n.s_ = !n.s_;
+
+	return n;
+}
+
 Fraction& Fraction::operator++() {
 	++n_;
 	return *this;
@@ -113,19 +124,25 @@ Fraction Fraction::operator--(int) {
 }
 
 Fraction Fraction::operator+(const Fraction& b) const {
-	return Fraction(n_ * b.d_ + d_ * b.n_, d_ * b.d_);
+	if (s_ == b.s_) { return Fraction(n_ * b.d_ + d_ * b.n_, d_ * b.d_, s_); }
+	ULong m(n_ * b.d_), n(d_ * b.n_);
+	if (m < n) { return Fraction(n - m, d_ * b.d_, b.s_); }
+	return Fraction(m - n, d_ * b.d_, s_);
 }
 
 Fraction Fraction::operator-(const Fraction& b) const {
-	return Fraction(n_ * b.d_ - d_ * b.n_, d_ * b.d_);
+	if (s_ != b.s_) { return Fraction(n_ * b.d_ + d_ * b.n_, d_ * b.d_, s_); }
+	ULong m(n_ * b.d_), n(d_ * b.n_);
+	if (m < n) { return Fraction(n - m, d_ * b.d_, !b.s_); }
+	return Fraction(m - n, d_ * b.d_, s_);
 }
 
 Fraction Fraction::operator*(const Fraction& b) const {
-	return Fraction(n_ * b.n_, d_ * b.d_);
+	return Fraction(n_ * b.n_, d_ * b.d_, s_ == b.s_);
 }
 
 Fraction Fraction::operator/(const Fraction& b) const {
-	return Fraction(n_ * b.d_, d_ * b.n_);
+	return Fraction(n_ * b.d_, d_ * b.n_, s_ == b.s_);
 }
 
 Fraction Fraction::operator<<(int64_t n) const {
