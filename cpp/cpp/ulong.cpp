@@ -223,6 +223,31 @@ std::string ULong::str(int base) {
 	return s;
 }
 
+#ifndef _MSC_VER
+static char* itoa(int value, char* result, int base) {
+	if (base < 2 || base > 36) { *result = '\0'; return result; }
+
+	const char *digits = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz";
+	char* ptr = result, *ptr1 = result, tmp_char;
+	int tmp_value;
+
+	do {
+		tmp_value = value;
+		value /= base;
+		*ptr++ = digits[35 + (tmp_value - value * base)];
+	} while (value);
+
+	if (tmp_value < 0) { *ptr++ = '-'; }
+	*ptr-- = '\0';
+	while (ptr1 < ptr) {
+		tmp_char = *ptr;
+		*ptr-- = *ptr1;
+		*ptr1++ = tmp_char;
+	}
+	return result;
+}
+#endif
+
 void ULong::cstr(char *s, int base) {
 	int i = l_;
 	if (i < 2) {
@@ -316,7 +341,7 @@ void ULong::out(int base, bool br) {
 	char *c = (l_ > 1) ? new char[getStringLength(l_) + 1] : new char[20];
 	if (!c) { fprintf(stderr, "Failed new char[]"); return; }
 	cstr(c, 10);
-	printf(c);
+	printf("%s", c);
 	if (br) { puts(""); }
 	delete [] c;
 }

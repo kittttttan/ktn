@@ -24,14 +24,14 @@ Fraction::Fraction(BitSize a) : d_(1) {
 	}
 }
 
-Fraction::Fraction(const ULong& a, bool s) : d_(1), s_(s) {
-	n_ = a;
+Fraction::Fraction(const ULong& a, bool s) : s_(s), n_(a), d_(1) {
+
 }
 
 Fraction::Fraction(const ULong& a, const ULong& b, bool s) : s_(s) {
 	n_ = a;
 	d_ = b;
-	if (!d_) { fprintf(stderr, "ZeroDivision: Fraction"); d_ = ULong(1); }
+	if (!d_) { fprintf(stderr, "ZeroDivision: Fraction"); d_ = ULong(1); return; }
 	cancel();
 }
 
