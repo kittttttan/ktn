@@ -1,9 +1,15 @@
 #ifndef ULONG_H_
 #define ULONG_H_
 
-#include <cstdint>
 #include <string>
 #include <iostream>
+
+#define USE_LONGLONG
+#ifdef USE_LONGLONG
+typedef long long BitSize;
+#else
+typedef long BitSize;
+#endif
 
 namespace mathktn {
 class ULong {
@@ -19,16 +25,16 @@ public:
 
 	ULong square() const;
 	ULong sqrt() const;
-	ULong pow(int64_t n) const;
+	ULong pow(BitSize n) const;
 	ULong karatsuba(const ULong& u) const;
 	ULong divmod(const ULong& b, bool mod) const;
 	ULong gcd(const ULong& b) const;
 	ULong gcdBin(const ULong& b) const;
-	int64_t bitLength() const;
+	BitSize bitLength() const;
 	int cmp(const ULong& b) const;
 
 	explicit ULong();
-	explicit ULong(int64_t u);
+	explicit ULong(BitSize u);
 	ULong(const ULong& l);
 	explicit ULong(const char *s, int base);
 	~ULong();
@@ -45,8 +51,8 @@ public:
 	ULong operator*(const ULong& b) const;
 	ULong operator/(const ULong& b) const;
 	ULong operator%(const ULong& b) const;
-	ULong operator<<(int64_t n) const;
-	ULong operator>>(int64_t n) const;
+	ULong operator<<(BitSize n) const;
+	ULong operator>>(BitSize n) const;
 
 	ULong& operator=(const ULong& b);
 	ULong& operator+=(const ULong& b);
@@ -54,8 +60,8 @@ public:
 	ULong& operator*=(const ULong& b);
 	ULong& operator/=(const ULong& b);
 	ULong& operator%=(const ULong& b);
-	ULong& operator<<=(int64_t n);
-	ULong& operator>>=(int64_t n);
+	ULong& operator<<=(BitSize n);
+	ULong& operator>>=(BitSize n);
 
 	bool operator==(const ULong& b) const;
 	bool operator!=(const ULong& b) const;
@@ -69,7 +75,7 @@ private:
 	void norm();
 
 	int l_;
-	int64_t* d_;
+	BitSize* d_;
 };
 } // namespace mathktn
 #endif // ULONG_H_

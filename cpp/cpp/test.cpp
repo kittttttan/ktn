@@ -73,9 +73,9 @@ ULong fib(int n) {
 	return a;
 }
 
-ULong fact(int64_t n) {
+ULong fact(BitSize n) {
 	ULong a(1);
-	for (int64_t i = 2; i <= n; ++i) {
+	for (BitSize i = 2; i <= n; ++i) {
 		a *= ULong(i);
 	}
 
@@ -106,7 +106,7 @@ ULong arccot(const ULong& n, int m) {
 	return a;
 };
 
-ULong pi(int64_t a) {
+ULong pi(BitSize a) {
 	ULong n(10);
 	n = n.pow(a);
 
@@ -130,9 +130,9 @@ int main(int argc, char** argv) {
 
 	srand(static_cast<unsigned int>(time(NULL)));
 
-	//ulongBasic();
-	//longBasic();
-	fractionBasic();
+	ulongBasic();
+	longBasic();
+	//fractionBasic();
 
 	//fib(77).out();
 	//fact(77).out();

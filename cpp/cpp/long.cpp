@@ -28,7 +28,7 @@ Long::Long(const Long& l) {
 	u_ = l.u_;
 }
 
-Long::Long(int64_t a) {
+Long::Long(BitSize a) {
 	if (a < 0) {
 		s_ = false;
 		u_ = ULong(-a);
@@ -161,20 +161,20 @@ Long Long::operator%(const Long& a) const {
 	return Long(u_ % a.u_, s_);
 }
 
-Long Long::operator<<(int64_t n) const {
+Long Long::operator<<(BitSize n) const {
 	return Long(u_ << n, true);
 }
 
-Long Long::operator>>(int64_t n) const {
+Long Long::operator>>(BitSize n) const {
 	return Long(u_ >> n, true);
 }
 
-Long& Long::operator<<=(int64_t n) {
+Long& Long::operator<<=(BitSize n) {
 	*this = *this << n;
 	return *this;
 }
 
-Long& Long::operator>>=(int64_t n) {
+Long& Long::operator>>=(BitSize n) {
 	*this = *this >> n;
 	return *this;
 }

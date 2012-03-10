@@ -2,18 +2,31 @@
  * ulong.cpp - Unsigned BigInteger
  */
 #include <cstdio>
-
-#ifndef _MSC_VER
 #include <cstdlib>
 #include <cstring>
-#endif
 
 #include "ulong.h"
+
+#ifdef USE_LONGLONG
+#define SHIFT_BIT			(16)
+#define MASK				(0xffff)
+#define OUTPUT_FORMAT		"%lld"
+#define OUTPUT_FORMAT_B		"%04x"
+#else
+#define SHIFT_BIT			(8)
+#define MASK				(0xff)
+#define OUTPUT_FORMAT		"%ld"
+#define OUTPUT_FORMAT_B		"%02x"
+#endif
 
 namespace mathktn {
 
 static const ULong ZERO(0);
 static const ULong ONE(1);
+
+inline int getStringLength(int l) {
+	return l * 241 / 50 + 2;
+}
 
 ULong::ULong() : l_(0), d_(NULL) {
 
@@ -28,23 +41,23 @@ ULong::~ULong() {
 ULong::ULong(const ULong& l) {
 	if (this == &l) { return; }
 	l_ = l.l_;
-	d_ = new int64_t[l_];
+	d_ = new BitSize[l_];
 	for (int i = 0; i < l_; ++i) {
 		d_[i] = l.d_[i];
 	}
 }
 
-ULong::ULong(int64_t u) {
-	if (u > 0xffff) {
+ULong::ULong(BitSize u) {
+	if (u > MASK) {
 		l_ = 2;
-		d_ = new int64_t[2];
-		if (!d_) { fprintf(stderr, "Failed new int64_t[2]"); return; }
-		d_[0] = u & 0xffff;
-		d_[1] = u >> 16;
+		d_ = new BitSize[2];
+		if (!d_) { fprintf(stderr, "Failed new BitSize[2]"); return; }
+		d_[0] = u & MASK;
+		d_[1] = u >> SHIFT_BIT;
 	} else {
 		l_ = 1;
-		d_ = new int64_t[1];
-		if (!d_) { fprintf(stderr, "Failed new int64_t[1]"); return; }
+		d_ = new BitSize[1];
+		if (!d_) { fprintf(stderr, "Failed new BitSize[1]"); return; }
 		d_[0] = u;
 	}
 }
@@ -55,8 +68,8 @@ ULong::ULong(const char *s, int base) {
 	while (s[index] == '0') { ++index; }
 	if (s[index] == '\0') {
 		l_ = 1;
-		d_ = new int64_t[1];
-		if (!d_) { fprintf(stderr, "Failed new int64_t[1]"); return; }
+		d_ = new BitSize[1];
+		if (!d_) { fprintf(stderr, "Failed new BitSize[1]"); return; }
 		d_[0] = 0;
 		return;
 	}
@@ -68,23 +81,26 @@ ULong::ULong(const char *s, int base) {
 	} else {
 		len <<= 2;
 	}
+#ifdef USE_LONGLONG
 	len = (len >> 4) + 1;
-
+#else
+	len = (len >> 2) + 1;
+#endif
 	l_ = len;
-	d_ = new int64_t[len];
-	if (!d_) { fprintf(stderr, "Failed new int64_t[%d]", len); return; }
+	d_ = new BitSize[len];
+	if (!d_) { fprintf(stderr, "Failed new BitSize[%d]", len); return; }
 	for (int i = 0; i < len; ++i) {
 		d_[i] = 0;
 	}
 
 	for (int bl = 1; ; ++index) {
-		int64_t n = s[index] - '0';
-		if (n > 9) { break; }
+		BitSize n = s[index] - '0';
+		if (n > 9 || n < 0) { break; }
 		for (int i = 0;;) {
 			for (; i < bl; ++i) {
 				n += d_[i] * base;
-				d_[i] = n & 0xffff;
-				n >>= 16;
+				d_[i] = n & MASK;
+				n >>= SHIFT_BIT;
 			}
 			if (n) {
 				++bl;
@@ -105,7 +121,7 @@ void ULong::alloc(int length, bool zero) {
 	if (l_ != length) {
 		l_ = length;
 		if (d_) { delete [] d_; }
-		d_ = new int64_t[l_];
+		d_ = new BitSize[l_];
 	}
 	if (!zero) { return; }
 	for (int i = 0; i < length; ++i) {
@@ -147,8 +163,8 @@ ULong& ULong::operator=(const ULong& b) {
 	if (this == &b) { return *this; }
 	if (l_ < b.l_) {
 		if (d_) { delete [] d_; }
-		d_ = new int64_t[b.l_];
-		if (!d_) { fprintf(stderr, "Failed new int64_t[%d]", b.l_); return *this; }
+		d_ = new BitSize[b.l_];
+		if (!d_) { fprintf(stderr, "Failed new BitSize[%d]", b.l_); return *this; }
 	}
 	l_ = b.l_;
 	for (int i = 0; i < l_; ++i) {
@@ -160,7 +176,7 @@ ULong& ULong::operator=(const ULong& b) {
 
 void ULong::debug() {
 	for (int i = 0; i < l_; ++i) {
-		printf("%lld ", d_[i]);
+		printf(OUTPUT_FORMAT " ", d_[i]);
 	}
 	puts("");
 }
@@ -174,6 +190,8 @@ inline void reverseChar(char* s) {
 	char *s0 = s;
 	while (*s != '\0') { ++s; }
 	--s;
+	while (*s == '0' && s > s0) { --s; };
+	*(s + 1) = '\0';
 	for (char t; s0 < s; --s, ++s0) {
 		t = *s;
 		*s = *s0;
@@ -188,7 +206,7 @@ std::string ULong::str(int base) {
 	} else if (base == 8) {
 		length = (l_ << 4) + 2;
 	} else {
-		length = (l_ * 241 / 50) + 2;
+		length = getStringLength(l_);
 	}
 
 	char* c = new char[length];
@@ -221,7 +239,7 @@ void ULong::cstr(char *s, int base) {
 		j = (i << 4) + 2;
 		hbase = 0x1000;
 	} else {
-		j = (i * 241 / 50) + 2;
+		j = getStringLength(i);
 		hbase = 10000;
 	}
 
@@ -231,9 +249,9 @@ void ULong::cstr(char *s, int base) {
 	
 	while (i && j) {
 		int k = i;
-		int64_t n = 0;
+		BitSize n = 0;
 		while (k--) {
-			n = (n << 16) + t.d_[k];
+			n = (n << SHIFT_BIT) + t.d_[k];
 			t.d_[k] = n / hbase;
 			n %= hbase;
 		}
@@ -258,24 +276,24 @@ void ULong::cstr(char *s, int base) {
  */
 void ULong::out(int base, bool br) {
 	if (base == 2) {
-		int i = l_ - 1, j = 16;
+		int i = l_ - 1, j = SHIFT_BIT;
 		bool f = false;
-		int64_t t;
+		BitSize t;
 		while (j--) {
 			t = (d_[i] >> j) & 1;
 			if (f) {
 				//printf("%d", t);
-				printf("%lld", t);
+				printf(OUTPUT_FORMAT, t);
 			} else if (t) {
-				printf("%lld", t);
+				printf(OUTPUT_FORMAT, t);
 				f = true;
 			}
 		}
 		if (i) {
 			while (i--) {
-				j = 16;
+				j = SHIFT_BIT;
 				while (j--) {
-					printf("%lld", (d_[i] >> j) & 1);
+					printf(OUTPUT_FORMAT, (d_[i] >> j) & 1);
 				}
 			}
 		}
@@ -288,14 +306,14 @@ void ULong::out(int base, bool br) {
 		printf("%x", d_[i]);
 		if (i) {
 			while (i--) {
-				printf("%04x", d_[i]);
+				printf(OUTPUT_FORMAT_B, d_[i]);
 			}
 		}
 		if (br) { puts(""); }
 
 		return;
 	}
-	char *c = (l_ > 1) ? new char[(l_ * 241 / 50) + 3] : new char[20];
+	char *c = (l_ > 1) ? new char[getStringLength(l_) + 1] : new char[20];
 	if (!c) { fprintf(stderr, "Failed new char[]"); return; }
 	cstr(c, 10);
 	printf(c);
@@ -322,21 +340,21 @@ ULong ULong::operator+(const ULong& b) const {
 	ULong z;
 	z.alloc(l_ + 1, false);
 	int i = 0;
-	int64_t n = 0;
+	BitSize n = 0;
 	for (; i < b.l_; ++i) {
 		n += d_[i] + b.d_[i];
-		z.d_[i] = n & 0xffff;
-		n >>= 16;
+		z.d_[i] = n & MASK;
+		n >>= SHIFT_BIT;
 	}
 	for (; n && i < l_; ++i) {
 		n += d_[i];
-		z.d_[i] = n & 0xffff;
-		n >>= 16;
+		z.d_[i] = n & MASK;
+		n >>= SHIFT_BIT;
 	}
 	for (; i < l_; ++i) {
 		z.d_[i] = d_[i];
 	}
-	z.d_[i] = n & 0xffff;
+	z.d_[i] = n & MASK;
 	z.norm();
 	return z;
 }
@@ -345,10 +363,10 @@ ULong ULong::operator-(const ULong& b) const {
 	ULong z;
 	z.alloc(l_, false);
 	int i = 0;
-	int64_t c = 0;
+	BitSize c = 0;
 	for (; i < b.l_; ++i) {
 		if (d_[i] < b.d_[i] + c) {
-			z.d_[i] = 0x10000 + d_[i] - b.d_[i] - c;
+			z.d_[i] = (MASK + 1) + d_[i] - b.d_[i] - c;
 			c = 1;
 		} else {
 			z.d_[i] = d_[i] - b.d_[i] - c;
@@ -357,7 +375,7 @@ ULong ULong::operator-(const ULong& b) const {
 	}
 	for (; i < l_; ++i) {
 		if (d_[i] < c) {
-			z.d_[i] = 0x10000 + d_[i] - c;
+			z.d_[i] = (MASK + 1) + d_[i] - c;
 			c = 1;
 		} else {
 			z.d_[i] = d_[i] - c;
@@ -368,32 +386,32 @@ ULong ULong::operator-(const ULong& b) const {
 	return z;
 }
 
-ULong ULong::operator<<(int64_t n) const {
-	int d = static_cast<int>(n >> 4);
+ULong ULong::operator<<(BitSize n) const {
+	int d = static_cast<int>(n / SHIFT_BIT);
 	ULong c;
 	c.alloc(l_ + d + 1, false);
 	for (int i = 0; i < d; ++i) { c.d_[i] = 0; }
-	int64_t b = n & 0xf, carry = 0;
+	BitSize b = n % SHIFT_BIT, carry = 0;
 	int i = 0;
-	for (int64_t t = 0; i < l_; ++i) {
+	for (BitSize t = 0; i < l_; ++i) {
 		t = (d_[i] << b) + carry;
-		c.d_[i + d] = t & 0xffff;
-		carry = t >> 16;
+		c.d_[i + d] = t & MASK;
+		carry = t >> SHIFT_BIT;
 	}
 	c.d_[i + d] = carry;
 	c.norm();
 	return c;
 }
 
-ULong ULong::operator>>(int64_t n) const {
-	int d = static_cast<int>(n >> 4);
+ULong ULong::operator>>(BitSize n) const {
+	int d = static_cast<int>(n / SHIFT_BIT);
 	if (l_ <= d) { return ZERO; }
 	ULong c;
 	c.alloc(l_ - d, false);
-	int64_t b = n & 0xf;
+	BitSize b = n % SHIFT_BIT;
 	int i = 0;
-	for (int64_t mask = (1 << b) - 1; i < l_ - d - 1; ++i) {
-		c.d_[i] = ((d_[i + d + 1] & mask) << (16 - b)) + (d_[i + d] >> b);
+	for (BitSize mask = (1 << b) - 1; i < l_ - d - 1; ++i) {
+		c.d_[i] = ((d_[i + d + 1] & mask) << (SHIFT_BIT - b)) + (d_[i + d] >> b);
 	}
 	c.d_[i] = d_[i + d] >> b;
 	c.norm();
@@ -404,20 +422,20 @@ ULong ULong::square() const {
 	ULong s;
 	s.alloc(l_ << 1, true);
 
-	int64_t u, v ,uv, c;
+	BitSize u, v ,uv, c;
 	for (int i = 0; i < l_; ++i) {
 		uv = s.d_[i << 1] + d_[i] * d_[i];
-		u = uv >> 16;
-		v = uv & 0xffff;
+		u = uv >> SHIFT_BIT;
+		v = uv & MASK;
 		s.d_[i << 1] = v;
 		c = u;
 		for (int j = i + 1; j < l_; ++j) {
 			uv = d_[j] * d_[i];
-			u = (uv >> 16) << 1;
-			v = (uv & 0xffff) << 1;
+			u = (uv >> SHIFT_BIT) << 1;
+			v = (uv & MASK) << 1;
 			v += s.d_[i + j] + c;
-			u += v >> 16;
-			v &= 0xffff;
+			u += v >> SHIFT_BIT;
+			v &= MASK;
 			s.d_[i + j] = v;
 			c = u;
 		}
@@ -445,7 +463,7 @@ ULong ULong::sqrt() const {
 	return b;
 }
 
-ULong ULong::pow(int64_t n) const {
+ULong ULong::pow(BitSize n) const {
 	ULong p(1), a(*this);
 	for (; n > 0; n >>= 1, a = a.square()) {
 		if (n & 1) { p *= a; }
@@ -453,9 +471,9 @@ ULong ULong::pow(int64_t n) const {
 	return p;
 }
 
-inline int64_t ULong::bitLength() const {
-	int64_t l = l_ << 4;
-	int j = 16;
+inline BitSize ULong::bitLength() const {
+	BitSize l = l_ * SHIFT_BIT;
+	int j = SHIFT_BIT;
 	while (j-- && ((d_[l_ - 1] >> j) & 1) == 0) {
 		--l;
 	}
@@ -467,8 +485,8 @@ inline int64_t ULong::bitLength() const {
  * multiple with karatsuba method
  */
 ULong ULong::karatsuba(const ULong& u) const {
-	int64_t N = bitLength();
-	int64_t l = u.bitLength();
+	BitSize N = bitLength();
+	BitSize l = u.bitLength();
 	if (N < l) { N = l; }
 	if (N < 2000) { return *this * u; }
 
@@ -489,17 +507,17 @@ ULong ULong::operator*(const ULong& b) const {
 	ULong z;
 	z.alloc(l_ + b.l_, true);
 
-	int64_t n, e;
+	BitSize n, e;
 	for (int i = 0, j; i < l_; ++i) {
 		if (d_[i] == 0) { continue; }
 		n = 0;
 		for (j = 0; j < b.l_; ++j) {
 			e = n + d_[i] * b.d_[j];
 			n = z.d_[i + j] + e;
-			if (e) { z.d_[i + j] = n & 0xffff; }
-			n >>= 16;
+			if (e) { z.d_[i + j] = n & MASK; }
+			n >>= SHIFT_BIT;
 		}
-		if (n) { z.d_[i + j] = n & 0xffff; }
+		if (n) { z.d_[i + j] = n & MASK; }
 	}
 
 	z.norm();
@@ -510,7 +528,7 @@ ULong ULong::random(int n) {
 	ULong r;
 	r.alloc(n, false);
 	for (int i = 0; i < n; ++i) {
-		r.d_[i] = rand() & 0xffff;
+		r.d_[i] = rand() & MASK;
 	}
 	r.norm();
 	return r;
@@ -579,12 +597,12 @@ ULong ULong::divmod(const ULong& b, bool mod) const {
 	}
 
 	if (b.l_ == 1) {
-		int64_t dd = b.d_[0], t = 0;
+		BitSize dd = b.d_[0], t = 0;
 		ULong z(*this);
 		int i = l_;
 		while (i--) {
-			t = (t << 16) + z.d_[i];
-			z.d_[i] = (t / dd) & 0xffff;
+			t = (t << SHIFT_BIT) + z.d_[i];
+			z.d_[i] = (t / dd) & MASK;
 			t %= dd;
 		}
 		if (mod) {
@@ -597,52 +615,52 @@ ULong ULong::divmod(const ULong& b, bool mod) const {
 	ULong bb(b);
 	ULong z;
 	z.alloc(albl ? l_ + 2 : l_ + 1, true);
-	int64_t dd = 0x10000 / (b.d_[b.l_ - 1] + 1) & 0xffff;
+	BitSize dd = (MASK + 1) / (b.d_[b.l_ - 1] + 1) & MASK;
 	
 	if (dd == 1) {
 		int j = l_;
 		while (j--) { z.d_[j] = d_[j]; }
 	} else {
-		int64_t num = 0;
+		BitSize num = 0;
 		int j;
 		for (j = 0; j < b.l_; ++j) {
 			num += b.d_[j] * dd;
-			bb.d_[j] = num & 0xffff;
-			num >>= 16;
+			bb.d_[j] = num & MASK;
+			num >>= SHIFT_BIT;
 		}
 
 		num = 0;
 		for (j = 0; j < l_; ++j) {
 			num += d_[j] * dd;
-			z.d_[j] = num & 0xffff;
-			num >>= 16;
+			z.d_[j] = num & MASK;
+			num >>= SHIFT_BIT;
 		}
 
-		z.d_[j] = num & 0xffff;
+		z.d_[j] = num & MASK;
 	}
 
 	int j = albl ? l_ + 1 : l_;
 	do {
-		int64_t q;
+		BitSize q;
 		if (z.d_[j] == bb.d_[bb.l_- 1]) {
-			q = 0xffff;
+			q = MASK;
 		} else {
-			q = ((z.d_[j] << 16) + z.d_[j - 1]) / bb.d_[bb.l_ - 1] & 0xffff;
+			q = ((z.d_[j] << SHIFT_BIT) + z.d_[j - 1]) / bb.d_[bb.l_ - 1] & MASK;
 		}
 
 		if (q) {
 			int i = 0;
-			int64_t num = 0;
-			int64_t t = 0;
+			BitSize num = 0;
+			BitSize t = 0;
 			do {
 				t += bb.d_[i] * q;
-				int64_t ee = (t & 0xffff) - num;
+				BitSize ee = (t & MASK) - num;
 				num = z.d_[j - bb.l_ + i] - ee;
 				if (ee) {
-					z.d_[j - bb.l_ + i] = num & 0xffff;
+					z.d_[j - bb.l_ + i] = num & MASK;
 				}
-				num >>= 16;
-				t >>= 16;
+				num >>= SHIFT_BIT;
+				t >>= SHIFT_BIT;
 			} while (++i < bb.l_);
 
 			num += z.d_[j - bb.l_ + i] - t;
@@ -652,10 +670,10 @@ ULong ULong::divmod(const ULong& b, bool mod) const {
 				--q;
 
 				do {
-					int64_t ee = num + bb.d_[i];
+					BitSize ee = num + bb.d_[i];
 					num = z.d_[j - bb.l_ + i] + ee;
-					if (ee) { z.d_[j - bb.l_ + i] = num & 0xffff; }
-					num >>= 16;
+					if (ee) { z.d_[j - bb.l_ + i] = num & MASK; }
+					num >>= SHIFT_BIT;
 				} while (++i < bb.l_);
 
 				--num;
@@ -668,11 +686,11 @@ ULong ULong::divmod(const ULong& b, bool mod) const {
 	ULong div(z);
 	if (mod) {
 		if (dd) {
-			int64_t t = 0;
+			BitSize t = 0;
 			int i = bb.l_;
 			while (i--) {
-				t = (t << 16) + div.d_[i];
-				div.d_[i] = (t / dd) & 0xffff;
+				t = (t << SHIFT_BIT) + div.d_[i];
+				div.d_[i] = (t / dd) & MASK;
 				t %= dd;
 			}
 		}
@@ -722,12 +740,12 @@ ULong& ULong::operator%=(const ULong& b) {
 	return *this;
 }
 
-ULong& ULong::operator<<=(int64_t n) {
+ULong& ULong::operator<<=(BitSize n) {
 	*this = *this << n;
 	return *this;
 }
 
-ULong& ULong::operator>>=(int64_t n) {
+ULong& ULong::operator>>=(BitSize n) {
 	*this = *this >> n;
 	return *this;
 }

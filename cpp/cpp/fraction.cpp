@@ -3,11 +3,6 @@
  */
 #include <cstdio>
 
-#ifndef _MSC_VER
-#include <cstdlib>
-#include <cstring>
-#endif
-
 #include "fraction.h"
 
 namespace mathktn {
@@ -19,7 +14,7 @@ Fraction::Fraction() : s_(true), n_(0), d_(1) {
 
 }
 
-Fraction::Fraction(int64_t a) : d_(1) {
+Fraction::Fraction(BitSize a) : d_(1) {
 	if (a < 0) {
 		s_ = false;
 		n_ = ULong(-a);
@@ -57,7 +52,7 @@ inline void Fraction::cancel() {
 	d_ /= g;
 }
 
-Fraction::Fraction(int64_t a, int64_t b) {
+Fraction::Fraction(BitSize a, BitSize b) {
 	if (a < 0) {
 		s_ = false;
 		n_ = ULong(-a);
@@ -145,11 +140,11 @@ Fraction Fraction::operator/(const Fraction& b) const {
 	return Fraction(n_ * b.d_, d_ * b.n_, s_ == b.s_);
 }
 
-Fraction Fraction::operator<<(int64_t n) const {
+Fraction Fraction::operator<<(BitSize n) const {
 	return Fraction(n_ << n, d_);
 }
 
-Fraction Fraction::operator>>(int64_t n) const {
+Fraction Fraction::operator>>(BitSize n) const {
 	return Fraction(n_, d_ << n);
 }
 
@@ -182,12 +177,12 @@ Fraction& Fraction::operator/=(const Fraction& b) {
 	return *this;
 }
 
-Fraction& Fraction::operator<<=(int64_t n) {
+Fraction& Fraction::operator<<=(BitSize n) {
 	*this = *this << n;
 	return *this;
 }
 
-Fraction& Fraction::operator>>=(int64_t n) {
+Fraction& Fraction::operator>>=(BitSize n) {
 	*this = *this >> n;
 	return *this;
 }

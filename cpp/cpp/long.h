@@ -1,7 +1,6 @@
 #ifndef LONG_H_
 #define LONG_H_
 
-#include <cstdint>
 #include <string>
 #include <iostream>
 #include "ulong.h"
@@ -19,7 +18,7 @@ public:
 
 	Long();
 	Long(const Long& l);
-	explicit Long(int64_t a);
+	explicit Long(BitSize a);
 	explicit Long(const ULong& u, bool s=true);
 	explicit Long(const char *s, int base);
 	~Long();
@@ -37,8 +36,8 @@ public:
 	Long operator*(const Long& b) const;
 	Long operator/(const Long& b) const;
 	Long operator%(const Long& b) const;
-	Long operator<<(int64_t n) const;
-	Long operator>>(int64_t n) const;
+	Long operator<<(BitSize n) const;
+	Long operator>>(BitSize n) const;
 
 	Long& operator=(const Long& b);
 	Long& operator+=(const Long& b);
@@ -46,8 +45,8 @@ public:
 	Long& operator*=(const Long& b);
 	Long& operator/=(const Long& b);
 	Long& operator%=(const Long& b);
-	Long& operator<<=(int64_t n);
-	Long& operator>>=(int64_t n);
+	Long& operator<<=(BitSize n);
+	Long& operator>>=(BitSize n);
 
 	bool operator==(const Long& b) const;
 	bool operator!=(const Long& b) const;
