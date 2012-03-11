@@ -1,21 +1,19 @@
-#ifndef ULONG_H_
-#define ULONG_H_
+#ifndef MATHKTN_ULONG_H_
+#define MATHKTN_ULONG_H_
 
 #include <string>
 #include <iostream>
 
-#define USE_LONGLONG
-#ifdef USE_LONGLONG
-typedef long long BitSize;
-#else
-typedef long BitSize;
-#endif
-
 namespace mathktn {
+typedef long long BitSize;
+
 class ULong {
 friend std::ostream& operator<<(std::ostream& os, ULong l);
 
 public:
+	static const ULong ZERO;
+	static const ULong ONE;
+
 	std::string str(int base=10);
 	void cstr(char *s, int base=10);
 	void out(int base=10, bool br=true);
@@ -32,6 +30,7 @@ public:
 	ULong gcdBin(const ULong& b) const;
 	BitSize bitLength() const;
 	int cmp(const ULong& b) const;
+	int cmp(BitSize b) const;
 
 	explicit ULong();
 	explicit ULong(BitSize u);
@@ -51,6 +50,12 @@ public:
 	ULong operator*(const ULong& b) const;
 	ULong operator/(const ULong& b) const;
 	ULong operator%(const ULong& b) const;
+
+	ULong operator+(BitSize b) const;
+	ULong operator-(BitSize b) const;
+	ULong operator*(BitSize b) const;
+	ULong operator/(BitSize b) const;
+	ULong operator%(BitSize b) const;
 	ULong operator<<(BitSize n) const;
 	ULong operator>>(BitSize n) const;
 
@@ -60,6 +65,12 @@ public:
 	ULong& operator*=(const ULong& b);
 	ULong& operator/=(const ULong& b);
 	ULong& operator%=(const ULong& b);
+
+	ULong& operator+=(BitSize b);
+	ULong& operator-=(BitSize b);
+	ULong& operator*=(BitSize b);
+	ULong& operator/=(BitSize b);
+	ULong& operator%=(BitSize b);
 	ULong& operator<<=(BitSize n);
 	ULong& operator>>=(BitSize n);
 
@@ -70,6 +81,13 @@ public:
 	bool operator<=(const ULong& b) const;
 	bool operator>=(const ULong& b) const;
 
+	bool operator==(BitSize b) const;
+	bool operator!=(BitSize b) const;
+	bool operator<(BitSize b) const;
+	bool operator>(BitSize b) const;
+	bool operator<=(BitSize b) const;
+	bool operator>=(BitSize b) const;
+
 private:
 	void alloc(int length, bool zero);
 	void norm();
@@ -78,4 +96,4 @@ private:
 	BitSize* d_;
 };
 } // namespace mathktn
-#endif // ULONG_H_
+#endif // MATHKTN_ULONG_H_

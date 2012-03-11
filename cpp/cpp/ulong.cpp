@@ -7,22 +7,15 @@
 
 #include "ulong.h"
 
-#ifdef USE_LONGLONG
 #define SHIFT_BIT			(16)
 #define MASK				(0xffff)
 #define OUTPUT_FORMAT		"%lld"
 #define OUTPUT_FORMAT_B		"%04x"
-#else
-#define SHIFT_BIT			(8)
-#define MASK				(0xff)
-#define OUTPUT_FORMAT		"%ld"
-#define OUTPUT_FORMAT_B		"%02x"
-#endif
 
 namespace mathktn {
 
-static const ULong ZERO(0);
-static const ULong ONE(1);
+const ULong ULong::ZERO(0);
+const ULong ULong::ONE(1);
 
 inline int getStringLength(int l) {
 	return l * 241 / 50 + 2;
@@ -42,24 +35,18 @@ ULong::ULong(const ULong& l) {
 	if (this == &l) { return; }
 	l_ = l.l_;
 	d_ = new BitSize[l_];
+	if (!d_) { l_ = 0; return; }
 	for (int i = 0; i < l_; ++i) {
 		d_[i] = l.d_[i];
 	}
 }
 
-ULong::ULong(BitSize u) {
-	if (u > MASK) {
-		l_ = 2;
-		d_ = new BitSize[2];
-		if (!d_) { fprintf(stderr, "Failed new BitSize[2]"); return; }
-		d_[0] = u & MASK;
-		d_[1] = u >> SHIFT_BIT;
-	} else {
-		l_ = 1;
-		d_ = new BitSize[1];
-		if (!d_) { fprintf(stderr, "Failed new BitSize[1]"); return; }
-		d_[0] = u;
-	}
+ULong::ULong(BitSize u) : l_(2) {
+	d_ = new BitSize[2];
+	if (!d_) { fprintf(stderr, "Failed new BitSize[2]"); return; }
+	d_[0] = u & MASK;
+	d_[1] = u >> SHIFT_BIT;
+	norm();
 }
 
 ULong::ULong(const char *s, int base) {
@@ -67,10 +54,8 @@ ULong::ULong(const char *s, int base) {
 	if (s[index] == '+') { ++index; }
 	while (s[index] == '0') { ++index; }
 	if (s[index] == '\0') {
-		l_ = 1;
-		d_ = new BitSize[1];
-		if (!d_) { fprintf(stderr, "Failed new BitSize[1]"); return; }
-		d_[0] = 0;
+		l_ = 0;
+		d_ = NULL;
 		return;
 	}
 
@@ -120,7 +105,6 @@ void ULong::alloc(int length, bool zero) {
 	}
 	if (l_ != length) {
 		l_ = length;
-		if (d_) { delete [] d_; }
 		d_ = new BitSize[l_];
 	}
 	if (!zero) { return; }
@@ -130,7 +114,7 @@ void ULong::alloc(int length, bool zero) {
 }
 
 bool ULong::operator!() const {
-	return l_ < 2 && d_[0] == 0;
+	return l_ < 1 || l_ == 1 && d_[0] == 0;
 }
 
 ULong ULong::operator+() const {
@@ -162,9 +146,12 @@ ULong ULong::operator++(int) {
 ULong& ULong::operator=(const ULong& b) {
 	if (this == &b) { return *this; }
 	if (l_ < b.l_) {
-		if (d_) { delete [] d_; }
 		d_ = new BitSize[b.l_];
-		if (!d_) { fprintf(stderr, "Failed new BitSize[%d]", b.l_); return *this; }
+		if (!d_) {
+			l_ = 0;
+			fprintf(stderr, "Failed new BitSize[%d]", b.l_);
+			return *this;
+		}
 	}
 	l_ = b.l_;
 	for (int i = 0; i < l_; ++i) {
@@ -182,7 +169,7 @@ void ULong::debug() {
 }
 
 inline void ULong::norm() {
-	while (l_ > 1 && d_[l_ - 1] == 0) { --l_; }
+	while (l_ > 0 && d_[l_ - 1] == 0) { --l_; }
 }
 
 inline void reverseChar(char* s) {
@@ -200,6 +187,10 @@ inline void reverseChar(char* s) {
 }
 
 std::string ULong::str(int base) {
+	if (!(*this)) {
+		std::string s("0");
+		return s;
+	}
 	int length;
 	if (l_ < 2) {
 		length = 20;
@@ -249,6 +240,11 @@ static char* itoa(int value, char* result, int base) {
 #endif
 
 void ULong::cstr(char *s, int base) {
+	if (!(*this)) {
+		s[0] = '0';
+		s[1] = '\0';
+		return;
+	}
 	int i = l_;
 	if (i < 2) {
 #ifdef _MSC_VER
@@ -300,6 +296,11 @@ void ULong::cstr(char *s, int base) {
  * @param base 2, 10, 16
  */
 void ULong::out(int base, bool br) {
+	if (!(*this)) {
+		putchar('0');
+		if (br) { puts(""); }
+		return;
+	}
 	if (base == 2) {
 		int i = l_ - 1, j = SHIFT_BIT;
 		bool f = false;
@@ -361,6 +362,7 @@ int ULong::cmp(const ULong& b) const {
 }
 
 ULong ULong::operator+(const ULong& b) const {
+	if (!b) { return *this; }
 	if (l_ < b.l_) { return b + *this; }
 	ULong z;
 	z.alloc(l_ + 1, false);
@@ -385,6 +387,7 @@ ULong ULong::operator+(const ULong& b) const {
 }
 
 ULong ULong::operator-(const ULong& b) const {
+	if (!b) { return *this; }
 	ULong z;
 	z.alloc(l_, false);
 	int i = 0;
@@ -510,6 +513,7 @@ inline BitSize ULong::bitLength() const {
  * multiple with karatsuba method
  */
 ULong ULong::karatsuba(const ULong& u) const {
+	if (!u) { return ZERO; }
 	BitSize N = bitLength();
 	BitSize l = u.bitLength();
 	if (N < l) { N = l; }
@@ -529,6 +533,7 @@ ULong ULong::karatsuba(const ULong& u) const {
 }
 
 ULong ULong::operator*(const ULong& b) const {
+	if (!b) { return ZERO; }
 	ULong z;
 	z.alloc(l_ + b.l_, true);
 
@@ -563,9 +568,9 @@ ULong ULong::random(int n) {
  * greatest common divisor
  */
 ULong ULong::gcd(const ULong& b) const {
-	ULong x(*this), y(b), z;
+	ULong x(*this), y(b);
 	for (;;) {
-		z = x % y;
+		const ULong z(x % y);
 		if (!z) { break; }
 		x = y;
 		y = z;
@@ -578,7 +583,7 @@ ULong ULong::gcd(const ULong& b) const {
  * greatest common divisor with binary method
  */
 ULong ULong::gcdBin(const ULong& b) const {
-	if (cmp(b) > -1) { return b.gcdBin(*this); }
+	if (*this < b) { return b.gcdBin(*this); }
 	ULong x(*this), y(b), g(1);
 	while ((x.d_[0] & 1) == 0 && (y.d_[0] & 1) == 0) {
 		x >>= 1;
@@ -594,10 +599,10 @@ ULong ULong::gcdBin(const ULong& b) const {
 			y >>= 1;
 		}
 
-		if (x.cmp(y) > -1) {
-			x = (x - y) >> 1;
-		} else {
+		if (x < y) {
 			y = (y - x) >> 1;
+		} else {
+			x = (x - y) >> 1;
 		}
 	}
 
@@ -796,6 +801,80 @@ bool ULong::operator>=(const ULong& b) const {
 }
 
 bool ULong::operator<=(const ULong& b) const {
+	return cmp(b) <= 0;
+}
+
+
+ULong ULong::operator+(BitSize b) const {
+	return *this + ULong(b);
+}
+
+ULong ULong::operator-(BitSize b) const {
+	return *this - ULong(b);
+}
+
+ULong ULong::operator*(BitSize b) const {
+	return *this * ULong(b);
+}
+
+ULong ULong::operator/(BitSize b) const {
+	return *this / ULong(b);
+}
+
+ULong ULong::operator%(BitSize b) const {
+	return *this % ULong(b);
+}
+
+ULong& ULong::operator+=(BitSize b) {
+	*this = *this + b;
+	return *this;
+}
+
+ULong& ULong::operator-=(BitSize b) {
+	*this = *this - b;
+	return *this;
+}
+
+ULong& ULong::operator*=(BitSize b) {
+	*this = *this * b;
+	return *this;
+}
+
+ULong& ULong::operator/=(BitSize b) {
+	*this = *this / b;
+	return *this;
+}
+
+ULong& ULong::operator%=(BitSize b) {
+	*this = *this % b;
+	return *this;
+}
+
+int ULong::cmp(BitSize b) const {
+	return cmp(ULong(b));
+}
+
+bool ULong::operator==(BitSize b) const {
+	return cmp(b) == 0;
+}
+
+bool ULong::operator!=(BitSize b) const {
+	return cmp(b) != 0;
+}
+
+bool ULong::operator>(BitSize b) const {
+	return cmp(b) > 0;
+}
+
+bool ULong::operator<(BitSize b) const {
+	return cmp(b) < 0;
+}
+
+bool ULong::operator>=(BitSize b) const {
+	return cmp(b) >= 0;
+}
+
+bool ULong::operator<=(BitSize b) const {
 	return cmp(b) <= 0;
 }
 } // namespace mathktn

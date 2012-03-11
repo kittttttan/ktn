@@ -4,6 +4,7 @@
 
 #include "long.h"
 #include "fraction.h"
+#include "math.h"
 
 using namespace std;
 using namespace mathktn;
@@ -29,6 +30,11 @@ void ulongBasic() {
 	printf("GCD(a, b) = "); a.gcd(b).out();
 	printf("          = "); a.gcdBin(b).out();
 	printf("++a = "); (++a).out();
+	printf("b + 7 = "); (b + 7).out();
+	printf("b - 7 = "); (b - 7).out();
+	printf("b * 7 = "); (b * 7).out();
+	printf("b / 7 = "); (b / 7).out();
+	printf("b %% 7 = "); (b % 7).out();
 }
 
 void longBasic() {
@@ -45,8 +51,6 @@ void longBasic() {
 	printf("a * b = "); (a * b).out();
 	printf("a / b = "); (a / b).out();
 	printf("a %% b = "); (a % b).out();
-	printf("++a = "); (++a).out();
-	printf("a-- = "); (a--).out();
 }
 
 void fractionBasic() {
@@ -61,11 +65,11 @@ void fractionBasic() {
 	printf("a / b = "); (a / b).out();
 }
 
-ULong fib(int n) {
-	ULong a(1), b(0), c;
+template <typename Integer>
+Integer fib(int n) {
+	Integer a(1), b(0);
 	for (int i = 1; i < n; ++i) {
-		c = a;
-		//a = a + b;
+		const Integer c(a);
 		a += b;
 		b = c;
 	}
@@ -73,10 +77,11 @@ ULong fib(int n) {
 	return a;
 }
 
-ULong fact(BitSize n) {
-	ULong a(1);
-	for (BitSize i = 2; i <= n; ++i) {
-		a *= ULong(i);
+template <typename Integer>
+Integer fact(int n) {
+	Integer a(1);
+	for (int i = 2; i <= n; ++i) {
+		a *= i;
 	}
 
 	return a;
@@ -91,7 +96,7 @@ ULong arccot(const ULong& n, int m) {
 	bool s = true;
 	m2 = m2.square();
 
-	while (!!c) {
+	while (c != 0) {
 		b /= m2;
 		k += l2;
 		c = b / k;
@@ -104,7 +109,7 @@ ULong arccot(const ULong& n, int m) {
 	}
 
 	return a;
-};
+}
 
 ULong pi(BitSize a) {
 	ULong n(10);
@@ -126,21 +131,20 @@ void kTest() {
 }
 
 int main(int argc, char** argv) {
-	clock_t t = clock();
-
 	srand(static_cast<unsigned int>(time(NULL)));
+	clock_t t = clock();
 
 	ulongBasic();
 	longBasic();
-	//fractionBasic();
+	fractionBasic();
 
-	//fib(77).out();
-	//fact(77).out();
+	//fib<ULong>(77).out();
+	//fact<ULong>(77).out();
 	//pi(200).out();
 	//kTest();
 
 	printf("%ld ms\n", clock() - t);
-#if defined(_MSC_VER) && defined(_DEBUG)
+#if defined(_MSC_VER)
 	system("pause");
 #endif
 	return 0;

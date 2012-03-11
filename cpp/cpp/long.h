@@ -1,5 +1,5 @@
-#ifndef LONG_H_
-#define LONG_H_
+#ifndef MATHKTN_LONG_H_
+#define MATHKTN_LONG_H_
 
 #include <string>
 #include <iostream>
@@ -10,11 +10,17 @@ class Long {
 friend std::ostream& operator<<(std::ostream& os, Long l);
 
 public:
+	static const Long ZERO;
+	static const Long ONE;
+
+	bool sign() { return s_; }
+
 	void out(int base=10);
 	void cstr(char *s, int base=10);
 	std::string str(int base=10);
 	void debug();
 	int cmp(const Long& b) const;
+	int cmp(BitSize b) const;
 
 	Long();
 	Long(const Long& l);
@@ -36,6 +42,12 @@ public:
 	Long operator*(const Long& b) const;
 	Long operator/(const Long& b) const;
 	Long operator%(const Long& b) const;
+
+	Long operator+(BitSize b) const;
+	Long operator-(BitSize b) const;
+	Long operator*(BitSize b) const;
+	Long operator/(BitSize b) const;
+	Long operator%(BitSize b) const;
 	Long operator<<(BitSize n) const;
 	Long operator>>(BitSize n) const;
 
@@ -45,6 +57,12 @@ public:
 	Long& operator*=(const Long& b);
 	Long& operator/=(const Long& b);
 	Long& operator%=(const Long& b);
+
+	Long& operator+=(BitSize b);
+	Long& operator-=(BitSize b);
+	Long& operator*=(BitSize b);
+	Long& operator/=(BitSize b);
+	Long& operator%=(BitSize b);
 	Long& operator<<=(BitSize n);
 	Long& operator>>=(BitSize n);
 
@@ -55,9 +73,16 @@ public:
 	bool operator<=(const Long& b) const;
 	bool operator>=(const Long& b) const;
 
+	bool operator==(BitSize b) const;
+	bool operator!=(BitSize b) const;
+	bool operator<(BitSize b) const;
+	bool operator>(BitSize b) const;
+	bool operator<=(BitSize b) const;
+	bool operator>=(BitSize b) const;
+
 private:
 	ULong u_;
 	bool s_;
 };
 } // namespace mathktn
-#endif // LONG_H_
+#endif // MATHKTN_LONG_H_

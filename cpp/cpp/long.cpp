@@ -7,8 +7,8 @@
 
 namespace mathktn {
 
-static const Long ZERO(0);
-static const Long ONE(1);
+const Long Long::ZERO(0);
+const Long Long::ONE(1);
 
 Long::Long() : u_(), s_(true) {
 
@@ -225,6 +225,80 @@ bool Long::operator>=(const Long& b) const {
 }
 
 bool Long::operator<=(const Long& b) const {
+	return cmp(b) <= 0;
+}
+
+
+Long Long::operator+(BitSize b) const {
+	return *this + Long(b);
+}
+
+Long Long::operator-(BitSize b) const {
+	return *this - Long(b);
+}
+
+Long Long::operator*(BitSize b) const {
+	return *this * Long(b);
+}
+
+Long Long::operator/(BitSize b) const {
+	return *this / Long(b);
+}
+
+Long Long::operator%(BitSize b) const {
+	return *this % Long(b);
+}
+
+Long& Long::operator+=(BitSize b) {
+	*this = *this + b;
+	return *this;
+}
+
+Long& Long::operator-=(BitSize b) {
+	*this = *this - b;
+	return *this;
+}
+
+Long& Long::operator*=(BitSize b) {
+	*this = *this * b;
+	return *this;
+}
+
+Long& Long::operator/=(BitSize b) {
+	*this = *this / b;
+	return *this;
+}
+
+Long& Long::operator%=(BitSize b) {
+	*this = *this % b;
+	return *this;
+}
+
+int Long::cmp(BitSize b) const {
+	return cmp(Long(b));
+}
+
+bool Long::operator==(BitSize b) const {
+	return cmp(b) == 0;
+}
+
+bool Long::operator!=(BitSize b) const {
+	return cmp(b) != 0;
+}
+
+bool Long::operator>(BitSize b) const {
+	return cmp(b) > 0;
+}
+
+bool Long::operator<(BitSize b) const {
+	return cmp(b) < 0;
+}
+
+bool Long::operator>=(BitSize b) const {
+	return cmp(b) >= 0;
+}
+
+bool Long::operator<=(BitSize b) const {
 	return cmp(b) <= 0;
 }
 } // namespace mathktn

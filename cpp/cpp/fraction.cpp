@@ -7,10 +7,14 @@
 
 namespace mathktn {
 
-static const Fraction ZERO(0);
-static const Fraction ONE(1);
+const Fraction Fraction::ZERO(0);
+const Fraction Fraction::ONE(1);
 
 Fraction::Fraction() : s_(true), n_(0), d_(1) {
+
+}
+
+Fraction::Fraction(const ULong& a, bool s) : s_(s), n_(a), d_(1) {
 
 }
 
@@ -22,10 +26,6 @@ Fraction::Fraction(BitSize a) : d_(1) {
 		s_ = true;
 		n_ = ULong(a);
 	}
-}
-
-Fraction::Fraction(const ULong& a, bool s) : s_(s), n_(a), d_(1) {
-
 }
 
 Fraction::Fraction(const ULong& a, const ULong& b, bool s) : s_(s) {
@@ -40,10 +40,6 @@ Fraction::Fraction(const Fraction& f) {
 	s_ = f.s_;
 	n_ = f.n_;
 	d_ = f.d_;
-}
-
-Fraction::~Fraction() {
-
 }
 
 inline void Fraction::cancel() {
@@ -215,6 +211,71 @@ bool Fraction::operator>=(const Fraction& b) const {
 }
 
 bool Fraction::operator<=(const Fraction& b) const {
+	return cmp(b) <= 0;
+}
+
+
+Fraction Fraction::operator+(BitSize b) const {
+	return *this + Fraction(b);
+}
+
+Fraction Fraction::operator-(BitSize b) const {
+	return *this - Fraction(b);
+}
+
+Fraction Fraction::operator*(BitSize b) const {
+	return *this * Fraction(b);
+}
+
+Fraction Fraction::operator/(BitSize b) const {
+	return *this / Fraction(b);
+}
+
+Fraction& Fraction::operator+=(BitSize b) {
+	*this = *this + b;
+	return *this;
+}
+
+Fraction& Fraction::operator-=(BitSize b) {
+	*this = *this - b;
+	return *this;
+}
+
+Fraction& Fraction::operator*=(BitSize b) {
+	*this = *this * b;
+	return *this;
+}
+
+Fraction& Fraction::operator/=(BitSize b) {
+	*this = *this / b;
+	return *this;
+}
+
+int Fraction::cmp(BitSize b) const {
+	return cmp(Fraction(b));
+}
+
+bool Fraction::operator==(BitSize b) const {
+	return cmp(b) == 0;
+}
+
+bool Fraction::operator!=(BitSize b) const {
+	return cmp(b) != 0;
+}
+
+bool Fraction::operator>(BitSize b) const {
+	return cmp(b) > 0;
+}
+
+bool Fraction::operator<(BitSize b) const {
+	return cmp(b) < 0;
+}
+
+bool Fraction::operator>=(BitSize b) const {
+	return cmp(b) >= 0;
+}
+
+bool Fraction::operator<=(BitSize b) const {
 	return cmp(b) <= 0;
 }
 
