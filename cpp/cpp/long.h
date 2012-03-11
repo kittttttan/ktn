@@ -10,6 +10,13 @@ class Long {
 friend std::ostream& operator<<(std::ostream& os, Long l);
 
 public:
+	Long() : u_(), s_(true) {}
+	Long(const Long& l);
+	explicit Long(BitSize a);
+	explicit Long(const ULong& u, bool s=true) : u_(u), s_(s) {}
+	explicit Long(const char *s, int base);
+	~Long() {}
+
 	static const Long ZERO;
 	static const Long ONE;
 
@@ -21,13 +28,6 @@ public:
 	void debug();
 	int cmp(const Long& b) const;
 	int cmp(BitSize b) const;
-
-	Long();
-	Long(const Long& l);
-	explicit Long(BitSize a);
-	explicit Long(const ULong& u, bool s=true);
-	explicit Long(const char *s, int base);
-	~Long();
 
 	bool operator!() const;
 	Long operator+() const;

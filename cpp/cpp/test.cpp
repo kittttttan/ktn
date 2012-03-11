@@ -140,7 +140,7 @@ int main(int argc, char** argv) {
 
 	//fib<ULong>(77).out();
 	//fact<ULong>(77).out();
-	//pi(200).out();
+	//pi(2000).out();
 	//kTest();
 
 	printf("%ld ms\n", clock() - t);

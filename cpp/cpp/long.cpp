@@ -10,18 +10,6 @@ namespace mathktn {
 const Long Long::ZERO(0);
 const Long Long::ONE(1);
 
-Long::Long() : u_(), s_(true) {
-
-}
-
-Long::~Long() {
-
-}
-
-Long::Long(const ULong& u, bool s) : u_(u), s_(s) {
-
-}
-
 Long::Long(const Long& l) {
 	if (this == &l) { return; }
 	s_ = l.s_;

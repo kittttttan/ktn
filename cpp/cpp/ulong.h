@@ -11,6 +11,12 @@ class ULong {
 friend std::ostream& operator<<(std::ostream& os, ULong l);
 
 public:
+	explicit ULong() : l_(0), d_(NULL) {}
+	explicit ULong(BitSize u);
+	ULong(const ULong& l);
+	explicit ULong(const char *s, int base);
+	~ULong() { delete [] d_; }
+
 	static const ULong ZERO;
 	static const ULong ONE;
 
@@ -31,12 +37,6 @@ public:
 	BitSize bitLength() const;
 	int cmp(const ULong& b) const;
 	int cmp(BitSize b) const;
-
-	explicit ULong();
-	explicit ULong(BitSize u);
-	ULong(const ULong& l);
-	explicit ULong(const char *s, int base);
-	~ULong();
 
 	bool operator!() const;
 	ULong operator+() const;

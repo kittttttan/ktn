@@ -10,6 +10,15 @@ class Fraction {
 friend std::ostream& operator<<(std::ostream& os, Fraction f);
 
 public:
+	explicit Fraction() : s_(true), n_(0), d_(1) {}
+	explicit Fraction(BitSize a);
+	explicit Fraction(BitSize a, BitSize b);
+	Fraction(const Fraction& f);
+	explicit Fraction(const ULong& a, bool s=true) : s_(s), n_(a), d_(1) {}
+	explicit Fraction(const ULong& a, const ULong& b,bool s=true);
+	explicit Fraction(const char *s, int base);
+	~Fraction(){}
+
 	static const Fraction ZERO;
 	static const Fraction ONE;
 
@@ -22,15 +31,6 @@ public:
 	void out(int base=10, bool br=true);
 	int cmp(const Fraction& b) const;
 	int cmp(BitSize b) const;
-
-	explicit Fraction();
-	explicit Fraction(BitSize a);
-	explicit Fraction(BitSize a, BitSize b);
-	Fraction(const Fraction& f);
-	explicit Fraction(const ULong& a, bool s=true);
-	explicit Fraction(const ULong& a, const ULong& b,bool s=true);
-	explicit Fraction(const char *s, int base);
-	~Fraction(){}
 
 	bool operator!() const;
 	Fraction operator+() const;

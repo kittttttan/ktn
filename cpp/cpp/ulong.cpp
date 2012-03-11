@@ -7,28 +7,19 @@
 
 #include "ulong.h"
 
-#define SHIFT_BIT			(16)
-#define MASK				(0xffff)
+namespace mathktn {
+
 #define OUTPUT_FORMAT		"%lld"
 #define OUTPUT_FORMAT_B		"%04x"
 
-namespace mathktn {
+static const int SHIFT_BIT	= 16;
+static const int MASK		= 0xffff;
 
 const ULong ULong::ZERO(0);
 const ULong ULong::ONE(1);
 
 inline int getStringLength(int l) {
 	return l * 241 / 50 + 2;
-}
-
-ULong::ULong() : l_(0), d_(NULL) {
-
-}
-
-ULong::~ULong() {
-	if (d_) {
-		delete [] d_;
-	}
 }
 
 ULong::ULong(const ULong& l) {
@@ -105,6 +96,7 @@ void ULong::alloc(int length, bool zero) {
 	}
 	if (l_ != length) {
 		l_ = length;
+		delete [] d_;
 		d_ = new BitSize[l_];
 	}
 	if (!zero) { return; }
@@ -146,6 +138,7 @@ ULong ULong::operator++(int) {
 ULong& ULong::operator=(const ULong& b) {
 	if (this == &b) { return *this; }
 	if (l_ < b.l_) {
+		delete [] d_;
 		d_ = new BitSize[b.l_];
 		if (!d_) {
 			l_ = 0;
@@ -308,7 +301,6 @@ void ULong::out(int base, bool br) {
 		while (j--) {
 			t = (d_[i] >> j) & 1;
 			if (f) {
-				//printf("%d", t);
 				printf(OUTPUT_FORMAT, t);
 			} else if (t) {
 				printf(OUTPUT_FORMAT, t);
@@ -356,9 +348,10 @@ int ULong::cmp(const ULong& b) const {
 	int al = l_;
 	if (al < b.l_) { return -1; }
 	if (al > b.l_) { return 1; }
+	if (al == 0) { return 0; }
 	do { --al; } while (al && d_[al] == b.d_[al]);
-	if (al == 0 && d_[0] == b.d_[0] ) { return 0; }
-	return d_[al] > b.d_[al] ? 1 : -1;
+	return d_[al] > b.d_[al] ? 1 :
+			d_[al] < b.d_[al] ? -1 : 0;
 }
 
 ULong ULong::operator+(const ULong& b) const {

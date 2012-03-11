@@ -10,14 +10,6 @@ namespace mathktn {
 const Fraction Fraction::ZERO(0);
 const Fraction Fraction::ONE(1);
 
-Fraction::Fraction() : s_(true), n_(0), d_(1) {
-
-}
-
-Fraction::Fraction(const ULong& a, bool s) : s_(s), n_(a), d_(1) {
-
-}
-
 Fraction::Fraction(BitSize a) : d_(1) {
 	if (a < 0) {
 		s_ = false;
