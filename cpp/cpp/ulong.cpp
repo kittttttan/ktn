@@ -50,8 +50,7 @@ ULong::ULong(const char *s, int base) {
 		return;
 	}
 
-	int length = strlen(s);
-	int len = length + 1 - index;
+	int len = strlen(s) + 1 - index;
 	if (base == 8) {
 		len *= 3;
 	} else {
@@ -78,7 +77,7 @@ ULong::ULong(const char *s, int base) {
 				d_[i] = n & MASK;
 				n >>= SHIFT_BIT;
 			}
-			if (n) {
+			if (n != 0) {
 				++bl;
 			} else {
 				break;
@@ -119,7 +118,7 @@ ULong& ULong::operator++() {
 }
 
 ULong ULong::operator--(int) {
-	ULong tmp(*this);
+	const ULong tmp(*this);
 	--*this;
 	return tmp;
 }
@@ -130,7 +129,7 @@ ULong& ULong::operator--() {
 }
 
 ULong ULong::operator++(int) {
-	ULong tmp(*this);
+	const ULong tmp(*this);
 	++*this;
 	return tmp;
 }
@@ -248,7 +247,8 @@ void ULong::cstr(char *s, int base) {
 		return;
 	}
 
-	int j, hbase;
+	int j;
+	int hbase;
 	if (base == 8) {
 		j = (i << 4) + 2;
 		hbase = 0x1000;
@@ -355,7 +355,7 @@ int ULong::cmp(const ULong& b) const {
 }
 
 ULong ULong::operator+(const ULong& b) const {
-	if (!b) { return *this; }
+	if (b == ZERO) { return *this; }
 	if (l_ < b.l_) { return b + *this; }
 	ULong z;
 	z.alloc(l_ + 1, false);
@@ -380,7 +380,7 @@ ULong ULong::operator+(const ULong& b) const {
 }
 
 ULong ULong::operator-(const ULong& b) const {
-	if (!b) { return *this; }
+	if (b == ZERO) { return *this; }
 	ULong z;
 	z.alloc(l_, false);
 	int i = 0;
@@ -408,14 +408,15 @@ ULong ULong::operator-(const ULong& b) const {
 }
 
 ULong ULong::operator<<(BitSize n) const {
-	int d = static_cast<int>(n / SHIFT_BIT);
+	const int d = static_cast<int>(n / SHIFT_BIT);
 	ULong c;
 	c.alloc(l_ + d + 1, false);
 	for (int i = 0; i < d; ++i) { c.d_[i] = 0; }
-	BitSize b = n % SHIFT_BIT, carry = 0;
+	const BitSize b = n % SHIFT_BIT;
+	BitSize carry = 0;
 	int i = 0;
-	for (BitSize t = 0; i < l_; ++i) {
-		t = (d_[i] << b) + carry;
+	for (; i < l_; ++i) {
+		const BitSize t = (d_[i] << b) + carry;
 		c.d_[i + d] = t & MASK;
 		carry = t >> SHIFT_BIT;
 	}
@@ -425,13 +426,13 @@ ULong ULong::operator<<(BitSize n) const {
 }
 
 ULong ULong::operator>>(BitSize n) const {
-	int d = static_cast<int>(n / SHIFT_BIT);
+	const int d = static_cast<int>(n / SHIFT_BIT);
 	if (l_ <= d) { return ZERO; }
 	ULong c;
 	c.alloc(l_ - d, false);
-	BitSize b = n % SHIFT_BIT;
+	const BitSize b = n % SHIFT_BIT;
 	int i = 0;
-	for (BitSize mask = (1 << b) - 1; i < l_ - d - 1; ++i) {
+	for (const BitSize mask = (1 << b) - 1; i < l_ - d - 1; ++i) {
 		c.d_[i] = ((d_[i + d + 1] & mask) << (SHIFT_BIT - b)) + (d_[i + d] >> b);
 	}
 	c.d_[i] = d_[i + d] >> b;
@@ -506,9 +507,10 @@ inline BitSize ULong::bitLength() const {
  * multiple with karatsuba method
  */
 ULong ULong::karatsuba(const ULong& u) const {
-	if (!u) { return ZERO; }
+	if (u == ZERO) { return ZERO; }
+	if (u == ONE) { return *this; }
 	BitSize N = bitLength();
-	BitSize l = u.bitLength();
+	const BitSize l = u.bitLength();
 	if (N < l) { N = l; }
 	if (N < 2000) { return *this * u; }
 
@@ -526,7 +528,8 @@ ULong ULong::karatsuba(const ULong& u) const {
 }
 
 ULong ULong::operator*(const ULong& b) const {
-	if (!b) { return ZERO; }
+	if (b == ZERO) { return ZERO; }
+	if (b == ONE) { return *this; }
 	ULong z;
 	z.alloc(l_ + b.l_, true);
 
@@ -584,7 +587,7 @@ ULong ULong::gcdBin(const ULong& b) const {
 		g <<= 1;
 	}
 
-	while (!!x) {
+	while (x != 0) {
 		while ((x.d_[0] & 1) == 0) {
 			x >>= 1;
 		}
@@ -608,19 +611,24 @@ ULong ULong::gcdBin(const ULong& b) const {
  * @return modulus if mod is true, else division
  */
 ULong ULong::divmod(const ULong& b, bool mod) const {
-	if (!b) {
+	if (b == ZERO) {
 		fprintf(stderr, "ZeroDivision: ULong::divmod");
-		return ULong();
+		return ZERO;
+	}
+	if (b == ONE) {
+		if (mod) { return ZERO; }
+		return *this;
 	}
 
-	bool albl = l_ == b.l_;
+	const bool albl = l_ == b.l_;
 	if (l_ < b.l_ || (albl && d_[l_ - 1] < b.d_[b.l_ - 1])) {
-		if (mod) { return ULong(*this); }
+		if (mod) { return *this; }
 		return ZERO;
 	}
 
 	if (b.l_ == 1) {
-		BitSize dd = b.d_[0], t = 0;
+		const BitSize dd = b.d_[0];
+		BitSize t = 0;
 		ULong z(*this);
 		int i = l_;
 		while (i--) {
@@ -635,10 +643,10 @@ ULong ULong::divmod(const ULong& b, bool mod) const {
 		return z;
 	}
 
-	ULong bb(b);
+	const ULong bb(b);
 	ULong z;
 	z.alloc(albl ? l_ + 2 : l_ + 1, true);
-	BitSize dd = (MASK + 1) / (b.d_[b.l_ - 1] + 1) & MASK;
+	const BitSize dd = (MASK + 1) / (b.d_[b.l_ - 1] + 1) & MASK;
 	
 	if (dd == 1) {
 		int j = l_;
@@ -671,13 +679,13 @@ ULong ULong::divmod(const ULong& b, bool mod) const {
 			q = ((z.d_[j] << SHIFT_BIT) + z.d_[j - 1]) / bb.d_[bb.l_ - 1] & MASK;
 		}
 
-		if (q) {
+		if (q != 0) {
 			int i = 0;
 			BitSize num = 0;
 			BitSize t = 0;
 			do {
 				t += bb.d_[i] * q;
-				BitSize ee = (t & MASK) - num;
+				const BitSize ee = (t & MASK) - num;
 				num = z.d_[j - bb.l_ + i] - ee;
 				if (ee) {
 					z.d_[j - bb.l_ + i] = num & MASK;
@@ -687,13 +695,13 @@ ULong ULong::divmod(const ULong& b, bool mod) const {
 			} while (++i < bb.l_);
 
 			num += z.d_[j - bb.l_ + i] - t;
-			while (num) {
+			while (num != 0) {
 				i = 0;
 				num = 0;
 				--q;
 
 				do {
-					BitSize ee = num + bb.d_[i];
+					const BitSize ee = num + bb.d_[i];
 					num = z.d_[j - bb.l_ + i] + ee;
 					if (ee) { z.d_[j - bb.l_ + i] = num & MASK; }
 					num >>= SHIFT_BIT;
@@ -708,7 +716,7 @@ ULong ULong::divmod(const ULong& b, bool mod) const {
 
 	ULong div(z);
 	if (mod) {
-		if (dd) {
+		if (dd != 0) {
 			BitSize t = 0;
 			int i = bb.l_;
 			while (i--) {

@@ -121,7 +121,7 @@ Long Long::operator+(const Long& a) const {
 	if (s_ == a.s_) {
 		return Long(u_ + a.u_, s_);
 	}
-	if (u_.cmp(a.u_) < 0) {
+	if (u_ < a.u_) {
 		return Long(a.u_ - u_, a.s_);
 	}
 	return Long(u_ - a.u_, s_);
@@ -131,7 +131,7 @@ Long Long::operator-(const Long& a) const {
 	if (s_ != a.s_) {
 		return Long(u_ + a.u_, s_);
 	}
-	if (u_.cmp(a.u_) < 0) {
+	if (u_ < a.u_) {
 		return Long(a.u_ - u_, !a.s_);
 	}
 	return Long(u_ - a.u_, s_);

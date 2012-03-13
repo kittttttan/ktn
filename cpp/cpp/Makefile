@@ -17,4 +17,4 @@ clean:
 ulong.o: ulong.h
 long.o: long.h
 fraction.o: ulong.h
-test.o: long.h fraction.h
+test.o: long.h fraction.h complex.h

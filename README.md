@@ -12,3 +12,5 @@
 tested on Visual C++ 2010 Express
 
 * long.cpp
+* fraction.cpp
+* complex.h

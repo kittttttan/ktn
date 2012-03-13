@@ -108,14 +108,14 @@ Fraction Fraction::operator--(int) {
 
 Fraction Fraction::operator+(const Fraction& b) const {
 	if (s_ == b.s_) { return Fraction(n_ * b.d_ + d_ * b.n_, d_ * b.d_, s_); }
-	ULong m(n_ * b.d_), n(d_ * b.n_);
+	const ULong m(n_ * b.d_), n(d_ * b.n_);
 	if (m < n) { return Fraction(n - m, d_ * b.d_, b.s_); }
 	return Fraction(m - n, d_ * b.d_, s_);
 }
 
 Fraction Fraction::operator-(const Fraction& b) const {
 	if (s_ != b.s_) { return Fraction(n_ * b.d_ + d_ * b.n_, d_ * b.d_, s_); }
-	ULong m(n_ * b.d_), n(d_ * b.n_);
+	const ULong m(n_ * b.d_), n(d_ * b.n_);
 	if (m < n) { return Fraction(n - m, d_ * b.d_, !b.s_); }
 	return Fraction(m - n, d_ * b.d_, s_);
 }

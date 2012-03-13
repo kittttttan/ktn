@@ -5,6 +5,7 @@
 #include "long.h"
 #include "fraction.h"
 #include "math.h"
+#include "complex.h"
 
 using namespace std;
 using namespace mathktn;
@@ -130,6 +131,25 @@ void kTest() {
 	printf("%d\nk: %ldms\n*: %ldms\n", c == d, t2 - t1, t1 - t);
 }
 
+void compBasic() {
+	Complex<double> a(1,2), b(3,-4);
+	puts("** Complex<double> **");
+	printf("a = "); a.out();
+	printf("b = "); b.out();
+	printf("a + b = "); (a+b).out();
+	printf("a - b = "); (a-b).out();
+	printf("a * b = "); (a*b).out();
+	printf("a / b = "); (a/b).out();
+
+	Complex<Long> c(Long(10000), Long(77777)), d(Long(14235),Long(-4156123));
+	puts("** Complex<Long> **");
+	printf("c = "); c.out();
+	printf("d = "); d.out();
+	printf("c + d = "); (c+d).out();
+	printf("c - d = "); (c-d).out();
+	printf("c * d = "); (c*d).out();
+}
+
 int main(int argc, char** argv) {
 	srand(static_cast<unsigned int>(time(NULL)));
 	clock_t t = clock();
@@ -137,6 +157,7 @@ int main(int argc, char** argv) {
 	ulongBasic();
 	longBasic();
 	fractionBasic();
+	compBasic();
 
 	//fib<ULong>(77).out();
 	//fact<ULong>(77).out();
