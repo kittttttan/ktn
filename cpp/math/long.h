@@ -5,7 +5,7 @@
 #include <iostream>
 #include "ulong.h"
 
-namespace mathktn {
+namespace ktn { namespace math {
 class Long {
 friend std::ostream& operator<<(std::ostream& os, Long l);
 
@@ -84,5 +84,5 @@ private:
 	ULong u_;
 	bool s_;
 };
-} // namespace mathktn
+}} // namespace ktn math
 #endif // MATHKTN_LONG_H_

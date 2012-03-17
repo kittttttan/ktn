@@ -4,7 +4,7 @@
 #include <string>
 #include <iostream>
 
-namespace mathktn {
+namespace ktn { namespace math {
 typedef long long BitSize;
 
 class ULong {
@@ -95,5 +95,5 @@ private:
 	int l_;
 	BitSize* d_;
 };
-} // namespace mathktn
+}} // namespace ktn math
 #endif // MATHKTN_ULONG_H_

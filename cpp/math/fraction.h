@@ -5,7 +5,7 @@
 #include <iostream>
 #include "ulong.h"
 
-namespace mathktn {
+namespace ktn { namespace math {
 class Fraction {
 friend std::ostream& operator<<(std::ostream& os, Fraction f);
 
@@ -86,5 +86,5 @@ private:
 	ULong n_;
 	ULong d_;
 };
-} // namespace mathktn
+}} // namespace ktn math
 #endif // FRACTION_H_

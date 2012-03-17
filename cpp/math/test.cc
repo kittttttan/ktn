@@ -8,7 +8,7 @@
 #include "complex.h"
 
 using namespace std;
-using namespace mathktn;
+using namespace ktn::math;
 
 void ulongBasic() {
 	ULong a = ULong::random(4), b(100000);

@@ -1,6 +1,6 @@
 CXX = g++ #clang++
 CFLAGS = -g -Wall -O2
-TARGET = test.exe
+TARGET = test
 OBJS = test.o ulong.o long.o fraction.o
 
 all: $(TARGET)
@@ -11,7 +11,7 @@ $(TARGET): $(OBJS)
 clean:
 	-$(RM) $(TARGET) $(OBJS)
 
-.cpp.o:
+.cc.o:
 	$(CXX) $(CFLAGS) -c $<
 
 ulong.o: ulong.h

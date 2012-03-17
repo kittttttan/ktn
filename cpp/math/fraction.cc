@@ -5,7 +5,7 @@
 
 #include "fraction.h"
 
-namespace mathktn {
+namespace ktn { namespace math {
 
 const Fraction Fraction::ZERO(0);
 const Fraction Fraction::ONE(1);
@@ -271,4 +271,4 @@ bool Fraction::operator<=(BitSize b) const {
 	return cmp(b) <= 0;
 }
 
-} // namespace mathktn
+}} // namespace ktn math

@@ -1,5 +1,5 @@
-# mathktn - Mathematics Libraries
-<https://github.com/kittttttan/mathktn>
+# ktn
+<https://github.com/kittttttan/ktn>
 
 ## JavaScript
 
@@ -11,6 +11,10 @@
 
 tested on Visual C++ 2010 Express
 
-* long.cpp
-* fraction.cpp
+* string.cc
+
+### math
+
+* long.cc
+* fraction.cc
 * complex.h

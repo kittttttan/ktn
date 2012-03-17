@@ -5,7 +5,7 @@
 
 #include "long.h"
 
-namespace mathktn {
+namespace ktn { namespace math {
 
 const Long Long::ZERO(0);
 const Long Long::ONE(1);
@@ -289,4 +289,4 @@ bool Long::operator>=(BitSize b) const {
 bool Long::operator<=(BitSize b) const {
 	return cmp(b) <= 0;
 }
-} // namespace mathktn
+}} // namespace ktn math

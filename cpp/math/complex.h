@@ -36,7 +36,9 @@ public:
 	Complex<T>& operator-=(const Complex<T>& b);
 	Complex<T>& operator*=(const Complex<T>& b);
 	Complex<T>& operator/=(const Complex<T>& b);
-	Complex<T>& operator%=(const Complex<T>& b);
+
+	bool operator==(const Complex<T>& b) const;
+	bool operator!=(const Complex<T>& b) const;
 
 private:
 	T r_;
@@ -89,7 +91,7 @@ Complex<T>& Complex<T>::operator++() {
 
 template<class T>
 Complex<T> Complex<T>::operator--(int) {
-	const ULong tmp(*this);
+	const Complex<T> tmp(*this);
 	--*this;
 	return tmp;
 }
@@ -102,7 +104,7 @@ Complex<T>& Complex<T>::operator--() {
 
 template<class T>
 Complex<T> Complex<T>::operator++(int) {
-	const ULong tmp(*this);
+	const Complex<T> tmp(*this);
 	++*this;
 	return tmp;
 }
@@ -159,6 +161,16 @@ template<class T>
 Complex<T>& Complex<T>::operator/=(const Complex<T>& b) {
 	*this = *this / b;
 	return *this;
+}
+
+template<class T>
+bool Complex<T>::operator==(const Complex<T>& b) const {
+	return r_ == b.r_ && i_ == b.i_;
+}
+
+template<class T>
+bool Complex<T>::operator!=(const Complex<T>& b) const {
+	return r_ != b.r_ || i_ != b.i_;
 }
 
 #endif // COMPLEX_H_

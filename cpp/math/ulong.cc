@@ -7,9 +7,13 @@
 
 #include "ulong.h"
 
-namespace mathktn {
+namespace ktn { namespace math {
 
+#ifdef _WIN32
+#define OUTPUT_FORMAT		"%I64d"
+#else
 #define OUTPUT_FORMAT		"%lld"
+#endif
 #define OUTPUT_FORMAT_B		"%04x"
 
 static const int SHIFT_BIT	= 16;
@@ -105,7 +109,7 @@ void ULong::alloc(int length, bool zero) {
 }
 
 bool ULong::operator!() const {
-	return l_ < 1 || l_ == 1 && d_[0] == 0;
+	return l_ < 1 || (l_ == 1 && d_[0] == 0);
 }
 
 ULong ULong::operator+() const {
@@ -878,4 +882,4 @@ bool ULong::operator>=(BitSize b) const {
 bool ULong::operator<=(BitSize b) const {
 	return cmp(b) <= 0;
 }
-} // namespace mathktn
+}} // namespace ktn math

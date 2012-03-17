@@ -1,7 +1,7 @@
 #ifndef MATHKTN_MATH_H_
 #define MATHKTN_MATH_H_
 
-namespace mathktn {
+namespace ktn { namespace math {
 
 template <typename Integer>
 inline Integer gcd(Integer A, Integer B) {
@@ -50,5 +50,5 @@ inline Integer lcm(const Integer& A, const Integer& B) {
    return ret;
 }
 
-} // namespace mathktn
+}} // namespace ktn math
 #endif // MATHKTN_MATH_H_
