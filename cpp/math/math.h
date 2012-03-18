@@ -1,6 +1,11 @@
 #ifndef MATHKTN_MATH_H_
 #define MATHKTN_MATH_H_
 
+/**
+ * @file  math/math.h
+ * @brief general math functions
+ */
+
 namespace ktn { namespace math {
 
 template <typename Integer>

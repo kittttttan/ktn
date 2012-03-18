@@ -1,13 +1,24 @@
 #ifndef MATHKTN_LONG_H_
 #define MATHKTN_LONG_H_
 
+/**
+ * @file  math/long.h
+ * @brief Long
+ */
+
 #include <string>
 #include <iostream>
 #include "ulong.h"
 
 namespace ktn { namespace math {
+
+/**
+ * @brief Signed BigInteger.
+ */
 class Long {
-friend std::ostream& operator<<(std::ostream& os, Long l);
+
+friend std::ostream& operator<<(std::ostream& os, const Long& l);
+//friend std::istream& operator>>(std::istream &is, Long& l);
 
 public:
 	Long() : u_(), s_(true) {}
@@ -22,10 +33,10 @@ public:
 
 	bool sign() { return s_; }
 
-	void out(int base=10);
-	void cstr(char *s, int base=10);
-	std::string str(int base=10);
-	void debug();
+	void out(int base=10) const;
+	void cstr(char *s, int base=10) const;
+	std::string str(int base=10) const;
+	void debug() const;
 	int cmp(const Long& b) const;
 	int cmp(BitSize b) const;
 
@@ -82,7 +93,7 @@ public:
 
 private:
 	ULong u_;
-	bool s_;
+	bool s_;	/**< sign */
 };
 }} // namespace ktn math
 #endif // MATHKTN_LONG_H_

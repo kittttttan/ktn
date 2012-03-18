@@ -1,3 +1,8 @@
+/**
+ * @file  string.cc
+ * @brief String
+ */
+
 #include <stdio.h>
 #include <locale.h>
 
@@ -62,7 +67,7 @@ String& String::operator=(const String& s) {
 	return *this;
 }
 
-void String::out() {
+void String::out() const {
 	if (length_ == 0 || string_ == nullptr) {
 		puts("");
 		return;
@@ -70,12 +75,24 @@ void String::out() {
 	_tprintf(_T("%s\n"), string_);
 }
 
+std::_tostream& operator<<(std::_tostream& os, const String& s) {
+	return os << s.string_;
+}
+/*
+std::_tistream& operator<<(std::_tistream& is, String& s) {
+	return is;
+}*/
+
 TCHAR& String::operator[](int index) {
 	if (index < 0) {
 		index += length_;
 	}
 	if (index > length_) {
-		throw "RangeError";
+		fprintf(stderr, "Warn: index is too large. %s:%d:\n", __FILE__, __LINE__);
+		index = length_ - 1;
+	} else if (index < 0) {
+		fprintf(stderr, "Warn: index is too small. %s:%d:\n", __FILE__, __LINE__);
+		index = 0;
 	}
 	return string_[index];
 }
@@ -307,6 +324,39 @@ String String::operator*(int times) const {
 	w[length] = _T('\0');
 
 	return String(w, length);
+}
+
+String& String::operator+=(const String& b) {
+	*this = *this + b;
+	return *this;
+}
+
+String& String::operator-=(const TCHAR c) {
+	*this = *this - c;
+	return *this;
+}
+
+String& String::operator*=(int times) {
+	*this = *this * times;
+	return *this;
+}
+
+bool String::operator==(const String& s) const {
+	if (this == &s) { return true; }
+	if (length_ != s.length_) { return false; }
+	for (int i = 0; i < length_; ++i) {
+		if (string_[i] != s.string_[i]) { return false; }
+	}
+	return true;
+}
+
+bool String::operator!=(const String& s) const {
+	if (this == &s) { return false; }
+	if (length_ != s.length_) { return true; }
+	for (int i = 0; i < length_; ++i) {
+		if (string_[i] != s.string_[i]) { return true; }
+	}
+	return false;
 }
 
 } // namespace ktn

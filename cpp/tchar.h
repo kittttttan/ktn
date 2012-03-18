@@ -1,5 +1,8 @@
 /* 
  * tchar.h
+ * This file has no copyright assigned and is placed in the Public Domain.
+ * This file is a part of the mingw-runtime package.
+ * No warranty is given; refer to the file DISCLAIMER within the package.
  *
  * Unicode mapping layer for the standard C library. By including this
  * file and using the 't' names for string functions
@@ -14,29 +17,13 @@
  * the convention of prepending an underscore to non-ANSI library function
  * names).
  *
- * This file is part of the Mingw32 package.
- *
- * Contributors:
- *  Created by Colin Peters <colin@bird.fu.is.saga-u.ac.jp>
- *
- *  THIS SOFTWARE IS NOT COPYRIGHTED
- *
- *  This source code is offered for use in the public domain. You may
- *  use, modify or distribute it freely.
- *
- *  This code is distributed in the hope that it will be useful but
- *  WITHOUT ANY WARRANTY. ALL WARRANTIES, EXPRESS OR IMPLIED ARE HEREBY
- *  DISCLAMED. This includes but is not limited to warranties of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- *
- * $Revision: 1.1.1.3 $
- * $Author: khan $
- * $Date: 1998/02/04 20:03:07 $
- *
  */
 
 #ifndef	_TCHAR_H_
 #define _TCHAR_H_
+
+/* All the headers include this file. */
+//#include <_mingw.h>
 
 /*
  * NOTE: This tests _UNICODE, which is different from the UNICODE define
@@ -44,6 +31,10 @@
  */
 #ifdef	_UNICODE
 
+/*
+ * Include <wchar.h> for wchar_t and WEOF if _UNICODE.
+ */
+#include <wchar.h>
 
 /*
  * Use TCHAR instead of char or wchar_t. It will be appropriately translated
@@ -52,25 +43,36 @@
 #ifndef _TCHAR_DEFINED
 #ifndef RC_INVOKED
 typedef	wchar_t	TCHAR;
+typedef wchar_t _TCHAR;
 #endif	/* Not RC_INVOKED */
 #define _TCHAR_DEFINED
 #endif
 
+/*
+ * Use _TEOF instead of EOF or WEOF. It will be appropriately translated if
+ * _UNICODE is correctly defined (or not).
+ */
+#define _TEOF WEOF
 
 /*
- * Enclose constant strings and literal characters in the _TEXT macro to make
- * them unicode constant strings when _UNICODE is defined.
+ * __TEXT is a private macro whose specific use is to force the expansion of a
+ * macro passed as an argument to the macros _T or _TEXT.  DO NOT use this
+ * macro within your programs.  It's name and function could change without
+ * notice.
  */
-#define	_TEXT(x)	L ## x
+#define	__TEXT(q)	L##q
 
-#ifndef	_T
-#define	_T(x)		L ## x
+/*  for porting from other Windows compilers */
+#if 0  /* no  wide startup module */
+#define _tmain      wmain
+#define _tWinMain   wWinMain
+#define _tenviron   _wenviron
+#define __targv     __wargv
 #endif
 
 /*
  * Unicode functions
  */
-
 #define	_tprintf	wprintf
 #define	_ftprintf	fwprintf
 #define	_stprintf	swprintf
@@ -79,6 +81,7 @@ typedef	wchar_t	TCHAR;
 #define	_vftprintf	vfwprintf
 #define _vstprintf	vswprintf
 #define	_vsntprintf	_vsnwprintf
+#define	_vsctprintf	_vscwprintf
 #define	_tscanf		wscanf
 #define	_ftscanf	fwscanf
 #define	_stscanf	swscanf
@@ -89,9 +92,10 @@ typedef	wchar_t	TCHAR;
 #define	_fputtchar	_fputwchar
 #define	_fputts		fputws
 #define	_gettc		getwc
-#define	_getts		getws
+#define	_getts		_getws
 #define	_puttc		putwc
-#define	_putts		putws
+#define _puttchar       putwchar
+#define	_putts		_putws
 #define	_ungettc	ungetwc
 #define	_tcstod		wcstod
 #define	_tcstol		wcstol
@@ -140,14 +144,116 @@ typedef	wchar_t	TCHAR;
 #define	_istascii	iswascii
 #define _totupper	towupper
 #define	_totlower	towlower
+#define _tcsftime	wcsftime
+/* Macro functions */ 
+#define _tcsdec     _wcsdec
+#define _tcsinc     _wcsinc
+#define _tcsnbcnt   _wcsncnt
+#define _tcsnccnt   _wcsncnt
+#define _tcsnextc   _wcsnextc
+#define _tcsninc    _wcsninc
+#define _tcsspnp    _wcsspnp
+#define _wcsdec(_wcs1, _wcs2) ((_wcs1)>=(_wcs2) ? NULL : (_wcs2)-1)
+#define _wcsinc(_wcs)  ((_wcs)+1)
+#define _wcsnextc(_wcs) ((unsigned int) *(_wcs))
+#define _wcsninc(_wcs, _inc) (((_wcs)+(_inc)))
+#define _wcsncnt(_wcs, _cnt) ((wcslen(_wcs)>_cnt) ? _count : wcslen(_wcs))
+#define _wcsspnp(_wcs1, _wcs2) ((*((_wcs1)+wcsspn(_wcs1,_wcs2))) ? ((_wcs1)+wcsspn(_wcs1,_wcs2)) : NULL)
+
+#if 1  /* defined __MSVCRT__ */
+/*
+ *   These wide functions not in crtdll.dll.
+ *   Define macros anyway so that _wfoo rather than _tfoo is undefined
+ */
+#define _ttoi64     _wtoi64
+#define _i64tot     _i64tow
+#define _ui64tot    _ui64tow
 #define	_tasctime	_wasctime
 #define	_tctime		_wctime
+#if __MSVCRT_VERSION__ >= 0x0800
+#define	_tctime32	_wctime32
+#define	_tctime64	_wctime64
+#endif /* __MSVCRT_VERSION__ >= 0x0800 */
 #define	_tstrdate	_wstrdate
 #define	_tstrtime	_wstrtime
 #define	_tutime		_wutime
-#define _tcsftime	wcsftime
-#define _ttoi		_wtoi
-#define _ttol		_wtol
+#if __MSVCRT_VERSION__ >= 0x0800
+#define	_tutime64	_wutime64
+#define	_tutime32	_wutime32
+#endif /* __MSVCRT_VERSION__ > 0x0800 */
+#define _tcsnccoll  _wcsncoll
+#define _tcsncoll   _wcsncoll
+#define _tcsncicoll _wcsnicoll
+#define _tcsnicoll  _wcsnicoll
+#define _taccess    _waccess
+#define _tchmod     _wchmod
+#define _tcreat     _wcreat
+#define _tfindfirst _wfindfirst
+#define _tfindnext  _wfindnext
+#if __MSVCRT_VERSION__ >= 0x0800
+#define _tfindfirst64 _wfindfirst64
+#define _tfindfirst32 _wfindfirst32
+#define _tfindnext64  _wfindnext64
+#define _tfindnext32  _wfindnext32
+#endif /* __MSVCRT_VERSION__ > 0x0800 */
+#define _tfdopen    _wfdopen
+#define _tfopen     _wfopen
+#define _tfreopen   _wfreopen
+#define _tfsopen    _wfsopen
+#define _tgetenv    _wgetenv
+#define _tputenv    _wputenv
+#define _tsearchenv _wsearchenv
+#define  _tsystem    _wsystem
+#define _tmakepath  _wmakepath
+#define _tsplitpath _wsplitpath
+#define _tfullpath  _wfullpath
+#define _tmktemp    _wmktemp
+#define _topen      _wopen
+#define _tremove    _wremove
+#define _trename    _wrename
+#define _tsopen     _wsopen
+#define _tsetlocale _wsetlocale
+#define _tunlink    _wunlink
+#define _tfinddata_t    _wfinddata_t
+#define _tfindfirsti64  _wfindfirsti64
+#define _tfindnexti64   _wfindnexti64
+#define _tfinddatai64_t _wfinddatai64_t
+#if __MSVCRT_VERSION__ >= 0x0601
+#define _tfinddata64_t    _wfinddata64_t
+#endif
+#if __MSVCRT_VERSION__ >= 0x0800
+#define _tfinddata32_t    _wfinddata32_t
+#define _tfinddata32i64_t _wfinddata32i64_t
+#define _tfinddata64i32_t _wfinddata64i32_t
+#define _tfindfirst32i64  _wfindfirst32i64
+#define _tfindfirst64i32  _wfindfirst64i32
+#define _tfindnext32i64   _wfindnext32i64
+#define _tfindnext64i32   _wfindnext64i32
+#endif /* __MSVCRT_VERSION__ > 0x0800 */
+#define _tchdir		_wchdir
+#define _tgetcwd	_wgetcwd
+#define _tgetdcwd	_wgetdcwd
+#define _tmkdir		_wmkdir
+#define _trmdir		_wrmdir
+#define _tstat		_wstat
+#define _tstati64	_wstati64
+#define _tstat64	_wstat64
+#if __MSVCRT_VERSION__ >= 0x0800
+#define _tstat32	_wstat32
+#define _tstat32i64	_wstat32i64
+#define _tstat64i32	_wstat64i32
+#endif /* __MSVCRT_VERSION__ > 0x0800 */
+#endif  /* __MSVCRT__ */
+
+/* dirent structures and functions */
+#define _tdirent	_wdirent
+#define _TDIR 		_WDIR
+#define _topendir	_wopendir
+#define _tclosedir	_wclosedir
+#define _treaddir	_wreaddir
+#define _trewinddir	_wrewinddir
+#define _ttelldir	_wtelldir
+#define _tseekdir	_wseekdir
 
 #else	/* Not _UNICODE */
 
@@ -157,18 +263,29 @@ typedef	wchar_t	TCHAR;
 #ifndef _TCHAR_DEFINED
 #ifndef RC_INVOKED
 typedef char	TCHAR;
+typedef char	_TCHAR;
 #endif
 #define _TCHAR_DEFINED
 #endif
 
 /*
- * Enclose constant strings and characters in the _TEXT macro.
+ * _TEOF, the constant you should use instead of EOF.
  */
-#define	_TEXT(x)	x
+#define _TEOF EOF
 
-#ifndef	_T
-#define	_T(x)		x
-#endif
+/*
+ * __TEXT is a private macro whose specific use is to force the expansion of a
+ * macro passed as an argument to the macros _T or _TEXT.  DO NOT use this
+ * macro within your programs.  It's name and function could change without
+ * notice.
+ */
+#define	__TEXT(q)	q
+
+/*  for porting from other Windows compilers */
+#define _tmain      main
+#define _tWinMain   WinMain
+#define _tenviron  _environ
+#define __targv     __argv
 
 /*
  * Non-unicode (standard) functions
@@ -182,6 +299,7 @@ typedef char	TCHAR;
 #define	_vftprintf	vfprintf
 #define _vstprintf	vsprintf
 #define	_vsntprintf	_vsnprintf
+#define	_vsctprintf	_vscprintf
 #define	_tscanf		scanf
 #define	_ftscanf	fscanf
 #define	_stscanf	sscanf
@@ -191,9 +309,21 @@ typedef char	TCHAR;
 #define	_fputtc		fputc
 #define	_fputtchar	_fputchar
 #define	_fputts		fputs
+#define _tfdopen	_fdopen
+#define	_tfopen		fopen
+#define _tfreopen	freopen
+#define	_tfsopen	_fsopen
+#define	_tgetenv	getenv
+#define	_tputenv	_putenv
+#define	_tsearchenv	_searchenv
+#define  _tsystem       system
+#define	_tmakepath	_makepath
+#define	_tsplitpath	_splitpath
+#define	_tfullpath	_fullpath
 #define	_gettc		getc
 #define	_getts		gets
 #define	_puttc		putc
+#define _puttchar       putchar
 #define	_putts		puts
 #define	_ungettc	ungetc
 #define	_tcstod		strtod
@@ -245,13 +375,109 @@ typedef char	TCHAR;
 #define	_totlower	tolower
 #define	_tasctime	asctime
 #define	_tctime		ctime
+#if __MSVCRT_VERSION__ >= 0x0800
+#define	_tctime32	_ctime32
+#define	_tctime64	_ctime64
+#endif /* __MSVCRT_VERSION__ >= 0x0800 */
 #define	_tstrdate	_strdate
 #define	_tstrtime	_strtime
 #define	_tutime		_utime
+#if __MSVCRT_VERSION__ >= 0x0800
+#define	_tutime64	_utime64
+#define	_tutime32	_utime32
+#endif /* __MSVCRT_VERSION__ > 0x0800 */
 #define _tcsftime	strftime
-#define _ttoi		atoi
-#define _ttol		atol
+/* Macro functions */ 
+#define _tcsdec     _strdec
+#define _tcsinc     _strinc
+#define _tcsnbcnt   _strncnt
+#define _tcsnccnt   _strncnt
+#define _tcsnextc   _strnextc
+#define _tcsninc    _strninc
+#define _tcsspnp    _strspnp
+#define _strdec(_str1, _str2) ((_str1)>=(_str2) ? NULL : (_str2)-1)
+#define _strinc(_str)  ((_str)+1)
+#define _strnextc(_str) ((unsigned int) *(_str))
+#define _strninc(_str, _inc) (((_str)+(_inc)))
+#define _strncnt(_str, _cnt) ((strlen(_str)>_cnt) ? _count : strlen(_str))
+#define _strspnp(_str1, _str2) ((*((_str1)+strspn(_str1,_str2))) ? ((_str1)+strspn(_str1,_str2)) : NULL)
+
+#define _tchmod     _chmod
+#define _tcreat     _creat
+#define _tfindfirst _findfirst
+#define _tfindnext  _findnext
+#if __MSVCRT_VERSION__ >= 0x0800
+#define _tfindfirst64 _findfirst64
+#define _tfindfirst32 _findfirst32
+#define _tfindnext64  _findnext64
+#define _tfindnext32  _findnext32
+#endif /* __MSVCRT_VERSION__ > 0x0800 */
+#define _tmktemp    _mktemp
+#define _topen      _open
+#define _taccess    _access
+#define _tremove    remove
+#define _trename    rename
+#define _tsopen     _sopen
+#define _tsetlocale setlocale
+#define _tunlink    _unlink
+#define _tfinddata_t    _finddata_t
+#define _tchdir	    _chdir
+#define _tgetcwd    _getcwd
+#define _tgetdcwd   _getdcwd
+#define _tmkdir	    _mkdir
+#define _trmdir	    _rmdir
+#define _tstat      _stat
+
+#if 1  /* defined __MSVCRT__ */
+/* Not in crtdll.dll. Define macros anyway? */
+#define _ttoi64     _atoi64
+#define _i64tot     _i64toa
+#define _ui64tot    _ui64toa
+#define _tcsnccoll  _strncoll
+#define _tcsncoll   _strncoll
+#define _tcsncicoll _strnicoll
+#define _tcsnicoll  _strnicoll
+#define _tfindfirsti64  _findfirsti64
+#define _tfindnexti64   _findnexti64
+#define _tfinddatai64_t _finddatai64_t
+#if __MSVCRT_VERSION__ >= 0x0601
+#define _tfinddata64_t    _finddata64_t
+#endif
+#if __MSVCRT_VERSION__ >= 0x0800
+#define _tfinddata32_t    _finddata32_t
+#define _tfinddata32i64_t _finddata32i64_t
+#define _tfinddata64i32_t _finddata64i32_t
+#define _tfindfirst32i64  _findfirst32i64
+#define _tfindfirst64i32  _findfirst64i32
+#define _tfindnext32i64   _findnext32i64
+#define _tfindnext64i32   _findnext64i32
+#endif /* __MSVCRT_VERSION__ > 0x0800 */
+#define _tstati64   _stati64
+#define _tstat64    _stat64
+#if __MSVCRT_VERSION__ >= 0x0800
+#define _tstat32	_stat32
+#define _tstat32i64	_stat32i64
+#define _tstat64i32	_stat64i32
+#endif /* __MSVCRT_VERSION__ > 0x0800 */
+#endif  /* __MSVCRT__ */
+
+/* dirent structures and functions */
+#define _tdirent	dirent
+#define _TDIR 		DIR
+#define _topendir	opendir
+#define _tclosedir	closedir
+#define _treaddir	readdir
+#define _trewinddir	rewinddir
+#define _ttelldir	telldir
+#define _tseekdir	seekdir
 
 #endif	/* Not _UNICODE */
+
+/*
+ * UNICODE a constant string when _UNICODE is defined else returns the string
+ * unmodified.  Also defined in w32api/winnt.h.
+ */
+#define _TEXT(x)	__TEXT(x)
+#define	_T(x)		__TEXT(x)
 
 #endif	/* Not _TCHAR_H_ */

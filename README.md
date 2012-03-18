@@ -1,5 +1,5 @@
 # ktn
-<https://github.com/kittttttan/ktn>
+[github repository](https://github.com/kittttttan/ktn)
 
 ## JavaScript
 
@@ -10,6 +10,8 @@
 ## C++
 
 tested on Visual C++ 2010 Express
+
+[doc](http://kittttttan.web.fc2.com/ktn/)
 
 * string.cc
 

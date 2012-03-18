@@ -1,5 +1,6 @@
 /**
- * long.cpp - BigInteger
+ * @file  math/long.cc
+ * @brief Long
  */
 #include <cstdio>
 
@@ -81,28 +82,37 @@ Long& Long::operator=(const Long& b) {
 	return *this;
 }
 
-void Long::debug() {
+void Long::debug() const {
 	if (!s_) {
 		putchar('-');
 	}
 	u_.debug();
 }
 
-std::string Long::str(int base) {
+std::ostream& operator<<(std::ostream& os, const Long& l) {
+	return os << l.str(10);
+}
+/*
+std::istream& operator<<(std::istream& is, Long& l) {
+	is >> l.u_.d_[0];
+	return is;
+}*/
+
+std::string Long::str(int base) const {
 	std::string s = u_.str(base);
 	if (!s_) { s = '-' + s; }
 
 	return s;
 }
 
-void Long::cstr(char *s, int base) {
+void Long::cstr(char *s, int base) const {
 	if (!s_) {
 		*s++ = '-';
 	}
 	u_.cstr(s, base);
 }
 
-void Long::out(int base) {
+void Long::out(int base) const {
 	if (!s_) { putchar('-'); }
 	u_.out(base);
 }

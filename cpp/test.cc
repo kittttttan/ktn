@@ -1,13 +1,25 @@
-﻿#include "string.h"
+﻿/**
+ * @file  cpp/test.cc
+ * @brief test for String
+ */
+#include "string.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <locale.h>
 
+#ifdef _UNICODE
+#define _tcout wcout
+#else
+#define _tcout cout
+#endif
+
 using namespace ktn;
 
 int main(int argc, const char** argv) {
+#ifdef _UNICODE
 	setlocale(LC_CTYPE, "");
+#endif
 
 	String a(_T("水樹")), b(_T("奈々"));
 	_tprintf(_T("%s: %d\n"), a.string(), a.length());
@@ -17,6 +29,7 @@ int main(int argc, const char** argv) {
 	String c = a + b;
 	c.out();
 	(-c).out();
+	std::_tcout << c << std::endl;
 
 	_tprintf(_T("%d\n"), c.indexOf(_T('々')));
 	_tprintf(_T("%d\n"), c.lastIndexOf(_T('水'), 2));

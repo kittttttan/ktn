@@ -1,3 +1,8 @@
+/**
+ * @file  math/test.cc
+ * @brief test for ktn::math
+ * @date  2012
+ */
 #include <cstdio>
 #include <cstdlib>
 #include <ctime>

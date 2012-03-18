@@ -1,8 +1,21 @@
 #ifndef COMPLEX_H_
 #define COMPLEX_H_
+/**
+ * @file  math/complex.h
+ * @brief Complex
+ */
 
+/**
+ * @brief Complex
+ */
 template<class T>
 class Complex {
+
+template<class T>
+friend std::ostream& operator<<(std::ostream& os, const Complex<T>& c);
+//template<class T>
+//friend std::istream& operator>>(std::istream& is, Complex<T>& c);
+
 public:
 	explicit Complex(T a=0, T b=0) : r_(a), i_(b) {}
 	Complex(const Complex<T>& b) : r_(b.r_), i_(b.i_) {}
@@ -14,7 +27,7 @@ public:
 	T real() { return r_; }
 	T imag() { return i_; }
 
-	void out(bool br=true);
+	void out(bool br=true) const;
 
 	Complex<T> conj();
 
@@ -41,8 +54,8 @@ public:
 	bool operator!=(const Complex<T>& b) const;
 
 private:
-	T r_;
-	T i_;
+	T r_;	/**< real */
+	T i_;	/**< imaginary */
 };
 
 template<class T>
@@ -52,7 +65,18 @@ template<class T>
 const Complex<T> Complex<T>::ONE(1);
 
 template<class T>
-void Complex<T>::out(bool br) {
+std::ostream& operator<<(std::ostream& os, const Complex<T>& c) {
+	return os << c.r_ <<
+		(c.i_ < 0 ? "" : "+") << c.i_ << "J";
+}
+/*
+template<class T>
+std::istream& operator<<(std::istream& is, Complex<T>& c) {
+	return is;
+}
+*/
+template<class T>
+void Complex<T>::out(bool br) const {
 	std::cout << r_ <<
 		(i_ < 0 ? "" : "+") << i_ << "J";
 	if (br) { std::cout << std::endl; }

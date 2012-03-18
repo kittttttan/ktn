@@ -1,17 +1,28 @@
 #ifndef MATHKTN_ULONG_H_
 #define MATHKTN_ULONG_H_
 
+/**
+ * @file  math/ulong.h
+ * @brief ULong
+ */
+
 #include <string>
 #include <iostream>
 
 namespace ktn { namespace math {
+
 typedef long long BitSize;
 
+/**
+ * @brief Unsigned BigInteger.
+ */
 class ULong {
-friend std::ostream& operator<<(std::ostream& os, ULong l);
+
+friend std::ostream& operator<<(std::ostream& os, const ULong& l);
+//friend std::istream& operator>>(std::istream& is, ULong& l);
 
 public:
-	explicit ULong() : l_(0), d_(NULL) {}
+	explicit ULong() : l_(0), d_(nullptr) {}
 	explicit ULong(BitSize u);
 	ULong(const ULong& l);
 	explicit ULong(const char *s, int base);
@@ -20,12 +31,12 @@ public:
 	static const ULong ZERO;
 	static const ULong ONE;
 
-	std::string str(int base=10);
-	void cstr(char *s, int base=10);
-	void out(int base=10, bool br=true);
-	void debug();
-
 	static ULong random(int n);
+
+	std::string str(int base=10) const;
+	void cstr(char *s, int base=10) const;
+	void out(int base=10, bool br=true) const;
+	void debug() const;
 
 	ULong square() const;
 	ULong sqrt() const;
@@ -92,8 +103,8 @@ private:
 	void alloc(int length, bool zero);
 	void norm();
 
-	int l_;
-	BitSize* d_;
+	int l_;			/**< length */
+	BitSize* d_;	/**< digit blocks */
 };
 }} // namespace ktn math
 #endif // MATHKTN_ULONG_H_

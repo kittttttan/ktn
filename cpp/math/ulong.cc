@@ -1,5 +1,6 @@
 /**
- * ulong.cpp - Unsigned BigInteger
+ * @file  math/ulong.cc
+ * @brief ULong
  */
 #include <cstdio>
 #include <cstdlib>
@@ -19,8 +20,8 @@ namespace ktn { namespace math {
 static const int SHIFT_BIT	= 16;
 static const int MASK		= 0xffff;
 
-const ULong ULong::ZERO(0);
-const ULong ULong::ONE(1);
+const ULong ULong::ZERO(0);	/**< constant zero */
+const ULong ULong::ONE(1);	/**< constant one */
 
 inline int getStringLength(int l) {
 	return l * 241 / 50 + 2;
@@ -44,7 +45,11 @@ ULong::ULong(BitSize u) : l_(2) {
 	norm();
 }
 
-ULong::ULong(const char *s, int base) {
+/**
+ * @param s     source string
+ * @param radix 
+ */
+ULong::ULong(const char *s, int radix) {
 	int index = 0;
 	if (s[index] == '+') { ++index; }
 	while (s[index] == '0') { ++index; }
@@ -55,16 +60,14 @@ ULong::ULong(const char *s, int base) {
 	}
 
 	int len = strlen(s) + 1 - index;
-	if (base == 8) {
+	if (radix == 8) {
 		len *= 3;
 	} else {
 		len <<= 2;
 	}
-#ifdef USE_LONGLONG
+
 	len = (len >> 4) + 1;
-#else
-	len = (len >> 2) + 1;
-#endif
+
 	l_ = len;
 	d_ = new BitSize[len];
 	if (!d_) { fprintf(stderr, "Failed new BitSize[%d]", len); return; }
@@ -77,7 +80,7 @@ ULong::ULong(const char *s, int base) {
 		if (n > 9 || n < 0) { break; }
 		for (int i = 0;;) {
 			for (; i < bl; ++i) {
-				n += d_[i] * base;
+				n += d_[i] * radix;
 				d_[i] = n & MASK;
 				n >>= SHIFT_BIT;
 			}
@@ -92,6 +95,11 @@ ULong::ULong(const char *s, int base) {
 	norm();
 }
 
+/**
+ * Allocation.
+ * @param length 
+ * @param zero   fill zero flag
+ */
 void ULong::alloc(int length, bool zero) {
 	if (length < 1) {
 		fprintf(stderr, "invalid value: ULong::alloc(%d, ...)", length);
@@ -157,13 +165,16 @@ ULong& ULong::operator=(const ULong& b) {
 	return *this;
 }
 
-void ULong::debug() {
+void ULong::debug() const {
 	for (int i = 0; i < l_; ++i) {
 		printf(OUTPUT_FORMAT " ", d_[i]);
 	}
 	puts("");
 }
 
+/**
+ * Fits length.
+ */
 inline void ULong::norm() {
 	while (l_ > 0 && d_[l_ - 1] == 0) { --l_; }
 }
@@ -182,7 +193,7 @@ inline void reverseChar(char* s) {
 	}
 }
 
-std::string ULong::str(int base) {
+std::string ULong::str(int radix) const {
 	if (!(*this)) {
 		std::string s("0");
 		return s;
@@ -190,7 +201,7 @@ std::string ULong::str(int base) {
 	int length;
 	if (l_ < 2) {
 		length = 20;
-	} else if (base == 8) {
+	} else if (radix == 8) {
 		length = (l_ << 4) + 2;
 	} else {
 		length = getStringLength(l_);
@@ -203,7 +214,7 @@ std::string ULong::str(int base) {
 		return s;
 	}
 
-	cstr(c, base);
+	cstr(c, radix);
 	std::string s(c);
 	delete [] c;
 
@@ -211,6 +222,11 @@ std::string ULong::str(int base) {
 }
 
 #ifndef _MSC_VER
+/**
+ * @param[in]  value
+ * @param[out] result
+ * @param[in]  base
+ */
 static char* itoa(int value, char* result, int base) {
 	if (base < 2 || base > 36) { *result = '\0'; return result; }
 
@@ -235,7 +251,11 @@ static char* itoa(int value, char* result, int base) {
 }
 #endif
 
-void ULong::cstr(char *s, int base) {
+/**
+ * @param[out] s
+ * @param[in]  radix 
+ */
+void ULong::cstr(char *s, int radix) const {
 	if (!(*this)) {
 		s[0] = '0';
 		s[1] = '\0';
@@ -244,21 +264,21 @@ void ULong::cstr(char *s, int base) {
 	int i = l_;
 	if (i < 2) {
 #ifdef _MSC_VER
-		_itoa_s(static_cast<int>(d_[0]), s, 19, base);
+		_itoa_s(static_cast<int>(d_[0]), s, 19, radix);
 #else
-		itoa(static_cast<int>(d_[0]), s, base);
+		itoa(static_cast<int>(d_[0]), s, radix);
 #endif
 		return;
 	}
 
 	int j;
-	int hbase;
-	if (base == 8) {
+	int hradix;
+	if (radix == 8) {
 		j = (i << 4) + 2;
-		hbase = 0x1000;
+		hradix = 0x1000;
 	} else {
 		j = getStringLength(i);
-		hbase = 10000;
+		hradix = 10000;
 	}
 
 	const char digits[] = "0123456789";
@@ -270,16 +290,16 @@ void ULong::cstr(char *s, int base) {
 		BitSize n = 0;
 		while (k--) {
 			n = (n << SHIFT_BIT) + t.d_[k];
-			t.d_[k] = n / hbase;
-			n %= hbase;
+			t.d_[k] = n / hradix;
+			n %= hradix;
 		}
 		if (t.d_[i - 1] == 0) { --i; }
 		k = 4;
 		while (k--) {
-			s[index] = digits[n % base];
+			s[index] = digits[n % radix];
 			++index;
 			--j;
-			n /= base;
+			n /= radix;
 			if (i == 0 && n == 0) { break; }
 		}
 	}
@@ -289,10 +309,11 @@ void ULong::cstr(char *s, int base) {
 }
 
 /**
- * output
+ * output.
  * @param base 2, 10, 16
+ * @param br   line break
  */
-void ULong::out(int base, bool br) {
+void ULong::out(int base, bool br) const {
 	if (!(*this)) {
 		putchar('0');
 		if (br) { puts(""); }
@@ -343,10 +364,14 @@ void ULong::out(int base, bool br) {
 	delete [] c;
 }
 
-std::ostream& operator<<(std::ostream& os, ULong l) {
+std::ostream& operator<<(std::ostream& os, const ULong& l) {
 	return os << l.str(10);
 }
-
+/*
+std::istream& operator<<(std::istream& is, ULong& l) {
+	return is;
+}
+*/
 int ULong::cmp(const ULong& b) const {
 	if (this == &b) { return 0; }
 	int al = l_;
@@ -473,7 +498,7 @@ ULong ULong::square() const {
 }
 
 /**
- * square root
+ * square root.
  */
 ULong ULong::sqrt() const {
 	ULong b(*this), c(1);
@@ -508,7 +533,7 @@ inline BitSize ULong::bitLength() const {
 }
 
 /**
- * multiple with karatsuba method
+ * multiple with karatsuba method.
  */
 ULong ULong::karatsuba(const ULong& u) const {
 	if (u == ZERO) { return ZERO; }
@@ -565,7 +590,7 @@ ULong ULong::random(int n) {
 }
 
 /**
- * greatest common divisor
+ * greatest common divisor.
  */
 ULong ULong::gcd(const ULong& b) const {
 	ULong x(*this), y(b);
@@ -580,7 +605,7 @@ ULong ULong::gcd(const ULong& b) const {
 }
 
 /**
- * greatest common divisor with binary method
+ * greatest common divisor with binary method.
  */
 ULong ULong::gcdBin(const ULong& b) const {
 	if (*this < b) { return b.gcdBin(*this); }

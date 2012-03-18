@@ -1,13 +1,24 @@
 #ifndef FRACTION_H_
 #define FRACTION_H_
 
+/**
+ * @file  math/fraction.h
+ * @brief Fraction
+ */
+
 #include <string>
 #include <iostream>
 #include "ulong.h"
 
 namespace ktn { namespace math {
+
+/**
+ * @brief Fraction
+ */
 class Fraction {
-friend std::ostream& operator<<(std::ostream& os, Fraction f);
+
+friend std::ostream& operator<<(std::ostream& os, const Fraction& f);
+//friend std::istream& operator>>(std::istream& is, Fraction& f);
 
 public:
 	explicit Fraction() : s_(true), n_(0), d_(1) {}
@@ -16,7 +27,7 @@ public:
 	Fraction(const Fraction& f);
 	explicit Fraction(const ULong& a, bool s=true) : s_(s), n_(a), d_(1) {}
 	explicit Fraction(const ULong& a, const ULong& b,bool s=true);
-	explicit Fraction(const char *s, int base);
+	explicit Fraction(const char *s, int radix);
 	~Fraction(){}
 
 	static const Fraction ZERO;
@@ -26,9 +37,9 @@ public:
     ULong denominator() const { return d_; }
 	bool sign() { return s_; }
 
-	std::string str(int base=10);
-	void cstr(char *s, int base=10);
-	void out(int base=10, bool br=true);
+	std::string str(int radix=10) const;
+	void cstr(char *s, int radix=10) const;
+	void out(int radix=10, bool br=true) const;
 	int cmp(const Fraction& b) const;
 	int cmp(BitSize b) const;
 
@@ -82,9 +93,9 @@ public:
 private:
 	void cancel();
 
-	bool s_;
-	ULong n_;
-	ULong d_;
+	bool s_;	/**< sign */
+	ULong n_;	/**< numerator */
+	ULong d_;	/**< denominator */
 };
 }} // namespace ktn math
 #endif // FRACTION_H_

@@ -11,3 +11,5 @@ ipch/
 *.suo
 *.o
 *.exe
+
+doc.h

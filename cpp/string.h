@@ -1,6 +1,11 @@
 #ifndef JS_STRING_H_
 #define JS_STRING_H_
 
+/**
+ * @file  string.h
+ * @brief String
+ */
+
 #ifdef _MSC_VER
 #include <tchar.h>
 #else
@@ -13,8 +18,24 @@
 #define TRACE(s)
 #endif
 
+#ifdef _UNICODE
+#define _tostream wostream
+#define _tistream wistream
+#else
+#define _tostream ostream
+#define _tistream oistream
+#endif
+
 namespace ktn {
+
+/**
+ * @brief String
+ */
 class String {
+
+friend std::_tostream& operator<<(std::_tostream& os, const String& s);
+//friend std::_tistream& operator>>(std::_tistream &is, String& s);
+
 public:
 	String() : string_(nullptr), length_(0) {}
 	explicit String(int n);
@@ -25,7 +46,7 @@ public:
 	TCHAR* string() { return string_; }
 	int length() { return length_; }
 
-	void out();
+	void out() const;
 	int indexOf(const TCHAR c, int from=0) const;
 	int lastIndexOf(const TCHAR c, int from=0) const;
 	String trim();
@@ -45,6 +66,12 @@ public:
 	String operator*(int times) const;
 
 	String& operator=(const String& s);
+	String& operator+=(const String& b);
+	String& operator-=(const TCHAR c);
+	String& operator*=(int times);
+
+	bool operator==(const String& s) const;
+	bool operator!=(const String& s) const;
 
 private:
 	String(const TCHAR* s, int length);

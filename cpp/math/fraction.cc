@@ -1,5 +1,6 @@
 /**
- * fraction.cpp - Fraction
+ * @file  math/fraction.cc
+ * @brief Fraction
  */
 #include <cstdio>
 
@@ -61,11 +62,30 @@ Fraction::Fraction(BitSize a, BitSize b) {
 	cancel();
 }
 
-void Fraction::out(int base, bool br) {
+std::string Fraction::str(int radix) const {
+	std::string s("");
+	if (!s_) { s = "-"; }
+	s += n_.str(radix);
+	s += "/";
+	s += d_.str(radix);
+
+	return s;
+}
+
+std::ostream& operator<<(std::ostream& os, const Fraction& f) {
+	return os << f.str(10);
+}
+/*
+std::istream& operator>>(std::istream& is, Fraction& f) {
+	return is;
+}
+*/
+
+void Fraction::out(int radix, bool br) const {
 	if (!s_) { putchar('-'); }
-	n_.out(base, false);
+	n_.out(radix, false);
 	putchar('/');
-	d_.out(base, false);
+	d_.out(radix, false);
 	if (br) { puts(""); }
 }
 
