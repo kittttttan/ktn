@@ -1,8 +1,7 @@
 /**
  * @fileOverview Fraction in JavaScript.
  * @version 2012-02-12
- * @author kittttttan
- * @url http://kittttttan.web.fc2.com/math/mathjs.html
+ * @url https://github.com/kittttttan/ktn
  * @example
  *    var a = Fraction.num(2, 3);
  *    var b = Fraction.str('-3/12');

@@ -1,8 +1,7 @@
 /**
  * @fileOverview Decimal in JavaScript.
  * @version 2012-02-12
- * @author kittttttan
- * @url http://kittttttan.web.fc2.com/math/mathjs.html
+ * @url https://github.com/kittttttan/ktn
  * @example
  *    var a = Decimal.num(7, -3);
  *    var b = Decimal.str('100.1');

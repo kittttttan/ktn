@@ -3,6 +3,8 @@
 
 ## JavaScript
 
+[doc](http://kittttttan.web.fc2.com/js/)
+
 * long.js
 * fraction.js
 * decimal.js
