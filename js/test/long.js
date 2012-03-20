@@ -25,16 +25,15 @@ if (typeof window !== 'undefined') {
  * @returns {string}
  */
 function basic() {
-  var r1 = (Math.random() * 4 | 0) + 3,
-      r2 = (Math.random() * 4 | 0) + 1,
-      a = long.random(r1),
-      b = long.random(r2);
+  var r = (Math.random() * 4 | 0) + 3,
+      a = long.random(r),
+      b = long.num(100000);
   return [
-      '    a = ',a, '\n    b = ',b, '\na + b = ',a.add(b),
+      '    a = ',a, '\n    b = ',b.toString(), '\na + b = ',a.add(b),
       '\na - b = ',a.sub(b), '\na * b = ',a.mul(b),
       '\na / b = ',a.div(b), '\na % b = ',a.mod(b),
       '\na ^ 2 = ',a.pow(2), '\na^0.5 = ',a.pow(0.5), ' ~ ',a.sqrt(),
-      '\na >> 2 = ',a.rshift(2), '\ngcd(a, b) = ',a.gcd(b),
+      '\na >> 2 = ',a.rightShift(2), '\ngcd(a, b) = ',a.gcd(b),
       ].join('');
 }
 
@@ -100,41 +99,6 @@ function sqvsmul(a) {
 }
 
 /**
- * test for longK
- * @param {number} a
- */
-function kara(a) {
-  for (var i = 0, b, c; i < a; i++) {
-    b = long.random(i + 20);
-    c = long.random(i + 20);
-    print(longEqual(longMul(b, c), longK(b, c)));
-  }
-}
-
-/**
- * Compares performance longMul vs longK
- * @param {number} a
- */
-function kvsmul(a) {
-  var m = [], n = [];
-  for (var i = 0; i < a; i++) {
-    m[i] = long.random(i + 20);
-    n[i] = long.random(i + 20);
-  }
-  var t0 = Date.now();
-  for (i = 0; i < a; i++) {
-    longMul(m[i], n[i]);
-  }
-  var t1 = Date.now();
-  for (i = 0; i < a; i++) {
-    longK(m[i], n[i]);
-  }
-  var t2 = Date.now();
-  print('mul:  '+ (t1 - t0) +'ms\nkara: '+ (t2 - t1) +'ms\n      '
-      + (100*(t2 - t1)/(t1 - t0)).toFixed(2) +'%');
-}
-
-/**
  * test for longGcdBin
  * @param {number} a
  */
@@ -142,7 +106,7 @@ function gcd(a) {
   for (var i = 0, b, c; i < a; i++) {
     b = long.random(i + 20);
     c = long.random(i + 20);
-    print(longEqual(longGcd(b, c), longGcdBin(b, c)));
+    print(b.gcd(c).equal(b._gcd(c)));
   }
 }
 
@@ -158,11 +122,11 @@ function gcdvsbin(a) {
   }
   var t0 = Date.now();
   for (i = 0; i < a; i++) {
-    longGcd(m[i], n[i]);
+    m[i].gcd(n[i]);
   }
   var t1 = Date.now();
   for (i = 0; i < a; i++) {
-    longGcdBin(m[i], n[i]);
+    m[i]._gcd(n[i]);
   }
   var t2 = Date.now();
   print('gcd: '+ (t1 - t0) +'ms\nbin: '+ (t2 - t1) +'ms\n      '
@@ -198,7 +162,7 @@ function pi(a) {
   var a5 = arccot(long.num(5)), a239 = arccot(long.num(239));
   //print(a5);
   //print(a239);
-  return a5.lshift(2).sub(a239).lshift(2);
+  return a5.leftShift(2).sub(a239).leftShift(2);
 }
 
 // Test
