@@ -1,5 +1,5 @@
-#ifndef MATHKTN_ULONG_H_
-#define MATHKTN_ULONG_H_
+#ifndef KTN_MATH_ULONG_H_
+#define KTN_MATH_ULONG_H_
 
 /**
  * @file  math/ulong.h
@@ -107,4 +107,4 @@ private:
 	BitSize* d_;	/**< digit blocks */
 };
 }} // namespace ktn math
-#endif // MATHKTN_ULONG_H_
+#endif // KTN_MATH_ULONG_H_

@@ -1,5 +1,5 @@
-#ifndef JS_STRING_H_
-#define JS_STRING_H_
+#ifndef KTN_STRING_H_
+#define KTN_STRING_H_
 
 /**
  * @file  string.h
@@ -81,4 +81,4 @@ private:
 };
 
 } // namespace ktn
-#endif // JS_STRING_H_
+#endif // KTN_STRING_H_

@@ -1,9 +1,11 @@
-#ifndef COMPLEX_H_
-#define COMPLEX_H_
+#ifndef KTN_MATH_COMPLEX_H_
+#define KTN_MATH_COMPLEX_H_
 /**
  * @file  math/complex.h
  * @brief Complex
  */
+
+namespace ktn { namespace math {
 
 /**
  * @brief Complex
@@ -197,4 +199,5 @@ bool Complex<T>::operator!=(const Complex<T>& b) const {
 	return r_ != b.r_ || i_ != b.i_;
 }
 
-#endif // COMPLEX_H_
+}} // namespace ktn math
+#endif // KTN_MATH_COMPLEX_H_

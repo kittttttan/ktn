@@ -1,5 +1,5 @@
-#ifndef MATHKTN_LONG_H_
-#define MATHKTN_LONG_H_
+#ifndef KTN_MATH_LONG_H_
+#define KTN_MATH_LONG_H_
 
 /**
  * @file  math/long.h
@@ -96,4 +96,4 @@ private:
 	bool s_;	/**< sign */
 };
 }} // namespace ktn math
-#endif // MATHKTN_LONG_H_
+#endif // KTN_MATH_LONG_H_

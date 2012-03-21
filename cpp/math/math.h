@@ -1,5 +1,5 @@
-#ifndef MATHKTN_MATH_H_
-#define MATHKTN_MATH_H_
+#ifndef KTN_MATH_MATH_H_
+#define KTN_MATH_MATH_H_
 
 /**
  * @file  math/math.h
@@ -8,7 +8,12 @@
 
 namespace ktn { namespace math {
 
-template <typename Integer>
+template <class Integer>
+inline Integer abs(const Integer& A) {
+   return A < 0 ? -A : A;
+}
+
+template <class Integer>
 inline Integer gcd(Integer A, Integer B) {
    do {
       const Integer tmp(B);
@@ -19,7 +24,7 @@ inline Integer gcd(Integer A, Integer B) {
    return A;
 }
 
-template <typename Integer>
+template <class Integer>
 inline Integer gcdBin(const Integer& A, const Integer& B) {
 	if (A < B) { return gcdBin(B, A); }
 	Integer x(A), y(B), g(1);
@@ -47,7 +52,7 @@ inline Integer gcdBin(const Integer& A, const Integer& B) {
 	return g * y;
 }
 
-template <typename Integer>
+template <class Integer>
 inline Integer lcm(const Integer& A, const Integer& B) {
    Integer ret(A);
    ret /= gcd(A, B);
@@ -56,4 +61,4 @@ inline Integer lcm(const Integer& A, const Integer& B) {
 }
 
 }} // namespace ktn math
-#endif // MATHKTN_MATH_H_
+#endif // KTN_MATH_MATH_H_

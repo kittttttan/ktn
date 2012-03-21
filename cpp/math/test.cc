@@ -11,6 +11,8 @@
 #include "fraction.h"
 #include "math.h"
 #include "complex.h"
+#include "vector.h"
+#include "matrix.h"
 
 using namespace std;
 using namespace ktn::math;
@@ -155,6 +157,45 @@ void compBasic() {
 	printf("c * d = "); (c*d).out();
 }
 
+void vectorBasic() {
+	Vector<int, 3> a, b;
+	cout << "** " << a.dimension() << "D Vector **" << endl;
+	a[0] = 1;
+	a[1] = 2;
+	a[2] = 3;
+	cout << a << endl;
+	cout << (-a) << endl;
+	cout << (a*2) << endl;
+
+	b[1] = 3;
+	b[2] = 4;
+	cout << b << endl;
+	cout << (a+b) << endl;
+	cout << (a-b) << endl;
+	cout << (a*b) << endl;
+}
+
+void matrixBasic() {
+	Matrix<int,3,2> n;
+	cout << "** " <<  n.row() << "x"<< n.col() << " Matrix **" << endl;
+	n.at(1,1) = 1;
+	n.at(3,2) = 2;
+	cout << n << endl;
+	cout << n.t() << endl;
+	//cout << n.cof(2, 1) << endl;
+
+	Matrix_<double, 3> m, k;
+	double d = 3;
+	m.at(1,1) = 1;
+	m.at(2,2) = 2;
+	m.at(3,3) = 3;
+	cout << m << endl;
+	//cout << m.cof(0, 1) << endl;
+
+	cout << (m*d) << endl;
+	cout << m.det() << endl;
+}
+
 int main(int argc, char** argv) {
 	srand(static_cast<unsigned int>(time(NULL)));
 	clock_t t = clock();
@@ -163,6 +204,8 @@ int main(int argc, char** argv) {
 	longBasic();
 	fractionBasic();
 	compBasic();
+	vectorBasic();
+	matrixBasic();
 
 	//fib<ULong>(77).out();
 	//fact<ULong>(77).out();

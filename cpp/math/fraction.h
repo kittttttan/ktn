@@ -1,5 +1,5 @@
-#ifndef FRACTION_H_
-#define FRACTION_H_
+#ifndef KTN_MATH_FRACTION_H_
+#define KTN_MATH_FRACTION_H_
 
 /**
  * @file  math/fraction.h
@@ -98,4 +98,4 @@ private:
 	ULong d_;	/**< denominator */
 };
 }} // namespace ktn math
-#endif // FRACTION_H_
+#endif // KTN_MATH_FRACTION_H_
