@@ -1,17 +1,13 @@
 # ktn
 [github repository](https://github.com/kittttttan/ktn)
 
-## JavaScript
+## C
 
-[doc](http://kittttttan.web.fc2.com/js/)
+### math
 
-* long.js
-* fraction.js
-* decimal.js
+* ulong.c
 
 ## C++
-
-tested on Visual C++ 2010 Express
 
 [doc](http://kittttttan.web.fc2.com/ktn/)
 
@@ -19,6 +15,15 @@ tested on Visual C++ 2010 Express
 
 ### math
 
+* ulong.cc
 * long.cc
 * fraction.cc
 * complex.h
+
+## JavaScript
+
+[doc](http://kittttttan.web.fc2.com/js/)
+
+* long.js
+* fraction.js
+* decimal.js

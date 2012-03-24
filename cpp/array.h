@@ -23,10 +23,10 @@ inline void swap(T& a, T& b) {
 template<class T>
 class Array {
 
-template<class T>
-friend std::ostream& operator<<(std::ostream& os, const Array<T>& a);
-//template<class T>
-//friend std::istream& operator>>(std::istream &is, Array<T>& a);
+template<class FT>
+friend std::ostream& operator<<(std::ostream& os, const Array<FT>& a);
+//template<class FT>
+//friend std::istream& operator>>(std::istream &is, Array<FT>& a);
 
 public:
 	Array() : array_(nullptr), length_(0) {}

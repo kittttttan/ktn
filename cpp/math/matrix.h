@@ -15,16 +15,16 @@ namespace ktn { namespace math {
 template<class T, int M, int N=M>
 class Matrix {
 
-template<class T, int M, int N>
-friend std::ostream& operator<<(std::ostream& os, const Matrix<T, M, N>& m);
-//template<class T, int M, int N>
-//friend std::istream& operator>>(std::istream& is, Matrix<T, M, N>& m);
+template<class FT, int FM, int FN>
+friend std::ostream& operator<<(std::ostream& os, const Matrix<FT, FM, FN>& m);
+//template<class FT, int FM, int FN>
+//friend std::istream& operator>>(std::istream& is, Matrix<FT, FM, FN>& m);
 
 public:
 	Matrix();
 	Matrix(const T& t);
 	Matrix(const Matrix<T, M, N>& b);
-	~Matrix();
+	virtual ~Matrix();
 
 	static const Matrix<T, M, N> ZERO;
 	static const Matrix<T, M, N> ONE;
@@ -34,7 +34,6 @@ public:
 
 	T& at(int x, int y);
 	Matrix<T, N, M> t() const;
-	//virtual Matrix<T, M - 1, N - 1> cof(int i, int j);
 
 	bool operator!() const;
 	Matrix<T, M, N> operator+() const;
@@ -283,68 +282,71 @@ bool Matrix<T, M, N>::operator!=(const Matrix<T, M, N>& b) const {
 }
 
 
-template<class T, int M, int N=M>
-class Matrix_ : public Matrix<T, M, N> {
-public:
-	T det();
-	Matrix_<T, M - 1, N - 1> cof(int i, int j);
-};
-
-/**
- * Cofactor
- */
-template<class T, int M, int N>
-Matrix_<T, M - 1, N - 1> Matrix_<T, M, N>::cof(int i, int j) {
-	Matrix_<T, M - 1, N - 1> m;
-	for (int y = 0, b = 0; y < N; ++y) {
-		if (y == j - 1) { continue; }
-		for (int x = 0, a = 0; x < M; ++x) {
-			if (x == i - 1) { continue; }
-			m.data_[b][a] = data_[y][x];
-			++a;
-		}
-		++b;
-	}
-	return m;
-}
-
-/**
- * Determinant
- */
-template<class T, int M, int N>
-T Matrix_<T, M, N>::det() {
-	int x = M;
-	T t = 0;
-	while (x--) {
-		if (data_[0][x] != 0) {
-			if ((x & 1) == 0) {
-				t += this->cof(x+1, 1).det() * data_[0][x];
-			} else {
-				t -= this->cof(x+1, 1).det() * data_[0][x];
-			}
-		}
-	}
-	return t;
-}
-
-template<class T>
-class Matrix_<T, 2, 2> : public Matrix<T, 2, 2> {
-public:
-	T det();
-	Matrix_<T, 1, 1> cof(int i, int j);
-};
-
-template<class T>
-Matrix_<T, 1, 1> Matrix_<T, 2, 2>::cof(int i, int j) {
-	Matrix_<T, 1, 1> m;
-	m.data_[0][0] = data_[(i == 1 ? 0 : 1)][(j == 1 ? 0 : 1)];
-	return m;
-}
-
-template<class T>
-T Matrix_<T, 2, 2>::det() {
-	return abs(data_[0][0] * data_[1][1] - data_[1][0] * data_[0][1]);
-}
-
+//template<class T, int M, int N=M>
+//class Matrix_ : public Matrix<T, M, N> {
+//public:
+//	T det();
+//	Matrix_<T, M - 1, N - 1> cof(int i, int j);
+//
+//	//T** data_;
+//};
+//
+///**
+// * Cofactor
+// */
+//template<class T, int M, int N>
+//Matrix_<T, M - 1, N - 1> Matrix_<T, M, N>::cof(int i, int j) {
+//	Matrix_<T, M - 1, N - 1> m;
+//	for (int y = 0, b = 0; y < N; ++y) {
+//		if (y == j - 1) { continue; }
+//		for (int x = 0, a = 0; x < M; ++x) {
+//			if (x == i - 1) { continue; }
+//			m.data_[b][a] = data_[y][x];
+//			++a;
+//		}
+//		++b;
+//	}
+//	return m;
+//}
+//
+///**
+// * Determinant
+// */
+//template<class T, int M, int N>
+//T Matrix_<T, M, N>::det() {
+//	int x = M;
+//	T t = 0;
+//	while (x--) {
+//		if (data_[0][x] != 0) {
+//			if ((x & 1) == 0) {
+//				t += this->cof(x+1, 1).det() * data_[0][x];
+//			} else {
+//				t -= this->cof(x+1, 1).det() * data_[0][x];
+//			}
+//		}
+//	}
+//	return t;
+//}
+//
+//template<class T>
+//class Matrix_<T, 2, 2> : public Matrix<T, 2, 2> {
+//public:
+//	T det();
+//	Matrix_<T, 1, 1> cof(int i, int j);
+//
+//	//T** data_;
+//};
+//
+//template<class T>
+//Matrix_<T, 1, 1> Matrix_<T, 2, 2>::cof(int i, int j) {
+//	Matrix_<T, 1, 1> m;
+//	m.data_[0][0] = data_[(i == 1 ? 0 : 1)][(j == 1 ? 0 : 1)];
+//	return m;
+//}
+//
+//template<class T>
+//T Matrix_<T, 2, 2>::det() {
+//	return abs(data_[0][0] * data_[1][1] - data_[1][0] * data_[0][1]);
+//}
 }} // namespace ktn math
 #endif // KTN_MATH_MATRIX_H_

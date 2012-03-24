@@ -1,7 +1,7 @@
 CXX = g++ #clang++
-CFLAGS = -g -Wall -O2
+CFLAGS = -g -Wall -O2 -Dnullptr=NULL
 TARGET = test
-OBJS = test.o ulong.o long.o fraction.o
+OBJS = main.o test.o ulong.o long.o fraction.o
 
 all: $(TARGET)
 
@@ -14,7 +14,8 @@ clean:
 .cc.o:
 	$(CXX) $(CFLAGS) -c $<
 
+main.o: test.h
 ulong.o: ulong.h
 long.o: long.h
 fraction.o: ulong.h
-test.o: long.h fraction.h complex.h
+test.o: long.h fraction.h complex.h vector.h matrix.h

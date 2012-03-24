@@ -70,7 +70,7 @@ void arrayTest() {
 }
 
 int main(int argc, const char** argv) {
-	//stringTest();
+	stringTest();
 	arrayTest();
 
 #ifdef _MSC_VER

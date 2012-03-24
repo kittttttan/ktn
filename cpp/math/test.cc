@@ -4,18 +4,16 @@
  * @date  2012
  */
 #include <cstdio>
-#include <cstdlib>
 #include <ctime>
 
-#include "long.h"
-#include "fraction.h"
-#include "math.h"
-#include "complex.h"
-#include "vector.h"
-#include "matrix.h"
+#include "test.h"
 
 using namespace std;
 using namespace ktn::math;
+
+#include "complex.h"
+#include "vector.h"
+#include "matrix.h"
 
 void ulongBasic() {
 	ULong a = ULong::random(4), b(100000);
@@ -71,28 +69,6 @@ void fractionBasic() {
 	printf("a - b = "); (a - b).out();
 	printf("a * b = "); (a * b).out();
 	printf("a / b = "); (a / b).out();
-}
-
-template <typename Integer>
-Integer fib(int n) {
-	Integer a(1), b(0);
-	for (int i = 1; i < n; ++i) {
-		const Integer c(a);
-		a += b;
-		b = c;
-	}
-
-	return a;
-}
-
-template <typename Integer>
-Integer fact(int n) {
-	Integer a(1);
-	for (int i = 2; i <= n; ++i) {
-		a *= i;
-	}
-
-	return a;
 }
 
 ULong arccot(const ULong& n, int m) {
@@ -182,39 +158,15 @@ void matrixBasic() {
 	n.at(3,2) = 2;
 	cout << n << endl;
 	cout << n.t() << endl;
-	//cout << n.cof(2, 1) << endl;
 
-	Matrix_<double, 3> m, k;
+	Matrix<double, 3> m, k;
 	double d = 3;
 	m.at(1,1) = 1;
 	m.at(2,2) = 2;
 	m.at(3,3) = 3;
 	cout << m << endl;
-	//cout << m.cof(0, 1) << endl;
+	//cout << m.cof(1, 1) << endl;
 
 	cout << (m*d) << endl;
-	cout << m.det() << endl;
-}
-
-int main(int argc, char** argv) {
-	srand(static_cast<unsigned int>(time(NULL)));
-	clock_t t = clock();
-
-	ulongBasic();
-	longBasic();
-	fractionBasic();
-	compBasic();
-	vectorBasic();
-	matrixBasic();
-
-	//fib<ULong>(77).out();
-	//fact<ULong>(77).out();
-	//pi(2000).out();
-	//kTest();
-
-	printf("%ld ms\n", clock() - t);
-#if defined(_MSC_VER)
-	system("pause");
-#endif
-	return 0;
+	//cout << m.det() << endl;
 }

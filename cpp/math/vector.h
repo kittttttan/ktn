@@ -13,10 +13,10 @@ namespace ktn { namespace math {
 template<class T, int N>
 class Vector {
 
-template<class T, int N>
-friend std::ostream& operator<<(std::ostream& os, const Vector<T, N>& v);
-//template<class T, int N>
-//friend std::istream& operator>>(std::istream& is, Vector<T, N>& v);
+template<class FT, int FN>
+friend std::ostream& operator<<(std::ostream& os, const Vector<FT, FN>& v);
+//template<class FT, int FN>
+//friend std::istream& operator>>(std::istream& is, Vector<FT, FN>& v);
 
 public:
 	Vector();
@@ -40,6 +40,7 @@ public:
 	Vector<T, N>& operator=(const Vector<T, N>& v);
 	Vector<T, N>& operator+=(const Vector<T, N>& v);
 	Vector<T, N>& operator-=(const Vector<T, N>& v);
+	Vector<T, N>& operator*=(const T& n);
 
 	bool operator==(const Vector<T, N>& v) const;
 	bool operator!=(const Vector<T, N>& v) const;
@@ -96,6 +97,7 @@ template<class T, int N>
 T& Vector<T, N>::operator[](int index) {
 	return data_[index];
 }
+
 template<class T, int N>
 bool Vector<T, N>::operator!() const {
 	for (int i = 0; i < N; ++i) {
@@ -170,6 +172,15 @@ template<class T, int N>
 Vector<T, N>& Vector<T, N>::operator-=(const Vector<T, N>& b) {
 	for (int i = 0; i < N; ++i) {
 		data_[i] -= b.data_[i];
+	}
+
+	return *this;
+}
+
+template<class T, int N>
+Vector<T, N>& Vector<T, N>::operator*=(const T& n) {
+	for (int i = 0; i < N; ++i) {
+		data_[i] *= n;
 	}
 
 	return *this;

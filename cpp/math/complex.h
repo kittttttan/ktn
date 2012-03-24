@@ -13,10 +13,10 @@ namespace ktn { namespace math {
 template<class T>
 class Complex {
 
-template<class T>
-friend std::ostream& operator<<(std::ostream& os, const Complex<T>& c);
-//template<class T>
-//friend std::istream& operator>>(std::istream& is, Complex<T>& c);
+template<class FT>
+friend std::ostream& operator<<(std::ostream& os, const Complex<FT>& c);
+//template<class FT>
+//friend std::istream& operator>>(std::istream& is, Complex<FT>& c);
 
 public:
 	explicit Complex(T a=0, T b=0) : r_(a), i_(b) {}
