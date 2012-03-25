@@ -1,6 +1,6 @@
 /**
  * @fileOverview Big Integer in JavaScript.
- * @version 2012-03-19
+ * @version 2012-03-25
  * @url https://github.com/kittttttan/ktn
  * @example
  *   var a = Long.str("12345678909876543210");
@@ -38,6 +38,25 @@ function Long() {
 
 (function(){
   "use strict";
+  
+  /**
+   * @private
+   * @const
+   */
+  var SHIFT = 15;
+  
+  /**
+   * @private
+   * @const
+   */
+  var BASE = 1 << SHIFT;
+  
+  /**
+   * @private
+   * @const
+   */
+  var MASK = BASE - 1;
+
   // static
   /**
    * Convert integer to Long.
@@ -51,10 +70,10 @@ function Long() {
       a._s = false;
     }
     n &= 0x7fffffff;
-    a._d[0] = n & 0xffff;
-    n >>>= 16;
+    a._d[0] = n & MASK;
+    n >>>= SHIFT;
     if (n) {
-      a._d[1] = n & 0xffff;
+      a._d[1] = n & MASK;
     }
     return a;
   };
@@ -99,8 +118,8 @@ function Long() {
       for (var i = 0;;) {
         for (; i < bl; i++) {
           n += zd[i] * base;
-          zd[i] = n & 0xffff;
-          n >>>= 16;
+          zd[i] = n & MASK;
+          n >>>= SHIFT;
         }
         if (n) {
           bl++;
@@ -165,7 +184,7 @@ function Long() {
     var r = longAlloc(a, true),
         rd = r._d;
     for (var i = 0; i < a; i++) {
-      rd[i] = Math.random() * 0x10000 | 0;
+      rd[i] = Math.random() * BASE | 0;
     }
     return longNorm(r);
   };
@@ -265,7 +284,7 @@ function Long() {
     var d = a._d,
         l = d.length - 1;
     for (var i = 0; i < l; i++) {
-      d[i] = (((d[i + 1] & 1) << 16) + d[i]) >>> 1;
+      d[i] = (((d[i + 1] & 1) << SHIFT) + d[i]) >>> 1;
     }
     d[l] >>>= 1;
     return longNorm(a);
@@ -282,8 +301,8 @@ function Long() {
         c = 0;
     for (var i = 0, t = 0; i < l; i++) {
       t = (d[i] << 1) + c;
-      d[i] = t & 0xffff;
-      c = t >>> 16;
+      d[i] = t & MASK;
+      c = t >>> SHIFT;
     }
     if (c) { d[l] = c; }
     return longNorm(a);
@@ -333,6 +352,7 @@ function Long() {
    * @param {Long} a
    * @param {number} b Base 2 or 16
    * @returns {string}
+   * @deprecated
    */
   function longToByte(a, /** @default 16 */b) {
     var d = a._d,
@@ -364,30 +384,42 @@ function Long() {
      */
     toString: function(/** @default 10 */b) {
       if (!b) { b = 10; }
-      if (b === 2 || b === 16) { return longToByte(this, b); }
+      //if (b === 2 || b === 16) { return longToByte(this, b); }
 
       var i = this._d.length;
       if (i < 2 && !this._d[0]) { return '0'; }
 
-      var j = 0, hbase = 10000;
-      if (b === 8) {
+      var j, hbase;
+      switch (b) {
+      case 16:
+        j = (i << 3) + 2;
+        hbase = 0x10000;
+        break;
+      case 8:
         j = (i << 4) + 2;
         hbase = 0x1000;
-      } else {
+        break;
+      case 2:
+        j = (i << 4) + 2;
+        hbase = 0x10;
+        break;
+      case 10: default:
         j = (i * 241 / 50 | 0) + 2;
+        hbase = 10000;
+        break;
       }
 
       var t = this.clone(),
           d = t._d,
           k = 0,
           n = 0,
-          digits = '0123456789',
+          digits = '0123456789abcdef',
           s = '';
       while (i && j) {
         k = i;
         n = 0;
         while (k--) {
-          n = (n << 16) + d[k];
+          n = (n << SHIFT) | d[k];
           d[k] = n / hbase | 0;
           n %= hbase;
         }
@@ -413,7 +445,7 @@ function Long() {
       var f = 0.0,
           d = this._d,
           i = d.length;
-      while (i--) { f = d[i] + 65536.0 * f; }
+      while (i--) { f = d[i] + BASE * f; }
       if (!this._s) { f = -f; }
       return f;
     },
@@ -468,8 +500,8 @@ function Long() {
       i = 0;
       for (var t = 0; i < l; i++) {
         t = (ad[i] << bb) + carry;
-        cd[i + d] = t & 0xffff;
-        carry = t >> 16;
+        cd[i + d] = t & MASK;
+        carry = t >> SHIFT;
       }
       cd[i + d] = carry;
       return longNorm(c);
@@ -494,7 +526,7 @@ function Long() {
           cd = c._d,
           i = 0;
       for (; i < cl - 1; i++) {
-        cd[i] = ((ad[i + d + 1] & mask) << (16 - bb)) + (ad[i + d] >> bb);
+        cd[i] = ((ad[i + d + 1] & mask) << (SHIFT - bb)) + (ad[i + d] >> bb);
       }
       cd[i] = ad[i + d] >> bb;
       return longNorm(c);
@@ -521,19 +553,19 @@ function Long() {
 
       for (var i = 0, j = 1, uv = 0, u = 0, v = 0, c = 0; i < t; i++) {
         uv = w[i << 1] + x[i] * x[i];
-        u = uv >>> 16;
-        v = uv & 0xffff;
+        u = uv >>> SHIFT;
+        v = uv & MASK;
         w[i << 1] = v;
         c = u;
         for (j = i + 1; j < t; j++) {
           // uv = w[i + j] + (x[j] * x[i] << 1) + c
           // can overflow.
           uv = x[j] * x[i];
-          u = (uv >>> 16) << 1;
-          v = (uv & 0xffff) << 1;
+          u = (uv >>> SHIFT) << 1;
+          v = (uv & MASK) << 1;
           v += w[i + j] + c;
-          u += v >>> 16;
-          v &= 0xffff;
+          u += v >>> SHIFT;
+          v &= MASK;
           w[i + j] = v;
           c = u;
         }
@@ -598,7 +630,7 @@ function Long() {
      * @param {Long} b
      * @returns {Long}
      */
-    _gcd: function(b) {
+    gcdBin: function(b) {
       if (this.cmpAbs(b) < 0) { return b._gcd(this); }
 
       var g = longNum(1), a = this.clone();
@@ -647,18 +679,18 @@ function Long() {
           num = 0;
       for (; i < bl; i++) {
         num += ad[i] + bd[i];
-        zd[i] = num & 0xffff;
-        num >>>= 16;
+        zd[i] = num & MASK;
+        num >>>= SHIFT;
       }
       for (; num && i < al; i++) {
         num += ad[i];
-        zd[i] = num & 0xffff;
-        num >>>= 16;
+        zd[i] = num & MASK;
+        num >>>= SHIFT;
       }
       for (; i < al; i++) {
         zd[i] = ad[i];
       }
-      zd[i] = num & 0xffff;
+      zd[i] = num & MASK;
       return longNorm(z);
     },
 
@@ -682,7 +714,7 @@ function Long() {
       for (; i < bl; i++) {
         c = ad[i] - bd[i] - c;
         if (c < 0) {
-          zd[i] = c & 0xffff;
+          zd[i] = c & MASK;
           c = 1;
         } else {
           zd[i] = c;
@@ -692,7 +724,7 @@ function Long() {
       for (; i < al; i++) { 
         c = ad[i] - c;
         if (c < 0) {
-          zd[i] = c & 0xffff;
+          zd[i] = c & MASK;
           c = 1;
         } else {
           zd[i] = c;
@@ -754,8 +786,8 @@ function Long() {
         for (j = 0; j < bl; j++) {
           e = n + d * bd[j];
           n = zd[i + j] + e;
-          if (e) { zd[i + j] = n & 0xffff; }
-          n >>>= 16;
+          if (e) { zd[i + j] = n & MASK; }
+          n >>>= SHIFT;
         }
         if (n) { zd[i + j] = n; }
       }
@@ -797,8 +829,8 @@ function Long() {
         zd = z._d;
         i = na;
         while (i--) {
-          t = t * 0x10000 + zd[i];
-          zd[i] = (t / dd) & 0xffff;
+          t = (t << SHIFT) | zd[i];
+          zd[i] = (t / dd) & MASK;
           t %= dd;
         }
         if (modulus) {
@@ -812,7 +844,7 @@ function Long() {
       z = longAlloc(albl ? na + 2 : na + 1, a._s === b._s);
       zd = z._d;
       longFillZero(z, zd.length);
-      dd = 0x10000 / (bd[nb - 1] + 1) & 0xffff;
+      dd = BASE / (bd[nb - 1] + 1) & MASK;
 
       var j = 0, num = 0;
       if (dd === 1) {
@@ -823,8 +855,8 @@ function Long() {
 
         for (; j < nb; j++) {
           num += bd[j] * dd;
-          td[j] = num & 0xffff;
-          num >>>= 16;
+          td[j] = num & MASK;
+          num >>>= SHIFT;
         }
 
         bd = td;
@@ -832,31 +864,31 @@ function Long() {
 
         for (; j < na; j++) {
           num += ad[j] * dd;
-          zd[j] = num & 0xffff;
-          num >>>= 16;
+          zd[j] = num & MASK;
+          num >>>= SHIFT;
         }
 
-        zd[j] = num & 0xffff;
+        zd[j] = num & MASK;
       }
 
       var q = 0, ee = 0;
       j = albl ? na + 1 : na;
       do {
         if (zd[j] === bd[nb - 1]) {
-          q = 0xffff;
+          q = MASK;
         } else {
-          q = (zd[j] * 0x10000 + zd[j - 1]) / bd[nb - 1] & 0xffff;
+          q = ((zd[j] << SHIFT) | zd[j - 1]) / bd[nb - 1] & MASK;
         }
 
         if (q) {
           i = num = t = 0;
           do {
             t += bd[i] * q;
-            ee = (t & 0xffff) - num;
+            ee = (t & MASK) - num;
             num = zd[j - nb + i] - ee;
-            if (ee) { zd[j - nb + i] = num & 0xffff; }
-            num >>= 16;
-            t >>>= 16;
+            if (ee) { zd[j - nb + i] = num & MASK; }
+            num >>= SHIFT;
+            t >>>= SHIFT;
           } while (++i < nb);
 
           num += zd[j - nb + i] - t;
@@ -867,8 +899,8 @@ function Long() {
             do {
               ee = num + bd[i];
               num = zd[j - nb + i] + ee;
-              if (ee) { zd[j - nb + i] = num & 0xffff; }
-              num >>= 16;
+              if (ee) { zd[j - nb + i] = num & MASK; }
+              num >>= SHIFT;
             } while (++i < nb);
 
             num--;
@@ -884,8 +916,8 @@ function Long() {
           t = 0;
           i = nb;
           while (i--) {
-            t = t * 0x10000 + zd[i];
-            zd[i] = (t / dd) & 0xffff;
+            t = (t << SHIFT) | zd[i];
+            zd[i] = (t / dd) & MASK;
             t %= dd;
           }
         }
