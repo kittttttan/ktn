@@ -136,7 +136,7 @@ void arccot(ULong* dest, ULong* n, int m) {
 	ulongFree(&t);
 }
 
-void pi(ULong* dest, BitSize a) {
+void pi(ULong* dest, ddigit a) {
 	ULong n, t, a5, a239;
 	ulongInit(&n);
 	ulongInit(&t);

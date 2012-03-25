@@ -7,18 +7,22 @@ extern "C" {
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
-#ifdef _WIN32
-#define OUTPUT_FORMAT		"%I64d"
+#ifdef USE_64BIT
+#define SHIFT_BIT	30
+#define SHIFT_DEC	9
+#define BASE_DEC	((digit)1000000000)
+#define getStringLength(l) (l * 241 / 25 + 2)
 #else
-#define OUTPUT_FORMAT		"%lld"
-#endif
-#define OUTPUT_FORMAT_B		"%04x"
-
-#define SHIFT_BIT	16
-#define MASK		0xffff
-
+#define SHIFT_BIT	15
+#define SHIFT_DEC	4
+#define BASE_DEC	((digit)10000)
 #define getStringLength(l) (l * 241 / 50 + 2)
+#endif
+#define BASE		((digit)1 << SHIFT_BIT)
+#define MASK		((digit)(BASE - 1))
+
 #define ulongNorm(self) {	\
 	while (self->l_ > 0 && self->d_[self->l_ - 1] == 0) { --self->l_; }	\
 }
@@ -32,25 +36,39 @@ void ulongAlloc(ULong* self, int length) {
 	if (self->l_ == length) { return; }
 	self->l_ = length;
 	if (self->d_ != NULL) { free(self->d_); }
-	self->d_ = (BitSize*)malloc(sizeof(BitSize) * length);
+	self->d_ = (digit*)malloc(sizeof(digit) * length);
 }
 
 void ulongFillZero(ULong* self, int length) {
 	ulongAlloc(self, length);
-	memset(self->d_, 0, sizeof(BitSize) * length);
+	memset(self->d_, 0, sizeof(digit) * length);
 }
 
-void ulongNum(ULong* self, BitSize n) {
-	self->l_ = 2;
+void ulongNum(ULong* self, ddigit n) {
+	int d = 0;
+	ddigit t = n;
+	while (t) {
+		++d;
+		t >>= SHIFT_BIT;
+	}
+	self->l_ = d;
 	if (self->d_ != NULL) { free(self->d_); }
-	self->d_ = (BitSize*)malloc(sizeof(BitSize) * 2);
-	self->d_[0] = n & MASK;
-	self->d_[1] = (n >> SHIFT_BIT) & MASK;
+	self->d_ = (digit*)malloc(sizeof(digit) * d);
+	if (!self->d_) { printf("malloc error.\n"); return; }
+	d = 0;
+	t = n;
+	while (t) {
+		self->d_[d++] = t & MASK;
+		t >>= SHIFT_BIT;
+	}
 	ulongNorm(self);
 }
 
 void ulongFree(ULong* self) {
-	free(self->d_);
+	if (self->d_ != NULL) {
+		free(self->d_);
+		self->d_ = NULL;
+	}
 }
 
 void ulongClone(ULong* dest, const ULong* src) {
@@ -58,10 +76,10 @@ void ulongClone(ULong* dest, const ULong* src) {
 	if (dest->l_ != src->l_) {
 		dest->l_ = src->l_;
 		if (dest->d_ != NULL) { free(dest->d_); }
-		dest->d_ = (BitSize*)malloc(sizeof(BitSize) * dest->l_);
+		dest->d_ = (digit*)malloc(sizeof(digit) * dest->l_);
 		if (!dest->d_) { printf("malloc error. @%d\n",__LINE__); return; }
 	}
-	memcpy(dest->d_, src->d_, sizeof(BitSize) * dest->l_);
+	memcpy(dest->d_, src->d_, sizeof(digit) * dest->l_);
 }
 
 void reverseChar(char* s) {
@@ -79,42 +97,13 @@ void reverseChar(char* s) {
 	}
 }
 
-#ifndef _MSC_VER
-/**
- * @param[in]  value
- * @param[out] result
- * @param[in]  base
- */
-static char* itoa(int value, char* result, int base) {
-	if (base < 2 || base > 36) { *result = '\0'; return result; }
-
-	const char *digits = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz";
-	char* ptr = result, *ptr1 = result, tmp_char;
-	int tmp_value;
-
-	do {
-		tmp_value = value;
-		value /= base;
-		*ptr++ = digits[35 + (tmp_value - value * base)];
-	} while (value);
-
-	if (tmp_value < 0) { *ptr++ = '-'; }
-	*ptr-- = '\0';
-	while (ptr1 < ptr) {
-		tmp_char = *ptr;
-		*ptr-- = *ptr1;
-		*ptr1++ = tmp_char;
-	}
-	return result;
-}
-#endif
-
 /**
  * @param[out] s
  */
 void ulongStr(const ULong* self, char *s) {
-	const int radix = 10, hradix = 10000;
-	int i, j, index;
+	const int radix = 10, hradix = BASE_DEC;
+	int i, j, k, index;
+	ddigit n;
 	const char digits[] = "0123456789";
 	ULong t;
 
@@ -126,11 +115,14 @@ void ulongStr(const ULong* self, char *s) {
 
 	i = self->l_;
 	if (i < 2) {
-#ifdef _MSC_VER
-		_itoa_s((int)self->d_[0], s, 19, radix);
-#else
-		itoa((int)self->d_[0], s, radix);
-#endif
+		digit d = self->d_[0];
+		j = 0;
+		while (d) {
+			s[j++] = digits[d % radix];
+			d /= radix;
+		}
+		s[j] = '\0';
+		reverseChar(s);
 		return;
 	}
 
@@ -141,15 +133,15 @@ void ulongStr(const ULong* self, char *s) {
 	index = 0;
 	
 	while (i && j) {
-		int k = i;
-		BitSize n = 0;
+		k = i;
+		n = 0;
 		while (k--) {
-			n = (n << SHIFT_BIT) + t.d_[k];
-			t.d_[k] = n / hradix;
+			n = (n << SHIFT_BIT) | t.d_[k];
+			t.d_[k] = (n / hradix) & MASK;
 			n %= hradix;
 		}
 		if (t.d_[i - 1] == 0) { --i; }
-		k = 4;
+		k = SHIFT_DEC;
 		while (k--) {
 			s[index] = digits[n % radix];
 			++index;
@@ -194,7 +186,7 @@ void ulongWriteln(const ULong* self) {
 
 void ulongAdd(ULong* dest, const ULong* lhs, const ULong* rhs) {
 	int i;
-	BitSize n;
+	ddigit n;
 	if (ulongIsZero(lhs)) {
 		ulongClone(dest, rhs);
 		return;
@@ -215,11 +207,13 @@ void ulongAdd(ULong* dest, const ULong* lhs, const ULong* rhs) {
 		n += lhs->d_[i] + rhs->d_[i];
 		dest->d_[i] = n & MASK;
 		n >>= SHIFT_BIT;
+		assert((n & 1) == n);
 	}
 	for (; n && i < lhs->l_; ++i) {
 		n += lhs->d_[i];
 		dest->d_[i] = n & MASK;
 		n >>= SHIFT_BIT;
+		assert((n & 1) == n);
 	}
 	for (; i < lhs->l_; ++i) {
 		dest->d_[i] = lhs->d_[i];
@@ -230,7 +224,7 @@ void ulongAdd(ULong* dest, const ULong* lhs, const ULong* rhs) {
 
 void ulongSub(ULong* dest, const ULong* lhs, const ULong* rhs) {
 	int i;
-	BitSize c;
+	digit c;
 
 	if (ulongIsZero(rhs)) {
 		ulongClone(dest, lhs);
@@ -243,19 +237,19 @@ void ulongSub(ULong* dest, const ULong* lhs, const ULong* rhs) {
 	c = 0;
 	for (; i < rhs->l_; ++i) {
 		if (lhs->d_[i] < rhs->d_[i] + c) {
-			dest->d_[i] = (MASK + 1) + lhs->d_[i] - rhs->d_[i] - c;
+			dest->d_[i] = (digit)BASE + lhs->d_[i] - rhs->d_[i] - c;
 			c = 1;
 		} else {
-			dest->d_[i] = lhs->d_[i] - rhs->d_[i] - c;
+			dest->d_[i] = (digit)lhs->d_[i] - rhs->d_[i] - c;
 			c = 0;
 		}
 	}
 	for (; i < lhs->l_; ++i) {
 		if (lhs->d_[i] < c) {
-			dest->d_[i] = (MASK + 1) + lhs->d_[i] - c;
+			dest->d_[i] = (digit)BASE + lhs->d_[i] - c;
 			c = 1;
 		} else {
-			dest->d_[i] = lhs->d_[i] - c;
+			dest->d_[i] = (digit)lhs->d_[i] - c;
 			c = 0;
 		}
 	}
@@ -264,7 +258,7 @@ void ulongSub(ULong* dest, const ULong* lhs, const ULong* rhs) {
 
 void ulongMul(ULong* dest, const ULong* lhs, const ULong* rhs) {
 	int i, j;
-	BitSize n, e;
+	ddigit n, e;
 	if (ulongIsZero(rhs)) {
 		ulongInit(dest);
 		return;
@@ -298,10 +292,10 @@ void ulongMul(ULong* dest, const ULong* lhs, const ULong* rhs) {
  * @return modulus if mod is true, else division
  */
 void ulongDivmod(ULong* dest, const ULong* lhs, const ULong* rhs, bool mod) {
-	const int albl = lhs->l_ == rhs->l_;
+	const bool albl = lhs->l_ == rhs->l_;
 	int i, j;
 	ULong bb, div;
-	BitSize dd, ee, t, num, q;
+	ddigit dd, ee, t, num, q;
 
 	if (ulongIsZero(rhs)) {
 		printf("Zero Division @%d\n", __LINE__);
@@ -346,13 +340,13 @@ void ulongDivmod(ULong* dest, const ULong* lhs, const ULong* rhs, bool mod) {
 	ulongInit(&bb);
 	ulongClone(&bb, rhs);
 	ulongFillZero(dest, albl ? lhs->l_ + 2 : lhs->l_ + 1);
-	dd = (MASK + 1) / (rhs->d_[rhs->l_ - 1] + 1) & MASK;
+	dd = BASE / (rhs->d_[rhs->l_ - 1] + 1) & MASK;
 	
 	if (dd == 1) {
 		j = lhs->l_;
 		while (j--) { dest->d_[j] = lhs->d_[j]; }
 	} else {
-		BitSize num = 0;
+		num = 0;
 		for (j = 0; j < rhs->l_; ++j) {
 			num += rhs->d_[j] * dd;
 			bb.d_[j] = num & MASK;
@@ -409,15 +403,15 @@ void ulongDivmod(ULong* dest, const ULong* lhs, const ULong* rhs, bool mod) {
 			}
 		}
 
-		dest->d_[j] = q;
+		dest->d_[j] = (digit)q;
 	} while (--j >= bb.l_);
 
 	ulongInit(&div);
 	ulongClone(&div, dest);
 	if (mod) {
 		if (dd != 0) {
-			BitSize t = 0;
-			int i = bb.l_;
+			t = 0;
+			i = bb.l_;
 			while (i--) {
 				t = (t << SHIFT_BIT) + div.d_[i];
 				div.d_[i] = (t / dd) & MASK;
@@ -442,30 +436,30 @@ void ulongDivmod(ULong* dest, const ULong* lhs, const ULong* rhs, bool mod) {
 	ulongFree(&bb);
 }
 
-void ulongLeftShift(ULong* dest, const ULong* self, BitSize n) {
+void ulongLeftShift(ULong* dest, const ULong* self, ddigit n) {
 	int i;
 	const int d = (int)n / SHIFT_BIT;
-	const BitSize b = n % SHIFT_BIT;
-	BitSize t, carry = 0;
+	const ddigit b = n % SHIFT_BIT;
+	ddigit t, carry = 0;
 
 	ulongAlloc(dest, self->l_ + d + 1);
-	memset(dest->d_, 0, sizeof(BitSize) * d);
+	memset(dest->d_, 0, sizeof(digit) * d);
 
 	for (i = 0; i < self->l_; ++i) {
 		t = (self->d_[i] << b) + carry;
 		dest->d_[i + d] = t & MASK;
 		carry = t >> SHIFT_BIT;
 	}
-	dest->d_[i + d] = carry;
+	dest->d_[i + d] = (digit)carry;
 
 	ulongNorm(dest);
 }
 
-void ulongRightShift(ULong* dest, const ULong* self, BitSize n) {
+void ulongRightShift(ULong* dest, const ULong* self, ddigit n) {
 	int i = 0;
 	const int d = (int)n / SHIFT_BIT;
-	const BitSize b = n % SHIFT_BIT;
-	const BitSize mask = (1 << b) - 1;
+	const ddigit b = n % SHIFT_BIT;
+	const ddigit mask = (1 << b) - 1;
 
 	if (self->l_ <= d) {
 		ulongInit(dest);
@@ -483,7 +477,7 @@ void ulongRightShift(ULong* dest, const ULong* self, BitSize n) {
 }
 
 void ulongSquare(ULong* dest, const ULong* self) {
-	BitSize u, v ,uv, c;
+	ddigit u, v ,uv, c;
 	int i, j;
 	ulongFillZero(dest, self->l_ << 1);
 
@@ -491,7 +485,7 @@ void ulongSquare(ULong* dest, const ULong* self) {
 		uv = dest->d_[i << 1] + self->d_[i] * self->d_[i];
 		u = uv >> SHIFT_BIT;
 		v = uv & MASK;
-		dest->d_[i << 1] = v;
+		dest->d_[i << 1] = (digit)v;
 		c = u;
 		for (j = i + 1; j < self->l_; ++j) {
 			uv = self->d_[j] * self->d_[i];
@@ -500,10 +494,10 @@ void ulongSquare(ULong* dest, const ULong* self) {
 			v += dest->d_[i + j] + c;
 			u += v >> SHIFT_BIT;
 			v &= MASK;
-			dest->d_[i + j] = v;
+			dest->d_[i + j] = (digit)v;
 			c = u;
 		}
-		dest->d_[i + self->l_] = u;
+		dest->d_[i + self->l_] = (digit)u;
 	}
 
 	ulongNorm(dest);
@@ -535,7 +529,7 @@ void ulongSqrt(ULong* dest, const ULong* self) {
 	} while (ulongGt(dest, &c));
 }
 
-void ulongPow(ULong* dest, const ULong* self, BitSize n) {
+void ulongPow(ULong* dest, const ULong* self, ddigit n) {
 	ULong a, t;
 	ulongInit(&a);
 	ulongInit(&t);

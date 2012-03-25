@@ -23,7 +23,7 @@ friend std::ostream& operator<<(std::ostream& os, const Long& l);
 public:
 	Long() : u_(), s_(true) {}
 	Long(const Long& l);
-	explicit Long(BitSize a);
+	explicit Long(ddigit a);
 	explicit Long(const ULong& u, bool s=true) : u_(u), s_(s) {}
 	explicit Long(const char *s, int base);
 	~Long() {}
@@ -38,7 +38,7 @@ public:
 	std::string str(int base=10) const;
 	void debug() const;
 	int cmp(const Long& b) const;
-	int cmp(BitSize b) const;
+	int cmp(ddigit b) const;
 
 	bool operator!() const;
 	Long operator+() const;
@@ -54,13 +54,13 @@ public:
 	Long operator/(const Long& b) const;
 	Long operator%(const Long& b) const;
 
-	Long operator+(BitSize b) const;
-	Long operator-(BitSize b) const;
-	Long operator*(BitSize b) const;
-	Long operator/(BitSize b) const;
-	Long operator%(BitSize b) const;
-	Long operator<<(BitSize n) const;
-	Long operator>>(BitSize n) const;
+	Long operator+(ddigit b) const;
+	Long operator-(ddigit b) const;
+	Long operator*(ddigit b) const;
+	Long operator/(ddigit b) const;
+	Long operator%(ddigit b) const;
+	Long operator<<(ddigit n) const;
+	Long operator>>(ddigit n) const;
 
 	Long& operator=(const Long& b);
 	Long& operator+=(const Long& b);
@@ -69,13 +69,13 @@ public:
 	Long& operator/=(const Long& b);
 	Long& operator%=(const Long& b);
 
-	Long& operator+=(BitSize b);
-	Long& operator-=(BitSize b);
-	Long& operator*=(BitSize b);
-	Long& operator/=(BitSize b);
-	Long& operator%=(BitSize b);
-	Long& operator<<=(BitSize n);
-	Long& operator>>=(BitSize n);
+	Long& operator+=(ddigit b);
+	Long& operator-=(ddigit b);
+	Long& operator*=(ddigit b);
+	Long& operator/=(ddigit b);
+	Long& operator%=(ddigit b);
+	Long& operator<<=(ddigit n);
+	Long& operator>>=(ddigit n);
 
 	bool operator==(const Long& b) const;
 	bool operator!=(const Long& b) const;
@@ -84,12 +84,12 @@ public:
 	bool operator<=(const Long& b) const;
 	bool operator>=(const Long& b) const;
 
-	bool operator==(BitSize b) const;
-	bool operator!=(BitSize b) const;
-	bool operator<(BitSize b) const;
-	bool operator>(BitSize b) const;
-	bool operator<=(BitSize b) const;
-	bool operator>=(BitSize b) const;
+	bool operator==(ddigit b) const;
+	bool operator!=(ddigit b) const;
+	bool operator<(ddigit b) const;
+	bool operator>(ddigit b) const;
+	bool operator<=(ddigit b) const;
+	bool operator>=(ddigit b) const;
 
 private:
 	ULong u_;

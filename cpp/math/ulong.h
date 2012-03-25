@@ -11,7 +11,14 @@
 
 namespace ktn { namespace math {
 
-typedef long long BitSize;
+//#define USE_64BIT
+#ifdef USE_64BIT
+typedef long digit;
+typedef long long ddigit;
+#else
+typedef short digit;
+typedef long ddigit;
+#endif
 
 /**
  * @brief Unsigned BigInteger.
@@ -23,7 +30,7 @@ friend std::ostream& operator<<(std::ostream& os, const ULong& l);
 
 public:
 	explicit ULong() : l_(0), d_(nullptr) {}
-	explicit ULong(BitSize u);
+	explicit ULong(ddigit u);
 	ULong(const ULong& l);
 	explicit ULong(const char *s, int base);
 	~ULong() { delete [] d_; }
@@ -40,14 +47,14 @@ public:
 
 	ULong square() const;
 	ULong sqrt() const;
-	ULong pow(BitSize n) const;
+	ULong pow(ddigit n) const;
 	ULong karatsuba(const ULong& u) const;
 	ULong divmod(const ULong& b, bool mod) const;
 	ULong gcd(const ULong& b) const;
 	ULong gcdBin(const ULong& b) const;
-	BitSize bitLength() const;
+	ddigit bitLength() const;
 	int cmp(const ULong& b) const;
-	int cmp(BitSize b) const;
+	int cmp(ddigit b) const;
 
 	bool operator!() const;
 	ULong operator+() const;
@@ -62,13 +69,13 @@ public:
 	ULong operator/(const ULong& b) const;
 	ULong operator%(const ULong& b) const;
 
-	ULong operator+(BitSize b) const;
-	ULong operator-(BitSize b) const;
-	ULong operator*(BitSize b) const;
-	ULong operator/(BitSize b) const;
-	ULong operator%(BitSize b) const;
-	ULong operator<<(BitSize n) const;
-	ULong operator>>(BitSize n) const;
+	ULong operator+(ddigit b) const;
+	ULong operator-(ddigit b) const;
+	ULong operator*(ddigit b) const;
+	ULong operator/(ddigit b) const;
+	ULong operator%(ddigit b) const;
+	ULong operator<<(ddigit n) const;
+	ULong operator>>(ddigit n) const;
 
 	ULong& operator=(const ULong& b);
 	ULong& operator+=(const ULong& b);
@@ -77,13 +84,13 @@ public:
 	ULong& operator/=(const ULong& b);
 	ULong& operator%=(const ULong& b);
 
-	ULong& operator+=(BitSize b);
-	ULong& operator-=(BitSize b);
-	ULong& operator*=(BitSize b);
-	ULong& operator/=(BitSize b);
-	ULong& operator%=(BitSize b);
-	ULong& operator<<=(BitSize n);
-	ULong& operator>>=(BitSize n);
+	ULong& operator+=(ddigit b);
+	ULong& operator-=(ddigit b);
+	ULong& operator*=(ddigit b);
+	ULong& operator/=(ddigit b);
+	ULong& operator%=(ddigit b);
+	ULong& operator<<=(ddigit n);
+	ULong& operator>>=(ddigit n);
 
 	bool operator==(const ULong& b) const;
 	bool operator!=(const ULong& b) const;
@@ -92,19 +99,19 @@ public:
 	bool operator<=(const ULong& b) const;
 	bool operator>=(const ULong& b) const;
 
-	bool operator==(BitSize b) const;
-	bool operator!=(BitSize b) const;
-	bool operator<(BitSize b) const;
-	bool operator>(BitSize b) const;
-	bool operator<=(BitSize b) const;
-	bool operator>=(BitSize b) const;
+	bool operator==(ddigit b) const;
+	bool operator!=(ddigit b) const;
+	bool operator<(ddigit b) const;
+	bool operator>(ddigit b) const;
+	bool operator<=(ddigit b) const;
+	bool operator>=(ddigit b) const;
 
 private:
 	void alloc(int length, bool zero);
 	void norm();
 
 	int l_;			/**< length */
-	BitSize* d_;	/**< digit blocks */
+	digit* d_;	/**< digit blocks */
 };
 }} // namespace ktn math
 #endif // KTN_MATH_ULONG_H_

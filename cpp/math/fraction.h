@@ -22,8 +22,8 @@ friend std::ostream& operator<<(std::ostream& os, const Fraction& f);
 
 public:
 	explicit Fraction() : s_(true), n_(0), d_(1) {}
-	explicit Fraction(BitSize a);
-	explicit Fraction(BitSize a, BitSize b);
+	explicit Fraction(ddigit a);
+	explicit Fraction(ddigit a, ddigit b);
 	Fraction(const Fraction& f);
 	explicit Fraction(const ULong& a, bool s=true) : s_(s), n_(a), d_(1) {}
 	explicit Fraction(const ULong& a, const ULong& b,bool s=true);
@@ -41,7 +41,7 @@ public:
 	void cstr(char *s, int radix=10) const;
 	void out(int radix=10, bool br=true) const;
 	int cmp(const Fraction& b) const;
-	int cmp(BitSize b) const;
+	int cmp(ddigit b) const;
 
 	bool operator!() const;
 	Fraction operator+() const;
@@ -56,12 +56,12 @@ public:
 	Fraction operator*(const Fraction& b) const;
 	Fraction operator/(const Fraction& b) const;
 
-	Fraction operator+(BitSize b) const;
-	Fraction operator-(BitSize b) const;
-	Fraction operator*(BitSize b) const;
-	Fraction operator/(BitSize b) const;
-	Fraction operator<<(BitSize n) const;
-	Fraction operator>>(BitSize n) const;
+	Fraction operator+(ddigit b) const;
+	Fraction operator-(ddigit b) const;
+	Fraction operator*(ddigit b) const;
+	Fraction operator/(ddigit b) const;
+	Fraction operator<<(ddigit n) const;
+	Fraction operator>>(ddigit n) const;
 
 	Fraction& operator=(const Fraction& b);
 	Fraction& operator+=(const Fraction& b);
@@ -69,12 +69,12 @@ public:
 	Fraction& operator*=(const Fraction& b);
 	Fraction& operator/=(const Fraction& b);
 
-	Fraction& operator+=(BitSize b);
-	Fraction& operator-=(BitSize b);
-	Fraction& operator*=(BitSize b);
-	Fraction& operator/=(BitSize b);
-	Fraction& operator<<=(BitSize n);
-	Fraction& operator>>=(BitSize n);
+	Fraction& operator+=(ddigit b);
+	Fraction& operator-=(ddigit b);
+	Fraction& operator*=(ddigit b);
+	Fraction& operator/=(ddigit b);
+	Fraction& operator<<=(ddigit n);
+	Fraction& operator>>=(ddigit n);
 
 	bool operator==(const Fraction& b) const;
 	bool operator!=(const Fraction& b) const;
@@ -83,12 +83,12 @@ public:
 	bool operator<=(const Fraction& b) const;
 	bool operator>=(const Fraction& b) const;
 
-	bool operator==(BitSize b) const;
-	bool operator!=(BitSize b) const;
-	bool operator<(BitSize b) const;
-	bool operator>(BitSize b) const;
-	bool operator<=(BitSize b) const;
-	bool operator>=(BitSize b) const;
+	bool operator==(ddigit b) const;
+	bool operator!=(ddigit b) const;
+	bool operator<(ddigit b) const;
+	bool operator>(ddigit b) const;
+	bool operator<=(ddigit b) const;
+	bool operator>=(ddigit b) const;
 
 private:
 	void cancel();

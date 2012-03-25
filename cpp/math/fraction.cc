@@ -11,7 +11,7 @@ namespace ktn { namespace math {
 const Fraction Fraction::ZERO(0);
 const Fraction Fraction::ONE(1);
 
-Fraction::Fraction(BitSize a) : d_(1) {
+Fraction::Fraction(ddigit a) : d_(1) {
 	if (a < 0) {
 		s_ = false;
 		n_ = ULong(-a);
@@ -41,7 +41,7 @@ inline void Fraction::cancel() {
 	d_ /= g;
 }
 
-Fraction::Fraction(BitSize a, BitSize b) {
+Fraction::Fraction(ddigit a, ddigit b) {
 	if (a < 0) {
 		s_ = false;
 		n_ = ULong(-a);
@@ -148,11 +148,11 @@ Fraction Fraction::operator/(const Fraction& b) const {
 	return Fraction(n_ * b.d_, d_ * b.n_, s_ == b.s_);
 }
 
-Fraction Fraction::operator<<(BitSize n) const {
+Fraction Fraction::operator<<(ddigit n) const {
 	return Fraction(n_ << n, d_);
 }
 
-Fraction Fraction::operator>>(BitSize n) const {
+Fraction Fraction::operator>>(ddigit n) const {
 	return Fraction(n_, d_ << n);
 }
 
@@ -185,12 +185,12 @@ Fraction& Fraction::operator/=(const Fraction& b) {
 	return *this;
 }
 
-Fraction& Fraction::operator<<=(BitSize n) {
+Fraction& Fraction::operator<<=(ddigit n) {
 	*this = *this << n;
 	return *this;
 }
 
-Fraction& Fraction::operator>>=(BitSize n) {
+Fraction& Fraction::operator>>=(ddigit n) {
 	*this = *this >> n;
 	return *this;
 }
@@ -227,67 +227,67 @@ bool Fraction::operator<=(const Fraction& b) const {
 }
 
 
-Fraction Fraction::operator+(BitSize b) const {
+Fraction Fraction::operator+(ddigit b) const {
 	return *this + Fraction(b);
 }
 
-Fraction Fraction::operator-(BitSize b) const {
+Fraction Fraction::operator-(ddigit b) const {
 	return *this - Fraction(b);
 }
 
-Fraction Fraction::operator*(BitSize b) const {
+Fraction Fraction::operator*(ddigit b) const {
 	return *this * Fraction(b);
 }
 
-Fraction Fraction::operator/(BitSize b) const {
+Fraction Fraction::operator/(ddigit b) const {
 	return *this / Fraction(b);
 }
 
-Fraction& Fraction::operator+=(BitSize b) {
+Fraction& Fraction::operator+=(ddigit b) {
 	*this = *this + b;
 	return *this;
 }
 
-Fraction& Fraction::operator-=(BitSize b) {
+Fraction& Fraction::operator-=(ddigit b) {
 	*this = *this - b;
 	return *this;
 }
 
-Fraction& Fraction::operator*=(BitSize b) {
+Fraction& Fraction::operator*=(ddigit b) {
 	*this = *this * b;
 	return *this;
 }
 
-Fraction& Fraction::operator/=(BitSize b) {
+Fraction& Fraction::operator/=(ddigit b) {
 	*this = *this / b;
 	return *this;
 }
 
-int Fraction::cmp(BitSize b) const {
+int Fraction::cmp(ddigit b) const {
 	return cmp(Fraction(b));
 }
 
-bool Fraction::operator==(BitSize b) const {
+bool Fraction::operator==(ddigit b) const {
 	return cmp(b) == 0;
 }
 
-bool Fraction::operator!=(BitSize b) const {
+bool Fraction::operator!=(ddigit b) const {
 	return cmp(b) != 0;
 }
 
-bool Fraction::operator>(BitSize b) const {
+bool Fraction::operator>(ddigit b) const {
 	return cmp(b) > 0;
 }
 
-bool Fraction::operator<(BitSize b) const {
+bool Fraction::operator<(ddigit b) const {
 	return cmp(b) < 0;
 }
 
-bool Fraction::operator>=(BitSize b) const {
+bool Fraction::operator>=(ddigit b) const {
 	return cmp(b) >= 0;
 }
 
-bool Fraction::operator<=(BitSize b) const {
+bool Fraction::operator<=(ddigit b) const {
 	return cmp(b) <= 0;
 }
 

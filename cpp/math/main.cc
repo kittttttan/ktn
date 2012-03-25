@@ -18,9 +18,9 @@ int main(int argc, char** argv) {
 	vectorBasic();
 	matrixBasic();
 
-	//fib<ULong>(7777).out();
-	//fact<ULong>(777).out();
-	//pi(2000).out();
+	//fib<ktn::math::ULong>(7777).out();
+	//fact<ktn::math::ULong>(777).out();
+	//pi(777).out();
 	//kTest();
 
 #if defined(_MSC_VER)

@@ -31,7 +31,7 @@ void ulongBasic();
 void longBasic();
 void fractionBasic();
 ktn::math::ULong arccot(const ktn::math::ULong& n, int m);
-ktn::math::ULong pi(ktn::math::BitSize a);
+ktn::math::ULong pi(ktn::math::ddigit a);
 void kTest();
 void compBasic();
 void vectorBasic();

@@ -17,7 +17,7 @@ Long::Long(const Long& l) {
 	u_ = l.u_;
 }
 
-Long::Long(BitSize a) {
+Long::Long(ddigit a) {
 	if (a < 0) {
 		s_ = false;
 		u_ = ULong(-a);
@@ -159,20 +159,20 @@ Long Long::operator%(const Long& a) const {
 	return Long(u_ % a.u_, s_);
 }
 
-Long Long::operator<<(BitSize n) const {
+Long Long::operator<<(ddigit n) const {
 	return Long(u_ << n, true);
 }
 
-Long Long::operator>>(BitSize n) const {
+Long Long::operator>>(ddigit n) const {
 	return Long(u_ >> n, true);
 }
 
-Long& Long::operator<<=(BitSize n) {
+Long& Long::operator<<=(ddigit n) {
 	*this = *this << n;
 	return *this;
 }
 
-Long& Long::operator>>=(BitSize n) {
+Long& Long::operator>>=(ddigit n) {
 	*this = *this >> n;
 	return *this;
 }
@@ -227,76 +227,76 @@ bool Long::operator<=(const Long& b) const {
 }
 
 
-Long Long::operator+(BitSize b) const {
+Long Long::operator+(ddigit b) const {
 	return *this + Long(b);
 }
 
-Long Long::operator-(BitSize b) const {
+Long Long::operator-(ddigit b) const {
 	return *this - Long(b);
 }
 
-Long Long::operator*(BitSize b) const {
+Long Long::operator*(ddigit b) const {
 	return *this * Long(b);
 }
 
-Long Long::operator/(BitSize b) const {
+Long Long::operator/(ddigit b) const {
 	return *this / Long(b);
 }
 
-Long Long::operator%(BitSize b) const {
+Long Long::operator%(ddigit b) const {
 	return *this % Long(b);
 }
 
-Long& Long::operator+=(BitSize b) {
+Long& Long::operator+=(ddigit b) {
 	*this = *this + b;
 	return *this;
 }
 
-Long& Long::operator-=(BitSize b) {
+Long& Long::operator-=(ddigit b) {
 	*this = *this - b;
 	return *this;
 }
 
-Long& Long::operator*=(BitSize b) {
+Long& Long::operator*=(ddigit b) {
 	*this = *this * b;
 	return *this;
 }
 
-Long& Long::operator/=(BitSize b) {
+Long& Long::operator/=(ddigit b) {
 	*this = *this / b;
 	return *this;
 }
 
-Long& Long::operator%=(BitSize b) {
+Long& Long::operator%=(ddigit b) {
 	*this = *this % b;
 	return *this;
 }
 
-int Long::cmp(BitSize b) const {
+int Long::cmp(ddigit b) const {
 	return cmp(Long(b));
 }
 
-bool Long::operator==(BitSize b) const {
+bool Long::operator==(ddigit b) const {
 	return cmp(b) == 0;
 }
 
-bool Long::operator!=(BitSize b) const {
+bool Long::operator!=(ddigit b) const {
 	return cmp(b) != 0;
 }
 
-bool Long::operator>(BitSize b) const {
+bool Long::operator>(ddigit b) const {
 	return cmp(b) > 0;
 }
 
-bool Long::operator<(BitSize b) const {
+bool Long::operator<(ddigit b) const {
 	return cmp(b) < 0;
 }
 
-bool Long::operator>=(BitSize b) const {
+bool Long::operator>=(ddigit b) const {
 	return cmp(b) >= 0;
 }
 
-bool Long::operator<=(BitSize b) const {
+bool Long::operator<=(ddigit b) const {
 	return cmp(b) <= 0;
 }
 }} // namespace ktn math

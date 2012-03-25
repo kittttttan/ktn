@@ -95,7 +95,7 @@ ULong arccot(const ULong& n, int m) {
 	return a;
 }
 
-ULong pi(BitSize a) {
+ULong pi(ddigit a) {
 	ULong n(10);
 	n = n.pow(a);
 

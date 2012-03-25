@@ -11,7 +11,7 @@ void basic();
 void fib(ULong* dest, int n);
 void fact(ULong* dest, int n);
 void arccot(ULong* dest, ULong* n, int m);
-void pi(ULong* dest, BitSize a);
+void pi(ULong* dest, ddigit a);
 
 #ifdef __cplusplus
 }

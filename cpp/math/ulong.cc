@@ -17,31 +17,38 @@ namespace ktn { namespace math {
 #endif
 #define OUTPUT_FORMAT_B		"%04x"
 
-static const int SHIFT_BIT	= 16;
-static const int MASK		= 0xffff;
+#ifdef USE_64BIT
+#define SHIFT_BIT	30
+#define SHIFT_DEC	9
+#define BASE_DEC	(1000000000)
+#define getStringLength(l) (l * 241 / 25 + 2)
+#else
+#define SHIFT_BIT	15
+#define SHIFT_DEC	4
+#define BASE_DEC	(10000)
+#define getStringLength(l) (l * 241 / 50 + 2)
+#endif
+#define BASE		(1 << SHIFT_BIT)
+#define MASK		(BASE - 1)
 
 const ULong ULong::ZERO(0);	/**< constant zero */
 const ULong ULong::ONE(1);	/**< constant one */
 
-inline int getStringLength(int l) {
-	return l * 241 / 50 + 2;
-}
-
 ULong::ULong(const ULong& l) {
 	if (this == &l) { return; }
 	l_ = l.l_;
-	d_ = new BitSize[l_];
+	d_ = new digit[l_];
 	if (!d_) { l_ = 0; return; }
 	for (int i = 0; i < l_; ++i) {
 		d_[i] = l.d_[i];
 	}
 }
 
-ULong::ULong(BitSize u) : l_(2) {
-	d_ = new BitSize[2];
-	if (!d_) { fprintf(stderr, "Failed new BitSize[2]"); return; }
+ULong::ULong(ddigit u) : l_(2) {
+	d_ = new digit[2];
+	if (!d_) { fprintf(stderr, "Failed new ddigit[2]"); return; }
 	d_[0] = u & MASK;
-	d_[1] = u >> SHIFT_BIT;
+	d_[1] = (u >> SHIFT_BIT) & MASK;
 	norm();
 }
 
@@ -69,14 +76,14 @@ ULong::ULong(const char *s, int radix) {
 	len = (len >> 4) + 1;
 
 	l_ = len;
-	d_ = new BitSize[len];
-	if (!d_) { fprintf(stderr, "Failed new BitSize[%d]", len); return; }
+	d_ = new digit[len];
+	if (!d_) { fprintf(stderr, "Failed new ddigit[%d]", len); return; }
 	for (int i = 0; i < len; ++i) {
 		d_[i] = 0;
 	}
 
 	for (int bl = 1; ; ++index) {
-		BitSize n = s[index] - '0';
+		ddigit n = s[index] - '0';
 		if (n > 9 || n < 0) { break; }
 		for (int i = 0;;) {
 			for (; i < bl; ++i) {
@@ -108,7 +115,7 @@ void ULong::alloc(int length, bool zero) {
 	if (l_ != length) {
 		l_ = length;
 		delete [] d_;
-		d_ = new BitSize[l_];
+		d_ = new digit[l_];
 	}
 	if (!zero) { return; }
 	for (int i = 0; i < length; ++i) {
@@ -150,10 +157,10 @@ ULong& ULong::operator=(const ULong& b) {
 	if (this == &b) { return *this; }
 	if (l_ < b.l_) {
 		delete [] d_;
-		d_ = new BitSize[b.l_];
+		d_ = new digit[b.l_];
 		if (!d_) {
 			l_ = 0;
-			fprintf(stderr, "Failed new BitSize[%d]", b.l_);
+			fprintf(stderr, "Failed new ddigit[%d]", b.l_);
 			return *this;
 		}
 	}
@@ -221,36 +228,6 @@ std::string ULong::str(int radix) const {
 	return s;
 }
 
-#ifndef _MSC_VER
-/**
- * @param[in]  value
- * @param[out] result
- * @param[in]  base
- */
-static char* itoa(int value, char* result, int base) {
-	if (base < 2 || base > 36) { *result = '\0'; return result; }
-
-	const char *digits = "zyxwvutsrqponmlkjihgfedcba9876543210123456789abcdefghijklmnopqrstuvwxyz";
-	char* ptr = result, *ptr1 = result, tmp_char;
-	int tmp_value;
-
-	do {
-		tmp_value = value;
-		value /= base;
-		*ptr++ = digits[35 + (tmp_value - value * base)];
-	} while (value);
-
-	if (tmp_value < 0) { *ptr++ = '-'; }
-	*ptr-- = '\0';
-	while (ptr1 < ptr) {
-		tmp_char = *ptr;
-		*ptr-- = *ptr1;
-		*ptr1++ = tmp_char;
-	}
-	return result;
-}
-#endif
-
 /**
  * @param[out] s
  * @param[in]  radix 
@@ -261,17 +238,21 @@ void ULong::cstr(char *s, int radix) const {
 		s[1] = '\0';
 		return;
 	}
-	int i = l_;
+
+	const char digits[] = "0123456789";
+	int i = l_, j;
 	if (i < 2) {
-#ifdef _MSC_VER
-		_itoa_s(static_cast<int>(d_[0]), s, 19, radix);
-#else
-		itoa(static_cast<int>(d_[0]), s, radix);
-#endif
+		digit d = d_[0];
+		j = 0;
+		while (d) {
+			s[j++] = digits[d % radix];
+			d /= radix;
+		}
+		s[j] = '\0';
+		reverseChar(s);
 		return;
 	}
 
-	int j;
 	int hradix;
 	if (radix == 8) {
 		j = (i << 4) + 2;
@@ -281,16 +262,15 @@ void ULong::cstr(char *s, int radix) const {
 		hradix = 10000;
 	}
 
-	const char digits[] = "0123456789";
 	ULong t(*this);
 	int index = 0;
 	
 	while (i && j) {
 		int k = i;
-		BitSize n = 0;
+		ddigit n = 0;
 		while (k--) {
-			n = (n << SHIFT_BIT) + t.d_[k];
-			t.d_[k] = n / hradix;
+			n = (n << SHIFT_BIT) | t.d_[k];
+			t.d_[k] = (n / hradix) & MASK;
 			n %= hradix;
 		}
 		if (t.d_[i - 1] == 0) { --i; }
@@ -322,7 +302,7 @@ void ULong::out(int base, bool br) const {
 	if (base == 2) {
 		int i = l_ - 1, j = SHIFT_BIT;
 		bool f = false;
-		BitSize t;
+		ddigit t;
 		while (j--) {
 			t = (d_[i] >> j) & 1;
 			if (f) {
@@ -389,7 +369,7 @@ ULong ULong::operator+(const ULong& b) const {
 	ULong z;
 	z.alloc(l_ + 1, false);
 	int i = 0;
-	BitSize n = 0;
+	ddigit n = 0;
 	for (; i < b.l_; ++i) {
 		n += d_[i] + b.d_[i];
 		z.d_[i] = n & MASK;
@@ -413,10 +393,10 @@ ULong ULong::operator-(const ULong& b) const {
 	ULong z;
 	z.alloc(l_, false);
 	int i = 0;
-	BitSize c = 0;
+	digit c = 0;
 	for (; i < b.l_; ++i) {
 		if (d_[i] < b.d_[i] + c) {
-			z.d_[i] = (MASK + 1) + d_[i] - b.d_[i] - c;
+			z.d_[i] = BASE + d_[i] - b.d_[i] - c;
 			c = 1;
 		} else {
 			z.d_[i] = d_[i] - b.d_[i] - c;
@@ -425,7 +405,7 @@ ULong ULong::operator-(const ULong& b) const {
 	}
 	for (; i < l_; ++i) {
 		if (d_[i] < c) {
-			z.d_[i] = (MASK + 1) + d_[i] - c;
+			z.d_[i] = BASE + d_[i] - c;
 			c = 1;
 		} else {
 			z.d_[i] = d_[i] - c;
@@ -436,32 +416,32 @@ ULong ULong::operator-(const ULong& b) const {
 	return z;
 }
 
-ULong ULong::operator<<(BitSize n) const {
+ULong ULong::operator<<(ddigit n) const {
 	const int d = static_cast<int>(n / SHIFT_BIT);
 	ULong c;
 	c.alloc(l_ + d + 1, false);
 	for (int i = 0; i < d; ++i) { c.d_[i] = 0; }
-	const BitSize b = n % SHIFT_BIT;
-	BitSize carry = 0;
+	const int b = static_cast<int>(n % SHIFT_BIT);
+	digit carry = 0;
 	int i = 0;
 	for (; i < l_; ++i) {
-		const BitSize t = (d_[i] << b) + carry;
+		const ddigit t = (d_[i] << b) + carry;
 		c.d_[i + d] = t & MASK;
-		carry = t >> SHIFT_BIT;
+		carry = static_cast<int>(t >> SHIFT_BIT);
 	}
 	c.d_[i + d] = carry;
 	c.norm();
 	return c;
 }
 
-ULong ULong::operator>>(BitSize n) const {
+ULong ULong::operator>>(ddigit n) const {
 	const int d = static_cast<int>(n / SHIFT_BIT);
 	if (l_ <= d) { return ZERO; }
 	ULong c;
 	c.alloc(l_ - d, false);
-	const BitSize b = n % SHIFT_BIT;
+	const int b = static_cast<int>(n % SHIFT_BIT);
 	int i = 0;
-	for (const BitSize mask = (1 << b) - 1; i < l_ - d - 1; ++i) {
+	for (const digit mask = (1 << b) - 1; i < l_ - d - 1; ++i) {
 		c.d_[i] = ((d_[i + d + 1] & mask) << (SHIFT_BIT - b)) + (d_[i + d] >> b);
 	}
 	c.d_[i] = d_[i + d] >> b;
@@ -473,12 +453,12 @@ ULong ULong::square() const {
 	ULong s;
 	s.alloc(l_ << 1, true);
 
-	BitSize u, v ,uv, c;
+	ddigit u, v ,uv, c;
 	for (int i = 0; i < l_; ++i) {
 		uv = s.d_[i << 1] + d_[i] * d_[i];
 		u = uv >> SHIFT_BIT;
 		v = uv & MASK;
-		s.d_[i << 1] = v;
+		s.d_[i << 1] = static_cast<int>(v);
 		c = u;
 		for (int j = i + 1; j < l_; ++j) {
 			uv = d_[j] * d_[i];
@@ -487,10 +467,10 @@ ULong ULong::square() const {
 			v += s.d_[i + j] + c;
 			u += v >> SHIFT_BIT;
 			v &= MASK;
-			s.d_[i + j] = v;
+			s.d_[i + j] = static_cast<int>(v);
 			c = u;
 		}
-		s.d_[i + l_] = u;
+		s.d_[i + l_] = static_cast<int>(u);
 	}
 
 	s.norm();
@@ -514,7 +494,7 @@ ULong ULong::sqrt() const {
 	return b;
 }
 
-ULong ULong::pow(BitSize n) const {
+ULong ULong::pow(ddigit n) const {
 	ULong p(1), a(*this);
 	for (; n > 0; n >>= 1, a = a.square()) {
 		if (n & 1) { p *= a; }
@@ -522,8 +502,8 @@ ULong ULong::pow(BitSize n) const {
 	return p;
 }
 
-inline BitSize ULong::bitLength() const {
-	BitSize l = l_ * SHIFT_BIT;
+inline ddigit ULong::bitLength() const {
+	ddigit l = l_ * SHIFT_BIT;
 	int j = SHIFT_BIT;
 	while (j-- && ((d_[l_ - 1] >> j) & 1) == 0) {
 		--l;
@@ -538,8 +518,8 @@ inline BitSize ULong::bitLength() const {
 ULong ULong::karatsuba(const ULong& u) const {
 	if (u == ZERO) { return ZERO; }
 	if (u == ONE) { return *this; }
-	BitSize N = bitLength();
-	const BitSize l = u.bitLength();
+	ddigit N = bitLength();
+	const ddigit l = u.bitLength();
 	if (N < l) { N = l; }
 	if (N < 2000) { return *this * u; }
 
@@ -562,7 +542,7 @@ ULong ULong::operator*(const ULong& b) const {
 	ULong z;
 	z.alloc(l_ + b.l_, true);
 
-	BitSize n, e;
+	ddigit n, e;
 	for (int i = 0, j; i < l_; ++i) {
 		if (d_[i] == 0) { continue; }
 		n = 0;
@@ -656,12 +636,12 @@ ULong ULong::divmod(const ULong& b, bool mod) const {
 	}
 
 	if (b.l_ == 1) {
-		const BitSize dd = b.d_[0];
-		BitSize t = 0;
+		const ddigit dd = b.d_[0];
+		ddigit t = 0;
 		ULong z(*this);
 		int i = l_;
 		while (i--) {
-			t = (t << SHIFT_BIT) + z.d_[i];
+			t = (t << SHIFT_BIT) | z.d_[i];
 			z.d_[i] = (t / dd) & MASK;
 			t %= dd;
 		}
@@ -675,13 +655,13 @@ ULong ULong::divmod(const ULong& b, bool mod) const {
 	const ULong bb(b);
 	ULong z;
 	z.alloc(albl ? l_ + 2 : l_ + 1, true);
-	const BitSize dd = (MASK + 1) / (b.d_[b.l_ - 1] + 1) & MASK;
+	const ddigit dd = BASE / (b.d_[b.l_ - 1] + 1) & MASK;
 	
 	if (dd == 1) {
 		int j = l_;
 		while (j--) { z.d_[j] = d_[j]; }
 	} else {
-		BitSize num = 0;
+		ddigit num = 0;
 		int j;
 		for (j = 0; j < b.l_; ++j) {
 			num += b.d_[j] * dd;
@@ -701,20 +681,20 @@ ULong ULong::divmod(const ULong& b, bool mod) const {
 
 	int j = albl ? l_ + 1 : l_;
 	do {
-		BitSize q;
+		ddigit q;
 		if (z.d_[j] == bb.d_[bb.l_- 1]) {
 			q = MASK;
 		} else {
-			q = ((z.d_[j] << SHIFT_BIT) + z.d_[j - 1]) / bb.d_[bb.l_ - 1] & MASK;
+			q = ((z.d_[j] << SHIFT_BIT) | z.d_[j - 1]) / bb.d_[bb.l_ - 1] & MASK;
 		}
 
 		if (q != 0) {
 			int i = 0;
-			BitSize num = 0;
-			BitSize t = 0;
+			ddigit num = 0;
+			ddigit t = 0;
 			do {
 				t += bb.d_[i] * q;
-				const BitSize ee = (t & MASK) - num;
+				const ddigit ee = (t & MASK) - num;
 				num = z.d_[j - bb.l_ + i] - ee;
 				if (ee) {
 					z.d_[j - bb.l_ + i] = num & MASK;
@@ -730,7 +710,7 @@ ULong ULong::divmod(const ULong& b, bool mod) const {
 				--q;
 
 				do {
-					const BitSize ee = num + bb.d_[i];
+					const ddigit ee = num + bb.d_[i];
 					num = z.d_[j - bb.l_ + i] + ee;
 					if (ee) { z.d_[j - bb.l_ + i] = num & MASK; }
 					num >>= SHIFT_BIT;
@@ -740,16 +720,16 @@ ULong ULong::divmod(const ULong& b, bool mod) const {
 			}
 		}
 
-		z.d_[j] = q;
+		z.d_[j] = static_cast<int>(q);
 	} while (--j >= bb.l_);
 
 	ULong div(z);
 	if (mod) {
 		if (dd != 0) {
-			BitSize t = 0;
+			ddigit t = 0;
 			int i = bb.l_;
 			while (i--) {
-				t = (t << SHIFT_BIT) + div.d_[i];
+				t = (t << SHIFT_BIT) | div.d_[i];
 				div.d_[i] = (t / dd) & MASK;
 				t %= dd;
 			}
@@ -800,12 +780,12 @@ ULong& ULong::operator%=(const ULong& b) {
 	return *this;
 }
 
-ULong& ULong::operator<<=(BitSize n) {
+ULong& ULong::operator<<=(ddigit n) {
 	*this = *this << n;
 	return *this;
 }
 
-ULong& ULong::operator>>=(BitSize n) {
+ULong& ULong::operator>>=(ddigit n) {
 	*this = *this >> n;
 	return *this;
 }
@@ -835,76 +815,76 @@ bool ULong::operator<=(const ULong& b) const {
 }
 
 
-ULong ULong::operator+(BitSize b) const {
+ULong ULong::operator+(ddigit b) const {
 	return *this + ULong(b);
 }
 
-ULong ULong::operator-(BitSize b) const {
+ULong ULong::operator-(ddigit b) const {
 	return *this - ULong(b);
 }
 
-ULong ULong::operator*(BitSize b) const {
+ULong ULong::operator*(ddigit b) const {
 	return *this * ULong(b);
 }
 
-ULong ULong::operator/(BitSize b) const {
+ULong ULong::operator/(ddigit b) const {
 	return *this / ULong(b);
 }
 
-ULong ULong::operator%(BitSize b) const {
+ULong ULong::operator%(ddigit b) const {
 	return *this % ULong(b);
 }
 
-ULong& ULong::operator+=(BitSize b) {
+ULong& ULong::operator+=(ddigit b) {
 	*this = *this + b;
 	return *this;
 }
 
-ULong& ULong::operator-=(BitSize b) {
+ULong& ULong::operator-=(ddigit b) {
 	*this = *this - b;
 	return *this;
 }
 
-ULong& ULong::operator*=(BitSize b) {
+ULong& ULong::operator*=(ddigit b) {
 	*this = *this * b;
 	return *this;
 }
 
-ULong& ULong::operator/=(BitSize b) {
+ULong& ULong::operator/=(ddigit b) {
 	*this = *this / b;
 	return *this;
 }
 
-ULong& ULong::operator%=(BitSize b) {
+ULong& ULong::operator%=(ddigit b) {
 	*this = *this % b;
 	return *this;
 }
 
-int ULong::cmp(BitSize b) const {
+int ULong::cmp(ddigit b) const {
 	return cmp(ULong(b));
 }
 
-bool ULong::operator==(BitSize b) const {
+bool ULong::operator==(ddigit b) const {
 	return cmp(b) == 0;
 }
 
-bool ULong::operator!=(BitSize b) const {
+bool ULong::operator!=(ddigit b) const {
 	return cmp(b) != 0;
 }
 
-bool ULong::operator>(BitSize b) const {
+bool ULong::operator>(ddigit b) const {
 	return cmp(b) > 0;
 }
 
-bool ULong::operator<(BitSize b) const {
+bool ULong::operator<(ddigit b) const {
 	return cmp(b) < 0;
 }
 
-bool ULong::operator>=(BitSize b) const {
+bool ULong::operator>=(ddigit b) const {
 	return cmp(b) >= 0;
 }
 
-bool ULong::operator<=(BitSize b) const {
+bool ULong::operator<=(ddigit b) const {
 	return cmp(b) <= 0;
 }
 }} // namespace ktn math

@@ -7,15 +7,22 @@ extern "C" {
 
 #include "../bool.h"
 
-typedef long long BitSize;
+//#define USE_64BIT
+#ifdef USE_64BIT
+typedef long digit;
+typedef long long ddigit;
+#else
+typedef short digit;
+typedef long ddigit;
+#endif
 typedef struct _ULong {
 	int l_;
-	BitSize* d_;
+	digit* d_;
 } ULong;
 
 void ulongInit(ULong* self);
 void ulongAlloc(ULong* self, int length);
-void ulongNum(ULong* self, BitSize n);
+void ulongNum(ULong* self, ddigit n);
 void ulongFree(ULong* self);
 
 void ulongClone(ULong* dest, const ULong* src);
@@ -37,12 +44,12 @@ bool ulongGt(const ULong* lhs, const ULong* rhs);
 bool ulongLe(const ULong* lhs, const ULong* rhs);
 bool ulongGe(const ULong* lhs, const ULong* rhs);
 
-void ulongLeftShift(ULong* dest, const ULong* self, BitSize n);
-void ulongRightShift(ULong* dest, const ULong* self, BitSize n);
+void ulongLeftShift(ULong* dest, const ULong* self, ddigit n);
+void ulongRightShift(ULong* dest, const ULong* self, ddigit n);
 
 void ulongSquare(ULong* dest, const ULong* self);
 void ulongSqrt(ULong* dest, const ULong* self);
-void ulongPow(ULong* dest, const ULong* self, BitSize n);
+void ulongPow(ULong* dest, const ULong* self, ddigit n);
 
 #define ulongIsZero(self)			(self->l_ < 1)
 #define ulongIsOne(self)			(self->l_ == 1 && self->d_[0] == 1)
