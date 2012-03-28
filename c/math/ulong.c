@@ -1,4 +1,5 @@
 #include "ulong.h"
+#include "../string.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -82,21 +83,6 @@ void ulongClone(ULong* dest, const ULong* src) {
 	memcpy(dest->d_, src->d_, sizeof(digit) * dest->l_);
 }
 
-void reverseChar(char* s) {
-	char t;
-	char *s0 = s;
-	if (*s == '\0') { return; }
-	while (*s != '\0') { ++s; }
-	--s;
-	while (*s == '0' && s > s0) { --s; };
-	*(s + 1) = '\0';
-	for (; s0 < s; --s, ++s0) {
-		t = *s;
-		*s = *s0;
-		*s0 = t;
-	}
-}
-
 /**
  * @param[out] s
  */
@@ -122,7 +108,7 @@ void ulongStr(const ULong* self, char *s) {
 			d /= radix;
 		}
 		s[j] = '\0';
-		reverseChar(s);
+		reverseString(s);
 		return;
 	}
 
@@ -152,7 +138,7 @@ void ulongStr(const ULong* self, char *s) {
 	}
 	s[index] = '\0';
 
-	reverseChar(s);
+	reverseString(s);
 
 	ulongFree(&t);
 }
@@ -325,7 +311,7 @@ void ulongDivmod(ULong* dest, const ULong* lhs, const ULong* rhs, bool mod) {
 		ulongClone(dest, lhs);
 		i = lhs->l_;
 		while (i--) {
-			t = (t << SHIFT_BIT) + dest->d_[i];
+			t = (t << SHIFT_BIT) | dest->d_[i];
 			dest->d_[i] = (t / dd) & MASK;
 			t %= dd;
 		}
