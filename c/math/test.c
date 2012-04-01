@@ -6,14 +6,14 @@ extern "C" {
 
 #include <stdio.h>
 
-void basic() {
+void basic(ddigit m, ddigit n) {
 	ULong a, b, t;
 	ulongInit(&a);
 	ulongInit(&b);
 	ulongInit(&t);
 
-	ulongNum(&a, 7777777);
-	ulongNum(&b, 100000);
+	ulongNum(&a, m);
+	ulongNum(&b, n);
 
 	printf("a = "); ulongWriteln(&a);
 	printf("b = "); ulongWriteln(&b);

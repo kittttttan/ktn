@@ -4,6 +4,7 @@
 
 #include "test.h"
 
+#ifndef UNIT_TEST
 int main(int argc, char** argv) {
 	srand(static_cast<unsigned int>(time(NULL)));
 
@@ -29,3 +30,5 @@ int main(int argc, char** argv) {
 #endif
 	return 0;
 }
+
+#endif // UNIT_TEST

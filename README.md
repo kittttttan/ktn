@@ -3,6 +3,9 @@
 
 ## C
 
+using [googletest](http://code.google.com/p/googletest/)
+for unit test.
+
 ### math
 
 * ulong.c

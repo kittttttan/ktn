@@ -3,11 +3,13 @@
 
 #include "ulong.h"
 
+#define UNIT_TEST
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void basic();
+void basic(ddigit m, ddigit n);
 void fib(ULong* dest, int n);
 void fact(ULong* dest, int n);
 void arccot(ULong* dest, ULong* n, int m);

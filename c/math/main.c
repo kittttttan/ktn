@@ -4,15 +4,16 @@
 #include <stdlib.h>
 #include <time.h>
 
+#ifndef UNIT_TEST
 int main() {
 #if defined(_MSC_VER)
 	clock_t t = clock();
-#endif
+#endif // defined(_MSC_VER)
 
 	ULong u;
 	int n;
 
-	basic();
+	basic(7777777, 10000);
 
 	ulongInit(&u);
 
@@ -32,7 +33,9 @@ int main() {
 #if defined(_MSC_VER)
 	printf("%ld ms\n", clock() - t);
 	system("pause");
-#endif
+#endif // defined(_MSC_VER)
 
 	return 0;
 }
+
+#endif // UNIT_TEST

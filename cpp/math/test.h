@@ -1,6 +1,8 @@
 #ifndef KTN_MATH_TEST_H_
 #define KTN_MATH_TEST_H_
 
+#define UNIT_TEST
+
 #include "long.h"
 #include "fraction.h"
 #include "math.h"
