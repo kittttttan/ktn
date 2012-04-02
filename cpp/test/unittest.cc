@@ -1,6 +1,5 @@
-#include "test.h"
+#include "../math/test.h"
 
-#ifdef UNIT_TEST
 #include <gtest/gtest.h>
 #pragma comment(lib, "gtestd.lib")
 #pragma comment(lib, "gtest_maind.lib")
@@ -34,5 +33,3 @@ TEST(ULong, Basic) {
 	(a%b).cstr(str);
 	EXPECT_STREQ("7777", str);
 }
-
-#endif

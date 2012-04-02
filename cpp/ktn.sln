@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C++ Express 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ktn", "ktn.vcxproj", "{9EEA8E7A-0E7A-43FE-8E31-D74216411F8A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "math", "math\math.vcxproj", "{1C5F7F82-1499-7C8A-C7E8-6B13859840E7}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test", "test\test.vcxproj", "{9D97CE6C-EAB5-4FF1-974E-19E5B64C6023}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9EEA8E7A-0E7A-43FE-8E31-D74216411F8A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9EEA8E7A-0E7A-43FE-8E31-D74216411F8A}.Debug|Win32.Build.0 = Debug|Win32
+		{9EEA8E7A-0E7A-43FE-8E31-D74216411F8A}.Release|Win32.ActiveCfg = Release|Win32
+		{9EEA8E7A-0E7A-43FE-8E31-D74216411F8A}.Release|Win32.Build.0 = Release|Win32
+		{1C5F7F82-1499-7C8A-C7E8-6B13859840E7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1C5F7F82-1499-7C8A-C7E8-6B13859840E7}.Debug|Win32.Build.0 = Debug|Win32
+		{1C5F7F82-1499-7C8A-C7E8-6B13859840E7}.Release|Win32.ActiveCfg = Release|Win32
+		{1C5F7F82-1499-7C8A-C7E8-6B13859840E7}.Release|Win32.Build.0 = Release|Win32
+		{9D97CE6C-EAB5-4FF1-974E-19E5B64C6023}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9D97CE6C-EAB5-4FF1-974E-19E5B64C6023}.Debug|Win32.Build.0 = Debug|Win32
+		{9D97CE6C-EAB5-4FF1-974E-19E5B64C6023}.Release|Win32.ActiveCfg = Release|Win32
+		{9D97CE6C-EAB5-4FF1-974E-19E5B64C6023}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <time.h>
 
-#ifndef UNIT_TEST
 int main() {
 #if defined(_MSC_VER)
 	clock_t t = clock();
@@ -37,5 +36,3 @@ int main() {
 
 	return 0;
 }
-
-#endif // UNIT_TEST

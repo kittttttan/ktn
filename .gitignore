@@ -5,12 +5,11 @@
 Debug/
 Release/
 ipch/
-*.vcxproj*
+*.vcxproj.*
 *.sdf
-*.sln
+*.opensdf
 *.suo
 *.o
 *.exe
 
-doc.h
 _/

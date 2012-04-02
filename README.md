@@ -5,28 +5,15 @@
 
 using [googletest](http://code.google.com/p/googletest/)
 for unit test.
+Set environment variables below.
 
-### math
-
-* ulong.c
+  * GTEST_INC  - path to gtest include. ex. C:\gtest-1.6.0\include
+  * GTESTD_LIB - path to gtest lib.     ex. C:\gtest-1.6.0\msvc\gtest\Debug
 
 ## C++
 
 [doc](http://kittttttan.web.fc2.com/ktn/)
 
-* string.cc
-
-### math
-
-* ulong.cc
-* long.cc
-* fraction.cc
-* complex.h
-
 ## JavaScript
 
 [doc](http://kittttttan.web.fc2.com/js/)
-
-* long.js
-* fraction.js
-* decimal.js

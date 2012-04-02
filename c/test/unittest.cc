@@ -1,6 +1,5 @@
-#include "test.h"
+#include "../math/test.h"
 
-#ifdef UNIT_TEST
 #include <gtest/gtest.h>
 #pragma comment(lib, "gtestd.lib")
 #pragma comment(lib, "gtest_maind.lib")
@@ -67,4 +66,3 @@ TEST(ULong, Basic) {
 	ulongFree(&b);
 	ulongFree(&t);
 }
-#endif // UNIT_TEST
