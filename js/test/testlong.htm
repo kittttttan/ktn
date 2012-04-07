@@ -1,0 +1,63 @@
+<html><head><title>Test long.js</title>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-git.css">
+<script src="http://code.jquery.com/qunit/qunit-git.js"></script>
+<script src="../lib/long.js"></script>
+<script>
+module("Long");
+
+test("basic", function() {
+	var a = Long.str("1234567890"),
+		b = Long.num(10).pow(7);
+	equal(a.toString(), "1234567890");
+	equal(b.toString(), "10000000");
+	equal(a.add(b).toString(), "1244567890");
+	equal(a.sub(b).toString(), "1224567890");
+	equal(a.mul(b).toString(), "12345678900000000");
+	equal(a.div(b).toString(), "123");
+	equal(a.mod(b).toString(), "4567890");
+});
+
+function fib(a) {
+  var b = Long.num(0);
+  for (var i = 0, c = Long.num(1), d; i < a; i++) {
+    d = b.clone();
+    b = b.add(c);
+    c = d;
+  }
+  return b;
+}
+
+test("fib", function(){
+    equal(fib(0).toString(), "0");
+    equal(fib(1).toString(), "1");
+    equal(fib(2).toString(), "1");
+    equal(fib(3).toString(), "2");
+    equal(fib(4).toString(), "3");
+    equal(fib(38).toString(), "39088169");
+});
+
+function fact(a) {
+  var f = Long.num(1);
+  for (var i = 2; i < a + 1; i++) {
+    f = f.mul(Long.num(i));
+  }
+  return f;
+}
+
+test("fact", function () {
+    equal(fact(0).toString(), "1");
+    equal(fact(2).toString(), "2");
+    equal(fact(3).toString(), "6");
+    equal(fact(10).toString(), "3628800");
+});
+</script>
+</head>
+<body>
+<h1 id="qunit-header">Test long.js</h1>
+<h2 id="qunit-banner"></h2>
+<div id="qunit-testrunner-toolbar"></div>
+<h2 id="qunit-userAgent"></h2>
+<ol id="qunit-tests"></ol>
+<div id="qunit-fixture">test markup</div>
+</body></html>
