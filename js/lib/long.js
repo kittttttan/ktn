@@ -97,12 +97,12 @@ function Long() {
       index++;
     }
     // Ignore following zeros. '00102' is regarded as '102'.
-    while (str.charAt(index) === '0') { index++; }
+    while (str.charAt(index) === '0') { ++index; }
     if (!str.charAt(index)) { return new Long(); }
     if (base === 8) {
       len = 3 * (str.length + 1 - index);
     } else {
-      if (!str.charAt(index)) { index--; }
+      if (!str.charAt(index)) { --index; }
       len = (str.length + 1 - index) << 2;
     }
     len = (len >>> 4) + 1;
@@ -183,7 +183,7 @@ function Long() {
   Long.random = function(a) {
     var r = longAlloc(a, true),
         rd = r._d;
-    for (var i = 0; i < a; i++) {
+    for (var i = 0; i < a; ++i) {
       rd[i] = Math.random() * BASE | 0;
     }
     return longNorm(r);
@@ -299,7 +299,7 @@ function Long() {
     var d = a._d,
         l = d.length,
         c = 0;
-    for (var i = 0, t = 0; i < l; i++) {
+    for (var i = 0, t = 0; i < l; ++i) {
       t = (d[i] << 1) + c;
       d[i] = t & MASK;
       c = t >>> SHIFT;
@@ -423,7 +423,7 @@ function Long() {
           d[k] = n / hbase | 0;
           n %= hbase;
         }
-        if (!d[i - 1]) { i--; }
+        if (!d[i - 1]) { --i; }
         k = 4;
         while (k--) {
           s = digits.charAt(n % b) + s;
@@ -498,7 +498,7 @@ function Long() {
           carry = 0;
       for (; i < d; i++) { cd[i] = 0; }
       i = 0;
-      for (var t = 0; i < l; i++) {
+      for (var t = 0; i < l; ++i) {
         t = (ad[i] << bb) + carry;
         cd[i + d] = t & MASK;
         carry = t >> SHIFT;
@@ -525,7 +525,7 @@ function Long() {
           c = longAlloc(cl, a._s),
           cd = c._d,
           i = 0;
-      for (; i < cl - 1; i++) {
+      for (; i < cl - 1; ++i) {
         cd[i] = ((ad[i + d + 1] & mask) << (SHIFT - bb)) + (ad[i + d] >> bb);
       }
       cd[i] = ad[i + d] >> bb;
@@ -551,13 +551,13 @@ function Long() {
           w = s._d;
       longFillZero(s, w.length);
 
-      for (var i = 0, j = 1, uv = 0, u = 0, v = 0, c = 0; i < t; i++) {
+      for (var i = 0, j = 1, uv = 0, u = 0, v = 0, c = 0; i < t; ++i) {
         uv = w[i << 1] + x[i] * x[i];
         u = uv >>> SHIFT;
         v = uv & MASK;
         w[i << 1] = v;
         c = u;
-        for (j = i + 1; j < t; j++) {
+        for (j = i + 1; j < t; ++j) {
           // uv = w[i + j] + (x[j] * x[i] << 1) + c
           // can overflow.
           uv = x[j] * x[i];
@@ -677,17 +677,17 @@ function Long() {
           zd = z._d,
           i = 0,
           num = 0;
-      for (; i < bl; i++) {
+      for (; i < bl; ++i) {
         num += ad[i] + bd[i];
         zd[i] = num & MASK;
         num >>>= SHIFT;
       }
-      for (; num && i < al; i++) {
+      for (; num && i < al; ++i) {
         num += ad[i];
         zd[i] = num & MASK;
         num >>>= SHIFT;
       }
-      for (; i < al; i++) {
+      for (; i < al; ++i) {
         zd[i] = ad[i];
       }
       zd[i] = num & MASK;
@@ -711,7 +711,7 @@ function Long() {
           zd = z._d,
           i = 0,
           c = 0;
-      for (; i < bl; i++) {
+      for (; i < bl; ++i) {
         c = ad[i] - bd[i] - c;
         if (c < 0) {
           zd[i] = c & MASK;
@@ -721,7 +721,7 @@ function Long() {
           c = 0;
         }
       }
-      for (; i < al; i++) { 
+      for (; i < al; ++i) { 
         c = ad[i] - c;
         if (c < 0) {
           zd[i] = c & MASK;
@@ -779,11 +779,11 @@ function Long() {
       var j = al + bl,
           z = longAlloc(j, this._s === b._s);
       longFillZero(z, j);
-      for (var i = 0, n, d, e, zd = z._d; i < al; i++) {
+      for (var i = 0, n, d, e, zd = z._d; i < al; ++i) {
         d = ad[i]; 
         if (!d) { continue; }
         n = 0;
-        for (j = 0; j < bl; j++) {
+        for (j = 0; j < bl; ++j) {
           e = n + d * bd[j];
           n = zd[i + j] + e;
           if (e) { zd[i + j] = n & MASK; }
@@ -853,7 +853,7 @@ function Long() {
       } else {
         var bb = b.clone(), td = bb._d;
 
-        for (; j < nb; j++) {
+        for (; j < nb; ++j) {
           num += bd[j] * dd;
           td[j] = num & MASK;
           num >>>= SHIFT;
@@ -862,7 +862,7 @@ function Long() {
         bd = td;
         j = num = 0;
 
-        for (; j < na; j++) {
+        for (; j < na; ++j) {
           num += ad[j] * dd;
           zd[j] = num & MASK;
           num >>>= SHIFT;
@@ -927,7 +927,7 @@ function Long() {
       }
 
       j = (albl ? na + 2 : na + 1) - nb;
-      for (i = 0; i < j; i++) { zd[i] = zd[i + nb]; }
+      for (i = 0; i < j; ++i) { zd[i] = zd[i + nb]; }
       zd.length = j;
       return longNorm(div);
     },
@@ -1035,7 +1035,7 @@ function Long() {
           bd = b._d,
           l = ad.length;
       if (l !== bd.length) { return false; }
-      for (var i = 0; i < l; i++) {
+      for (var i = 0; i < l; ++i) {
         if (ad[i] !== bd[i]) { return false; }
       }
       return true;
@@ -1054,7 +1054,7 @@ function Long() {
           bd = b._d,
           l = ad.length;
       if (l !== bd.length) { return false; }
-      for (var i = 0; i < l; i++) {
+      for (var i = 0; i < l; ++i) {
         if (ad[i] !== bd[i]) { return false; }
       }
       return true;

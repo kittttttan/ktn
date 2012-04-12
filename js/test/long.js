@@ -45,7 +45,7 @@ function basic() {
  */
 function fact(a) {
   var f = long.num(1);
-  for (var i = 2; i < a + 1; i++) {
+  for (var i = 2; i < a + 1; ++i) {
     f = f.mul(long.num(i));
   }
   return f;
@@ -58,7 +58,7 @@ function fact(a) {
  */
 function fib(a) {
   var b = long.num(0);
-  for (var i = 0, c = long.num(1), d; i < a; i++) {
+  for (var i = 0, c = long.num(1), d; i < a; ++i) {
     d = b.clone();
     b = b.add(c);
     c = d;
@@ -71,7 +71,7 @@ function fib(a) {
  * @param {number} a
  */
 function square(a) {
-  for (var i = 1, t; i < a; i++) {
+  for (var i = 1, t; i < a; ++i) {
     t = long.random(i);
     print(t.mul(t).equal(t.square()));
   }
@@ -83,15 +83,15 @@ function square(a) {
  */
 function sqvsmul(a) {
   var nums = [];
-  for (var i = 0; i < a; i++) {
+  for (var i = 0; i < a; ++i) {
     nums[i] = long.random(i + 1);
   }
   var t0 = Date.now();
-  for (i = 0; i < a; i++) {
+  for (i = 0; i < a; ++i) {
     nums[i].mul(nums[i]);
   }
   var t1 = Date.now();
-  for (i = 0; i < a; i++) {
+  for (i = 0; i < a; ++i) {
     nums[i].square();
   }
   var t2 = Date.now();
@@ -104,7 +104,7 @@ function sqvsmul(a) {
  * @param {number} a
  */
 function gcd(a) {
-  for (var i = 0, b, c; i < a; i++) {
+  for (var i = 0, b, c; i < a; ++i) {
     b = long.random(i + 20);
     c = long.random(i + 20);
     print(b.gcd(c).equal(b._gcd(c)));
@@ -117,16 +117,16 @@ function gcd(a) {
  */
 function gcdvsbin(a) {
   var m = [], n = [];
-  for (var i = 0; i < a; i++) {
+  for (var i = 0; i < a; ++i) {
     m[i] = long.random(i + 20);
     n[i] = long.random(i + 20);
   }
   var t0 = Date.now();
-  for (i = 0; i < a; i++) {
+  for (i = 0; i < a; ++i) {
     m[i].gcd(n[i]);
   }
   var t1 = Date.now();
-  for (i = 0; i < a; i++) {
+  for (i = 0; i < a; ++i) {
     m[i]._gcd(n[i]);
   }
   var t2 = Date.now();

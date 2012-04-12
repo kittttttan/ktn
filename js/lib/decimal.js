@@ -49,7 +49,7 @@ function Decimal(l, e) {
     }
     var trim = str.substring(0, index) + str.substring(index + 1);
     var i = 0;
-    while (trim.charAt(i) === '0') { i++; }
+    while (trim.charAt(i) === '0') { ++i; }
     if (i) { trim = trim.substring(i); }
     return new Decimal(Long.str(trim), index - str.length + 1);
   };
@@ -207,8 +207,8 @@ function Decimal(l, e) {
           str = a._l.toString(),
           i = str.length - 1;
       while (i >= 0 && str.charAt(i) === '0') {
-        a._e++;
-        i--;
+        ++a._e;
+        --i;
       }
       str = str.substring(0, i + 1);
       a._l = Long.str(str);
