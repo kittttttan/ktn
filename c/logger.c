@@ -5,6 +5,13 @@
 
 #define LOCALE_CHAR		32
 
+#ifndef _MSC_VER
+#define strcpy_s(dest, size, src)	strcpy(dest, src)
+#define _tcscpy_s(dest, size, src)	_tcscpy(dest, src)
+#define _ftprintf_s					_ftprintf
+#define _vftprintf_s				_vftprintf
+#endif
+
 static char locale_[LOCALE_CHAR] = "Japanese";
 static LogLevel loglevel_ = LOG_ALL;
 static TCHAR filename_[MAX_PATH] = _T("log.txt");
@@ -23,13 +30,20 @@ void loggerSetFilename(const TCHAR* filename) {
 
 void loggerLog(int level, const TCHAR* fmt, ...) {
 	FILE* f;
+#ifdef _MSC_VER
 	errno_t err;
+#endif
 	va_list ap;
 	if (level > loglevel_) { return; }
 
 	va_start(ap, fmt);
+#ifdef _MSC_VER
 	err = _tfopen_s(&f, filename_, _T("a+"));
 	if (err != 0) {
+#else
+	f = _tfopen(filename_, _T("a+"));
+	if (!f) {
+#endif
 		_ftprintf_s(stderr, _T("Failed to open %s\n"), filename_);
 		va_end(ap);
 		return;

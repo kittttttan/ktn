@@ -10,5 +10,7 @@ int main() {
 	loggerSetLevel(LOG_INFO);
 	LOGGER_INFO(_T("ƒeƒXƒg %d\n"), 3);
 
+	TRACE(_T("output log.txt\n"));
+
 	return 0;
 }

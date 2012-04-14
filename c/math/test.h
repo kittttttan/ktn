@@ -1,7 +1,7 @@
 #ifndef CKTN_TEST_H_
 #define CKTN_TEST_H_
 
-#include "ulong.h"
+#include "long.h"
 
 #define UNIT_TEST
 
@@ -10,10 +10,10 @@ extern "C" {
 #endif
 
 void basic(ddigit m, ddigit n);
-void fib(ULong* dest, int n);
-void fact(ULong* dest, int n);
-void arccot(ULong* dest, ULong* n, int m);
-void pi(ULong* dest, ddigit a);
+void fib(Long* dest, int n);
+void fact(Long* dest, int n);
+void arccot(Long* dest, Long* n, int m);
+void pi(Long* dest, ddigit a);
 
 #ifdef __cplusplus
 }

@@ -1,4 +1,4 @@
-#include "ulong.h"
+#include "long.h"
 #include "../string.h"
 
 #ifdef __cplusplus
@@ -24,74 +24,97 @@ extern "C" {
 #define BASE		((digit)1 << SHIFT_BIT)
 #define MASK		((digit)(BASE - 1))
 
-#define ulongNorm(self) {	\
-	while (self->l_ > 0 && self->d_[self->l_ - 1] == 0) { --self->l_; }	\
+#define longNorm(self) {							\
+	int l = abs(self->l_);							\
+	while (l > 0 && self->d_[l - 1] == 0) { --l; }	\
+	if (l == 0) {									\
+		self->l_ = 0;								\
+	} else {										\
+		self->l_ = self->l_ < 0 ? -l : l;			\
+	}												\
 }
 
-void ulongInit(ULong* self) {
+#define LONG_MALLOC_ERROR_CHECK(plong) {					\
+	if (!plong->d_) {										\
+		printf("malloc error [%d]%s\n",__LINE__,__FILE__);	\
+		plong->a_ = plong->l_ = 0;							\
+		return;												\
+	}														\
+}
+
+void longInit(Long* self) {
+	self->a_ = 0;
 	self->l_ = 0;
 	self->d_ = NULL;
 }
 
-void ulongAlloc(ULong* self, int length) {
-	if (self->l_ == length) { return; }
+void longAlloc(Long* self, int length) {
+	int absLength = abs(length);
 	self->l_ = length;
+	if (self->a_ > absLength) { return; }
 	if (self->d_ != NULL) { free(self->d_); }
-	self->d_ = (digit*)malloc(sizeof(digit) * length);
+	self->d_ = (digit*)malloc(sizeof(digit) * absLength);
+	LONG_MALLOC_ERROR_CHECK(self);
+	self->a_ = absLength;
 }
 
-void ulongFillZero(ULong* self, int length) {
-	ulongAlloc(self, length);
-	memset(self->d_, 0, sizeof(digit) * length);
+void longFillZero(Long* self, int length) {
+	longAlloc(self, length);
+	memset(self->d_, 0, sizeof(digit) * abs(length));
 }
 
-void ulongNum(ULong* self, ddigit n) {
+void longNum(Long* self, ddigit n) {
 	int d = 0;
-	ddigit t = n;
+	ddigit t = abs(n);
 	while (t) {
 		++d;
 		t >>= SHIFT_BIT;
 	}
-	self->l_ = d;
+	self->l_ = n < 0 ? -d : d;
 	if (self->d_ != NULL) { free(self->d_); }
 	self->d_ = (digit*)malloc(sizeof(digit) * d);
-	if (!self->d_) { printf("malloc error.\n"); return; }
+	LONG_MALLOC_ERROR_CHECK(self);
+	self->a_ = d;
 	d = 0;
-	t = n;
+	t = abs(n);
 	while (t) {
 		self->d_[d++] = t & MASK;
 		t >>= SHIFT_BIT;
 	}
-	ulongNorm(self);
+	longNorm(self);
 }
 
-void ulongFree(ULong* self) {
+void longFree(Long* self) {
+	self->a_ = self->l_ = 0;
 	if (self->d_ != NULL) {
 		free(self->d_);
 		self->d_ = NULL;
 	}
 }
 
-void ulongClone(ULong* dest, const ULong* src) {
+void longClone(Long* dest, const Long* src) {
+	int destLength;
 	if (dest == src) { return; }
-	if (dest->l_ != src->l_) {
-		dest->l_ = src->l_;
+	dest->l_ = src->l_;
+	destLength = abs(src->l_);
+	if (dest->a_ < destLength) {
 		if (dest->d_ != NULL) { free(dest->d_); }
-		dest->d_ = (digit*)malloc(sizeof(digit) * dest->l_);
-		if (!dest->d_) { printf("malloc error. @%d\n",__LINE__); return; }
+		dest->d_ = (digit*)malloc(sizeof(digit) * destLength);
+		LONG_MALLOC_ERROR_CHECK(dest);
+		dest->a_ = destLength;
 	}
-	memcpy(dest->d_, src->d_, sizeof(digit) * dest->l_);
+	memcpy(dest->d_, src->d_, sizeof(digit) * destLength);
 }
 
 /**
  * @param[out] s
  */
-void ulongStr(const ULong* self, char *s) {
+void longStr(const Long* self, char *s) {
 	const int radix = 10, hradix = BASE_DEC;
 	int i, j, k, index;
 	ddigit n;
 	const char digits[] = "0123456789";
-	ULong t;
+	Long t;
 
 	if (self->l_ < 1) {
 		s[0] = '0';
@@ -114,8 +137,8 @@ void ulongStr(const ULong* self, char *s) {
 
 	j = getStringLength(i);
 
-	ulongInit(&t);
-	ulongClone(&t, self);
+	longInit(&t);
+	longClone(&t, self);
 	index = 0;
 	
 	while (i && j) {
@@ -140,16 +163,16 @@ void ulongStr(const ULong* self, char *s) {
 
 	reverseString(s);
 
-	ulongFree(&t);
+	longFree(&t);
 }
 
 /**
  * output.
  */
-void ulongWrite(const ULong* self) {
+void longWrite(const Long* self) {
 	char *c;
 	int length;
-	if (ulongIsZero(self)) {
+	if (longIsZero(self)) {
 		putchar('0');
 		return;
 	}
@@ -157,7 +180,7 @@ void ulongWrite(const ULong* self) {
 	length = (self->l_ > 1) ? getStringLength(self->l_) + 1 : 20;
 	c = (char*)malloc(sizeof(char) * length);
 	if (!c) { printf("Failed malloc char*"); return; }
-	ulongStr(self, c);
+	longStr(self, c);
 	printf("%s", c);
 	free(c);
 }
@@ -165,28 +188,28 @@ void ulongWrite(const ULong* self) {
 /**
  * output.
  */
-void ulongWriteln(const ULong* self) {
-	ulongWrite(self);
+void longWriteln(const Long* self) {
+	longWrite(self);
 	puts("");
 }
 
-void ulongAdd(ULong* dest, const ULong* lhs, const ULong* rhs) {
+void longAdd(Long* dest, const Long* lhs, const Long* rhs) {
 	int i;
 	ddigit n;
-	if (ulongIsZero(lhs)) {
-		ulongClone(dest, rhs);
+	if (longIsZero(lhs)) {
+		longClone(dest, rhs);
 		return;
 	}
-	if (ulongIsZero(rhs)) {
-		ulongClone(dest, lhs);
+	if (longIsZero(rhs)) {
+		longClone(dest, lhs);
 		return;
 	}
 	if (lhs->l_ < rhs->l_) {
-		ulongAdd(dest, rhs, lhs);
+		longAdd(dest, rhs, lhs);
 		return;
 	}
 
-	ulongAlloc(dest, lhs->l_ + 1);
+	longAlloc(dest, lhs->l_ + 1);
 	i = 0;
 	n = 0;
 	for (; i < rhs->l_; ++i) {
@@ -205,19 +228,19 @@ void ulongAdd(ULong* dest, const ULong* lhs, const ULong* rhs) {
 		dest->d_[i] = lhs->d_[i];
 	}
 	dest->d_[i] = n & MASK;
-	ulongNorm(dest);
+	longNorm(dest);
 }
 
-void ulongSub(ULong* dest, const ULong* lhs, const ULong* rhs) {
+void longSub(Long* dest, const Long* lhs, const Long* rhs) {
 	int i;
 	digit c;
 
-	if (ulongIsZero(rhs)) {
-		ulongClone(dest, lhs);
+	if (longIsZero(rhs)) {
+		longClone(dest, lhs);
 		return;
 	}
 
-	ulongAlloc(dest, lhs->l_);
+	longAlloc(dest, lhs->l_);
 
 	i = 0;
 	c = 0;
@@ -239,22 +262,22 @@ void ulongSub(ULong* dest, const ULong* lhs, const ULong* rhs) {
 			c = 0;
 		}
 	}
-	ulongNorm(dest);
+	longNorm(dest);
 }
 
-void ulongMul(ULong* dest, const ULong* lhs, const ULong* rhs) {
+void longMul(Long* dest, const Long* lhs, const Long* rhs) {
 	int i, j;
 	ddigit n, e;
-	if (ulongIsZero(rhs)) {
-		ulongInit(dest);
+	if (longIsZero(rhs)) {
+		longInit(dest);
 		return;
 	}
-	if (ulongIsOne(rhs)) {
-		ulongClone(dest, lhs);
+	if (longIsOne(rhs)) {
+		longClone(dest, lhs);
 		return;
 	}
 
-	ulongFillZero(dest, lhs->l_ + rhs->l_);
+	longFillZero(dest, lhs->l_ + rhs->l_);
 
 	for (i = 0; i < lhs->l_; ++i) {
 		if (lhs->d_[i] == 0) { continue; }
@@ -268,7 +291,7 @@ void ulongMul(ULong* dest, const ULong* lhs, const ULong* rhs) {
 		if (n) { dest->d_[i + j] = n & MASK; }
 	}
 
-	ulongNorm(dest);
+	longNorm(dest);
 }
 
 
@@ -277,38 +300,38 @@ void ulongMul(ULong* dest, const ULong* lhs, const ULong* rhs) {
  * @param mod
  * @return modulus if mod is true, else division
  */
-void ulongDivmod(ULong* dest, const ULong* lhs, const ULong* rhs, bool mod) {
+void longDivmod(Long* dest, const Long* lhs, const Long* rhs, bool mod) {
 	const bool albl = lhs->l_ == rhs->l_;
 	int i, j;
-	ULong bb, div;
+	Long bb, div;
 	ddigit dd, ee, t, num, q;
 
-	if (ulongIsZero(rhs)) {
+	if (longIsZero(rhs)) {
 		printf("Zero Division @%d\n", __LINE__);
 		return;
 	}
-	if (ulongIsOne(rhs)) {
+	if (longIsOne(rhs)) {
 		if (mod) {
-			ulongInit(dest);
+			longInit(dest);
 			return;
 		}
-		ulongClone(dest, lhs);
+		longClone(dest, lhs);
 		return;
 	}
 
 	if (lhs->l_ < rhs->l_ || (albl && lhs->d_[lhs->l_ - 1] < rhs->d_[rhs->l_ - 1])) {
 		if (mod) {
-			ulongClone(dest, lhs);
+			longClone(dest, lhs);
 			return;
 		}
-		ulongInit(dest);
+		longInit(dest);
 		return;
 	}
 
 	if (rhs->l_ == 1) {
 		dd = rhs->d_[0];
 		t = 0;
-		ulongClone(dest, lhs);
+		longClone(dest, lhs);
 		i = lhs->l_;
 		while (i--) {
 			t = (t << SHIFT_BIT) | dest->d_[i];
@@ -316,16 +339,16 @@ void ulongDivmod(ULong* dest, const ULong* lhs, const ULong* rhs, bool mod) {
 			t %= dd;
 		}
 		if (mod) {
-			ulongNum(dest, t);
+			longNum(dest, t);
 			return;
 		}
-		ulongNorm(dest);
+		longNorm(dest);
 		return;
 	}
 
-	ulongInit(&bb);
-	ulongClone(&bb, rhs);
-	ulongFillZero(dest, albl ? lhs->l_ + 2 : lhs->l_ + 1);
+	longInit(&bb);
+	longClone(&bb, rhs);
+	longFillZero(dest, albl ? lhs->l_ + 2 : lhs->l_ + 1);
 	dd = BASE / (rhs->d_[rhs->l_ - 1] + 1) & MASK;
 	
 	if (dd == 1) {
@@ -392,8 +415,8 @@ void ulongDivmod(ULong* dest, const ULong* lhs, const ULong* rhs, bool mod) {
 		dest->d_[j] = (digit)q;
 	} while (--j >= bb.l_);
 
-	ulongInit(&div);
-	ulongClone(&div, dest);
+	longInit(&div);
+	longClone(&div, dest);
 	if (mod) {
 		if (dd != 0) {
 			t = 0;
@@ -406,29 +429,29 @@ void ulongDivmod(ULong* dest, const ULong* lhs, const ULong* rhs, bool mod) {
 		}
 
 		div.l_ = bb.l_;
-		ulongNorm((&div));
-		ulongClone(dest, &div);
-		ulongFree(&div);
-		ulongFree(&bb);
+		longNorm((&div));
+		longClone(dest, &div);
+		longFree(&div);
+		longFree(&bb);
 		return;
 	}
 
 	j = (albl ? lhs->l_ + 2 : lhs->l_ + 1) - bb.l_;
 	for (i = 0; i < j; ++i) { div.d_[i] = div.d_[i + bb.l_]; }
 	div.l_ = j;
-	ulongNorm((&div));
-	ulongClone(dest, &div);
-	ulongFree(&div);
-	ulongFree(&bb);
+	longNorm((&div));
+	longClone(dest, &div);
+	longFree(&div);
+	longFree(&bb);
 }
 
-void ulongLeftShift(ULong* dest, const ULong* self, ddigit n) {
+void longLeftShift(Long* dest, const Long* self, ddigit n) {
 	int i;
 	const int d = (int)n / SHIFT_BIT;
 	const ddigit b = n % SHIFT_BIT;
 	ddigit t, carry = 0;
 
-	ulongAlloc(dest, self->l_ + d + 1);
+	longAlloc(dest, self->l_ + d + 1);
 	memset(dest->d_, 0, sizeof(digit) * d);
 
 	for (i = 0; i < self->l_; ++i) {
@@ -438,34 +461,34 @@ void ulongLeftShift(ULong* dest, const ULong* self, ddigit n) {
 	}
 	dest->d_[i + d] = (digit)carry;
 
-	ulongNorm(dest);
+	longNorm(dest);
 }
 
-void ulongRightShift(ULong* dest, const ULong* self, ddigit n) {
+void longRightShift(Long* dest, const Long* self, ddigit n) {
 	int i = 0;
 	const int d = (int)n / SHIFT_BIT;
 	const ddigit b = n % SHIFT_BIT;
 	const ddigit mask = (1 << b) - 1;
 
 	if (self->l_ <= d) {
-		ulongInit(dest);
+		longInit(dest);
 		return;
 	}
 
-	ulongAlloc(dest, self->l_ - d);
+	longAlloc(dest, self->l_ - d);
 
 	for (; i < self->l_ - d - 1; ++i) {
 		dest->d_[i] = ((self->d_[i + d + 1] & mask) << (SHIFT_BIT - b)) + (self->d_[i + d] >> b);
 	}
 	dest->d_[i] = self->d_[i + d] >> b;
 
-	ulongNorm(dest);
+	longNorm(dest);
 }
 
-void ulongSquare(ULong* dest, const ULong* self) {
+void longSquare(Long* dest, const Long* self) {
 	ddigit u, v ,uv, c;
 	int i, j;
-	ulongFillZero(dest, self->l_ << 1);
+	longFillZero(dest, self->l_ << 1);
 
 	for (i = 0; i < self->l_; ++i) {
 		uv = dest->d_[i << 1] + self->d_[i] * self->d_[i];
@@ -486,55 +509,55 @@ void ulongSquare(ULong* dest, const ULong* self) {
 		dest->d_[i + self->l_] = (digit)u;
 	}
 
-	ulongNorm(dest);
+	longNorm(dest);
 }
 
 /**
  * square root.
  */
-void ulongSqrt(ULong* dest, const ULong* self) {
-	ULong c, t;
-	ulongInit(&c);
-	ulongInit(&t);
-	ulongNum(&c, 1);
-	ulongClone(dest, self);
-	while (ulongGt(dest, &c)) {
-		ulongRightShift(&t, dest, 1);
-		ulongClone(dest, &t);
+void longSqrt(Long* dest, const Long* self) {
+	Long c, t;
+	longInit(&c);
+	longInit(&t);
+	longNum(&c, 1);
+	longClone(dest, self);
+	while (longGt(dest, &c)) {
+		longRightShift(&t, dest, 1);
+		longClone(dest, &t);
 
-		ulongLeftShift(&t, &c, 1);
-		ulongClone(&c, &t);
+		longLeftShift(&t, &c, 1);
+		longClone(&c, &t);
 	}
 
 	do {
-		ulongClone(dest, &c);
+		longClone(dest, &c);
 
-		ulongDiv(&c, self, dest);
-		ulongAdd(&t, &c, dest);
-		ulongRightShift(&c, &t, 1);
-	} while (ulongGt(dest, &c));
+		longDiv(&c, self, dest);
+		longAdd(&t, &c, dest);
+		longRightShift(&c, &t, 1);
+	} while (longGt(dest, &c));
 }
 
-void ulongPow(ULong* dest, const ULong* self, ddigit n) {
-	ULong a, t;
-	ulongInit(&a);
-	ulongInit(&t);
-	ulongClone(&a, self);
-	ulongNum(dest, 1);
+void longPow(Long* dest, const Long* self, ddigit n) {
+	Long a, t;
+	longInit(&a);
+	longInit(&t);
+	longClone(&a, self);
+	longNum(dest, 1);
 	for (; n > 0; n >>= 1) {
 		if (n & 1) {
-			ulongMul(&t, dest, &a);
-			ulongClone(dest, &t);
+			longMul(&t, dest, &a);
+			longClone(dest, &t);
 		}
 
-		ulongSquare(&t, &a);
-		ulongClone(&a, &t);
+		longSquare(&t, &a);
+		longClone(&a, &t);
 	}
-	ulongFree(&a);
-	ulongFree(&t);
+	longFree(&a);
+	longFree(&t);
 }
 
-int ulongCmp(const ULong* lhs, const ULong* rhs) {
+int longCmp(const Long* lhs, const Long* rhs) {
 	int al;
 	if (lhs == rhs) { return 0; }
 	al = lhs->l_;
@@ -546,28 +569,28 @@ int ulongCmp(const ULong* lhs, const ULong* rhs) {
 			lhs->d_[al] < rhs->d_[al] ? -1 : 0;
 
 }
-bool ulongEq(const ULong* lhs, const ULong* rhs) {
-	return ulongCmp(lhs, rhs) == 0;
+bool longEq(const Long* lhs, const Long* rhs) {
+	return longCmp(lhs, rhs) == 0;
 }
 
-bool ulongNe(const ULong* lhs, const ULong* rhs) {
-	return ulongCmp(lhs, rhs) != 0;
+bool longNe(const Long* lhs, const Long* rhs) {
+	return longCmp(lhs, rhs) != 0;
 }
 
-bool ulongLt(const ULong* lhs, const ULong* rhs) {
-	return ulongCmp(lhs, rhs) < 0;
+bool longLt(const Long* lhs, const Long* rhs) {
+	return longCmp(lhs, rhs) < 0;
 }
 
-bool ulongGt(const ULong* lhs, const ULong* rhs) {
-	return ulongCmp(lhs, rhs) > 0;
+bool longGt(const Long* lhs, const Long* rhs) {
+	return longCmp(lhs, rhs) > 0;
 }
 
-bool ulongLe(const ULong* lhs, const ULong* rhs) {
-	return ulongCmp(lhs, rhs) <= 0;
+bool longLe(const Long* lhs, const Long* rhs) {
+	return longCmp(lhs, rhs) <= 0;
 }
 
-bool ulongGe(const ULong* lhs, const ULong* rhs) {
-	return ulongCmp(lhs, rhs) >= 0;
+bool longGe(const Long* lhs, const Long* rhs) {
+	return longCmp(lhs, rhs) >= 0;
 }
 
 #ifdef __cplusplus

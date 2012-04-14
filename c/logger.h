@@ -24,7 +24,7 @@ typedef enum _LogLevel {
 } LogLevel;
 
 void loggerSetLocal(const char* locale);
-void loggerSetLevel(int level);
+void loggerSetLevel(LogLevel level);
 void loggerSetFilename(const TCHAR* filename);
 void loggerLog(int level, const TCHAR* fmt, ...);
 

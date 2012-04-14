@@ -71,14 +71,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\string.c" />
+    <ClCompile Include="long.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="test.c" />
-    <ClCompile Include="ulong.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\string.h" />
+    <ClInclude Include="long.h" />
     <ClInclude Include="test.h" />
-    <ClInclude Include="ulong.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

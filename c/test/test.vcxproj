@@ -70,7 +70,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\math\ulong.c" />
+    <ClCompile Include="..\math\long.c" />
     <ClCompile Include="..\string.c" />
     <ClCompile Include="unittest.cc" />
   </ItemGroup>

@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -g -Wall -O2
 TARGET = test
-OBJS = main.o long.o test.o ../string.o
+OBJS = test.o string.o logger.o
 
 all: $(TARGET)
 
@@ -14,6 +14,6 @@ clean:
 .c.o:
 	$(CC) $(CFLAGS) -c $<
 
-main.o:
-long.o: ../string.o
+logger.o:
+string.o:
 test.o:

@@ -7,157 +7,157 @@ extern "C" {
 #include <stdio.h>
 
 void basic(ddigit m, ddigit n) {
-	ULong a, b, t;
-	ulongInit(&a);
-	ulongInit(&b);
-	ulongInit(&t);
+	Long a, b, t;
+	longInit(&a);
+	longInit(&b);
+	longInit(&t);
 
-	ulongNum(&a, m);
-	ulongNum(&b, n);
+	longNum(&a, m);
+	longNum(&b, n);
 
-	printf("a = "); ulongWriteln(&a);
-	printf("b = "); ulongWriteln(&b);
+	printf("a = "); longWriteln(&a);
+	printf("b = "); longWriteln(&b);
 
-	ulongAdd(&t, &a, &b);
-	printf("a + b = "); ulongWriteln(&t);
+	longAdd(&t, &a, &b);
+	printf("a + b = "); longWriteln(&t);
 
-	ulongSub(&t, &a, &b);
-	printf("a - b = "); ulongWriteln(&t);
+	longSub(&t, &a, &b);
+	printf("a - b = "); longWriteln(&t);
 
-	ulongMul(&t, &a, &b);
-	printf("a * b = "); ulongWriteln(&t);
+	longMul(&t, &a, &b);
+	printf("a * b = "); longWriteln(&t);
 
-	ulongDiv(&t, &a, &b);
-	printf("a / b = "); ulongWriteln(&t);
+	longDiv(&t, &a, &b);
+	printf("a / b = "); longWriteln(&t);
 
-	ulongMod(&t, &a, &b);
-	printf("a %% b = "); ulongWriteln(&t);
+	longMod(&t, &a, &b);
+	printf("a %% b = "); longWriteln(&t);
 
-	ulongSquare(&t, &b);
-	printf("b ^ 2 = "); ulongWriteln(&t);
+	longSquare(&t, &b);
+	printf("b ^ 2 = "); longWriteln(&t);
 
-	ulongSqrt(&t, &b);
-	printf("b ^ .5 = "); ulongWriteln(&t);
+	longSqrt(&t, &b);
+	printf("b ^ .5 = "); longWriteln(&t);
 
-	ulongPow(&t, &b, 7);
-	printf("b ^ 7 = "); ulongWriteln(&t);
+	longPow(&t, &b, 7);
+	printf("b ^ 7 = "); longWriteln(&t);
 
-	ulongLeftShift(&t, &b, 7);
-	printf("b << 7 = "); ulongWriteln(&t);
+	longLeftShift(&t, &b, 7);
+	printf("b << 7 = "); longWriteln(&t);
 
-	ulongFree(&a);
-	ulongFree(&b);
-	ulongFree(&t);
+	longFree(&a);
+	longFree(&b);
+	longFree(&t);
 }
 
-void fib(ULong* dest, int n) {
+void fib(Long* dest, int n) {
 	int i;
-	ULong a, b, ab;
-	ulongInit(&a);
-	ulongInit(&b);
-	ulongInit(&ab);
+	Long a, b, ab;
+	longInit(&a);
+	longInit(&b);
+	longInit(&ab);
 
-	ulongNum(&a, 1);
-	ulongNum(&b, 0);
+	longNum(&a, 1);
+	longNum(&b, 0);
 	for (i = 1; i < n; ++i) {
-		ulongAdd(&ab, &a, &b);
-		ulongClone(&b, &a);
-		ulongClone(&a, &ab);
+		longAdd(&ab, &a, &b);
+		longClone(&b, &a);
+		longClone(&a, &ab);
 	}
-	ulongClone(dest, &a);
+	longClone(dest, &a);
 
-	ulongFree(&a);
-	ulongFree(&b);
-	ulongFree(&ab);
+	longFree(&a);
+	longFree(&b);
+	longFree(&ab);
 }
 
-void fact(ULong* dest, int n) {
+void fact(Long* dest, int n) {
 	int i;
-	ULong a, t;
-	ulongInit(&a);
-	ulongInit(&t);
+	Long a, t;
+	longInit(&a);
+	longInit(&t);
 
-	ulongNum(&a, 1);
+	longNum(&a, 1);
 	for (i = 2; i <= n; ++i) {
-		ulongNum(&t, i);
-		ulongMul(dest, &a, &t);
-		ulongClone(&a, dest);
+		longNum(&t, i);
+		longMul(dest, &a, &t);
+		longClone(&a, dest);
 	}
 
-	ulongFree(&a);
-	ulongFree(&t);
+	longFree(&a);
+	longFree(&t);
 }
 
-void arccot(ULong* dest, ULong* n, int m) {
-	ULong c, m2, a, b, k, l2, t;
+void arccot(Long* dest, Long* n, int m) {
+	Long c, m2, a, b, k, l2, t;
 	bool s = true;
 
-	ulongInit(&c);
-	ulongInit(&m2);
-	ulongInit(&a);
-	ulongInit(&b);
-	ulongInit(&k);
-	ulongInit(&l2);
-	ulongInit(&t);
+	longInit(&c);
+	longInit(&m2);
+	longInit(&a);
+	longInit(&b);
+	longInit(&k);
+	longInit(&l2);
+	longInit(&t);
 
-	ulongClone(&c, n);
-	ulongNum(&t, m);
-	ulongDiv(&a, &c, &t);
-	ulongClone(&b, &a);
-	ulongNum(&k, 1);
-	ulongNum(&l2, 2);
-	ulongSquare(&m2, &t);
+	longClone(&c, n);
+	longNum(&t, m);
+	longDiv(&a, &c, &t);
+	longClone(&b, &a);
+	longNum(&k, 1);
+	longNum(&l2, 2);
+	longSquare(&m2, &t);
 
-	while (!ulongIsZero((&c))) {
-		ulongDiv(&t, &b, &m2);
-		ulongClone(&b, &t);
+	while (!longIsZero((&c))) {
+		longDiv(&t, &b, &m2);
+		longClone(&b, &t);
 
-		ulongAdd(&t, &k, &l2);
-		ulongClone(&k, &t);
+		longAdd(&t, &k, &l2);
+		longClone(&k, &t);
 
-		ulongDiv(&c, &b, &k);
+		longDiv(&c, &b, &k);
 		s = !s;
 		if (s) {
-			ulongAdd(&t, &a, &c);
+			longAdd(&t, &a, &c);
 		} else {
-			ulongSub(&t, &a, &c);
+			longSub(&t, &a, &c);
 		}
-		ulongClone(&a, &t);
+		longClone(&a, &t);
 	}
 
-	ulongClone(dest, &a);
+	longClone(dest, &a);
 
-	ulongFree(&c);
-	ulongFree(&m2);
-	ulongFree(&a);
-	ulongFree(&b);
-	ulongFree(&k);
-	ulongFree(&l2);
-	ulongFree(&t);
+	longFree(&c);
+	longFree(&m2);
+	longFree(&a);
+	longFree(&b);
+	longFree(&k);
+	longFree(&l2);
+	longFree(&t);
 }
 
-void pi(ULong* dest, ddigit a) {
-	ULong n, t, a5, a239;
-	ulongInit(&n);
-	ulongInit(&t);
-	ulongInit(&a5);
-	ulongInit(&a239);
-	ulongNum(&t, 10);
-	ulongPow(&n, &t, a);
+void pi(Long* dest, ddigit a) {
+	Long n, t, a5, a239;
+	longInit(&n);
+	longInit(&t);
+	longInit(&a5);
+	longInit(&a239);
+	longNum(&t, 10);
+	longPow(&n, &t, a);
 
 	arccot(&a5, &n, 5);
-	ulongLeftShift(dest, &a5, 2);
+	longLeftShift(dest, &a5, 2);
 
 	arccot(&a239, &n, 239);
 
-	ulongSub(&t, dest, &a239);
+	longSub(&t, dest, &a239);
 
-	ulongLeftShift(dest, &t, 2);
+	longLeftShift(dest, &t, 2);
 	
-	ulongFree(&n);
-	ulongFree(&t);
-	ulongFree(&a5);
-	ulongFree(&a239);
+	longFree(&n);
+	longFree(&t);
+	longFree(&a5);
+	longFree(&a239);
 }
 
 #ifdef __cplusplus
