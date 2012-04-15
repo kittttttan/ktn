@@ -3,8 +3,6 @@
 
 #include "long.h"
 
-#define UNIT_TEST
-
 #ifdef __cplusplus
 extern "C" {
 #endif

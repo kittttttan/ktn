@@ -12,7 +12,7 @@ int main() {
 	Long u;
 	int n;
 
-	basic(7777777, 10000);
+	basic(7777777, -10000);
 
 	longInit(&u);
 
