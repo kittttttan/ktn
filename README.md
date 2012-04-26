@@ -3,8 +3,9 @@
 
 ## C
 
-using [googletest](http://code.google.com/p/googletest/)
+Using [googletest](http://code.google.com/p/googletest/)
 for unit test.
+
 Set environment variables below.
 
   * GTEST_INC  - path to gtest include. ex. C:\gtest-1.6.0\include

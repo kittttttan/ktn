@@ -91,10 +91,10 @@ function Long() {
 
     var index = 0, sign = true, len;
     if (str.charAt(index) === '+') {
-      index++;
+      ++index;
     } else if (str.charAt(index) === '-') {
       sign = false;
-      index++;
+      ++index;
     }
     // Ignore following zeros. '00102' is regarded as '102'.
     while (str.charAt(index) === '0') { ++index; }
@@ -112,17 +112,17 @@ function Long() {
 
     for (var c, n, zd = z._d, bl = 1;;) {
       c = str.charAt(index);
-      index++;
+      ++index;
       if (!c) { break; }
       n = parseInt(c, 10);
       for (var i = 0;;) {
-        for (; i < bl; i++) {
+        for (; i < bl; ++i) {
           n += zd[i] * base;
           zd[i] = n & MASK;
           n >>>= SHIFT;
         }
         if (n) {
-          bl++;
+          ++bl;
         } else {
           break;
         }
@@ -168,7 +168,7 @@ function Long() {
         a1 = a1.substr(0, fpt) + a1.substr(fpt + 1, np);
         a2 -= np;
       }
-      for (; a2 > 0; a2--) { a1 += '0'; }
+      for (; a2 > 0; --a2) { a1 += '0'; }
       return longStr(a1);
     }
     return new Long();
@@ -237,7 +237,7 @@ function Long() {
   function longNorm(a) {
     var d = a._d,
         l = d.length;
-    do { l--; } while (l && !d[l]);
+    do { --l; } while (l && !d[l]);
     d.length = l + 1;
     // -0 -> +0
     if (!l && !d[l]) { a._s = true; }
@@ -283,7 +283,7 @@ function Long() {
   function longHalf(a) {
     var d = a._d,
         l = d.length - 1;
-    for (var i = 0; i < l; i++) {
+    for (var i = 0; i < l; ++i) {
       d[i] = (((d[i + 1] & 1) << SHIFT) + d[i]) >>> 1;
     }
     d[l] >>>= 1;
@@ -427,7 +427,7 @@ function Long() {
         k = 4;
         while (k--) {
           s = digits.charAt(n % b) + s;
-          j--;
+          --j;
           n = n / b | 0;
           if (!i && !n) { break; }
         }
@@ -496,7 +496,7 @@ function Long() {
           cd = c._d,
           i = 0,
           carry = 0;
-      for (; i < d; i++) { cd[i] = 0; }
+      for (; i < d; ++i) { cd[i] = 0; }
       i = 0;
       for (var t = 0; i < l; ++i) {
         t = (ad[i] << bb) + carry;
@@ -894,7 +894,7 @@ function Long() {
           num += zd[j - nb + i] - t;
           while (num) {
             i = num = 0;
-            q--;
+            --q;
 
             do {
               ee = num + bd[i];
@@ -903,7 +903,7 @@ function Long() {
               num >>= SHIFT;
             } while (++i < nb);
 
-            num--;
+            --num;
           }
         }
         zd[j] = q;
@@ -995,7 +995,7 @@ function Long() {
           al = ad.length;
       if (al < bd.length) { return -1; }
       if (al > bd.length) { return 1; }
-      do { al--; } while (al && ad[al] === bd[al]);
+      do { --al; } while (al && ad[al] === bd[al]);
       if (!al && ad[0] === bd[0]) { return 0; }
       return ad[al] > bd[al] ? 1 : -1;
     },
@@ -1016,7 +1016,7 @@ function Long() {
       if (this._s !== b._s) { return this._s ? 1 : -1; }
       if (al < bd.length) { return this._s ? -1 : 1; }
       if (al > bd.length) { return this._s ? 1 : -1; }
-      do { al--; } while (al && ad[al] === bd[al]);
+      do { --al; } while (al && ad[al] === bd[al]);
       if (!al && ad[0] === bd[0]) { return this._s - b._s; }
       if (ad[al] > bd[al]) { return this._s ? 1 : -1; }
       return this._s ? -1 : 1;
