@@ -2,15 +2,19 @@
 #include "logger.h"
 
 int main() {
-	loggerLog(LOG_INFO, _T("てすと\n"));
+	TCHAR filename[64];
+	loggerLog(LOG_INFO, _T("てすと %d\n"), __LINE__);
 
 	loggerSetLevel(LOG_NONE);
-	loggerLog(LOG_INFO, _T("テスト %d\n"), 2);
+	loggerLog(LOG_INFO, _T("テスト %d\n"), __LINE__);
 
-	loggerSetLevel(LOG_INFO);
-	LOGGER_INFO(_T("テスト %d\n"), 3);
+	loggerSetLevel(LOG_ALL);
+	LOGGER_WARN(_T("WARN %d\n"), __LINE__);
+	LOGGER_ERROR(_T("ERROR %d\n"), __LINE__);
 
-	TRACE(_T("output log.txt\n"));
+	loggerGetFilename(filename, 63);
+	TRACE(_T("出力: %s ...\n"), filename);
+	getchar();
 
 	return 0;
 }

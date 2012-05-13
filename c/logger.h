@@ -10,7 +10,7 @@ extern "C" {
 #include <tchar.h>
 
 #ifdef _DEBUG
-#define TRACE(fmt, ...) {printf(fmt "\t[%d]%s\n",__VA_ARGS__,__LINE__,__FILE__);}
+#define TRACE(fmt, ...) { _tprintf(fmt, __VA_ARGS__); }
 #else
 #define TRACE(fmt, ...)
 #endif
@@ -23,15 +23,22 @@ typedef enum _LogLevel {
 	LOG_ALL,
 } LogLevel;
 
+void loggerGetLocal(char* locale, int size);
+LogLevel loggerGetLevel();
+void loggerGetFilename(TCHAR* filename, int size);
+int loggerGetStdoutFlag();
+
 void loggerSetLocal(const char* locale);
 void loggerSetLevel(LogLevel level);
 void loggerSetFilename(const TCHAR* filename);
-void loggerLog(int level, const TCHAR* fmt, ...);
+void loggerSetStdoutFlag(int flag);
 
-#define LOGGER_INFO(fmt, ...) {loggerLog(LOG_INFO, fmt, __VA_ARGS__);}
-#define LOGGER_WARN(fmt, ...) {loggerLog(LOG_WARN, fmt, __VA_ARGS__);}
-#define LOGGER_ERROR(fmt, ...) {loggerLog(LOG_ERROR, fmt, __VA_ARGS__);}
-#define LOGGER_ALL(fmt, ...) {loggerLog(LOG_ALL, fmt, __VA_ARGS__);}
+void loggerLog(LogLevel level, const TCHAR* fmt, ...);
+
+#define LOGGER_INFO(fmt, ...) { loggerLog(LOG_INFO, fmt, __VA_ARGS__); }
+#define LOGGER_WARN(fmt, ...) { loggerLog(LOG_WARN, fmt, __VA_ARGS__); }
+#define LOGGER_ERROR(fmt, ...) { loggerLog(LOG_ERROR, fmt, __VA_ARGS__); }
+#define LOGGER_ALL(fmt, ...) { loggerLog(LOG_ALL, fmt, __VA_ARGS__); }
 
 #ifdef __cplusplus
 }
