@@ -16,11 +16,11 @@ extern "C" {
 #endif
 
 typedef enum _LogLevel {
-	LOG_NONE = 0,
-	LOG_INFO,
-	LOG_WARN,
-	LOG_ERROR,
-	LOG_ALL,
+  LOG_NONE = 0,
+  LOG_INFO,
+  LOG_WARN,
+  LOG_ERROR,
+  LOG_ALL,
 } LogLevel;
 
 void loggerGetLocal(char* locale, int size);

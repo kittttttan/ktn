@@ -1,5 +1,6 @@
-<html><head><title>Test long.js</title>
+<!DOCTYPE html>
 <meta charset="UTF-8">
+<title>Test long.js</title>
 <link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-git.css">
 <script src="http://code.jquery.com/qunit/qunit-git.js"></script>
 <script src="../lib/long.js"></script>
@@ -20,7 +21,7 @@ test("basic", function() {
 
 function fib(a) {
   var b = Long.num(0);
-  for (var i = 0, c = Long.num(1), d; i < a; i++) {
+  for (var i = 0, c = Long.num(1), d; i < a; ++i) {
     d = b.clone();
     b = b.add(c);
     c = d;
@@ -39,7 +40,7 @@ test("fib", function(){
 
 function fact(a) {
   var f = Long.num(1);
-  for (var i = 2; i < a + 1; i++) {
+  for (var i = 2; i < a + 1; ++i) {
     f = f.mul(Long.num(i));
   }
   return f;
@@ -52,12 +53,10 @@ test("fact", function () {
     equal(fact(10).toString(), "3628800");
 });
 </script>
-</head>
-<body>
+
 <h1 id="qunit-header">Test long.js</h1>
 <h2 id="qunit-banner"></h2>
 <div id="qunit-testrunner-toolbar"></div>
 <h2 id="qunit-userAgent"></h2>
 <ol id="qunit-tests"></ol>
 <div id="qunit-fixture">test markup</div>
-</body></html>
