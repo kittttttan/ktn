@@ -5,7 +5,9 @@
 extern "C" {
 #endif
 
+#ifdef _MSC_VER
 #include <Windows.h>
+#endif
 #include <stdio.h>
 #include <tchar.h>
 

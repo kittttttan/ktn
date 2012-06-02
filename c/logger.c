@@ -3,17 +3,27 @@
 #include <stdarg.h>
 #include <locale.h>
 
-#define LOCALE_CHAR     32
+#define LOCALE_CHAR     (32)
 
-#define LOG_COLOR_NONE  0
+#ifndef MAX_PATH
+#define MAX_PATH        (260)
+#endif
+
+#ifndef min
+#define min(a,b)        (((a)<(b))?(a):(b))
+#endif
+
+#define LOG_COLOR_NONE  (0)
 #ifdef _MSC_VER
-#define LOG_COLOR_RED     FOREGROUND_RED
-#define LOG_COLOR_GREEN   FOREGROUND_GREEN
+#define LOG_COLOR_RED     (FOREGROUND_RED)
+#define LOG_COLOR_GREEN   (FOREGROUND_GREEN)
 #define LOG_COLOR_YELLOW  (FOREGROUND_RED | FOREGROUND_GREEN)
+#define LOG_COLOR_CYAN    (FOREGROUND_BLUE | FOREGROUND_GREEN)
 #else
-#define LOG_COLOR_RED     1
-#define LOG_COLOR_GREEN   2
-#define LOG_COLOR_YELLOW  3
+#define LOG_COLOR_RED     (1)
+#define LOG_COLOR_GREEN   (2)
+#define LOG_COLOR_YELLOW  (3)
+#define LOG_COLOR_CYAN    (6)
 
 #define strcpy_s(dest, size, src)   strcpy(dest, src)
 #define _tcscpy_s(dest, size, src)  _tcscpy(dest, src)
@@ -26,8 +36,8 @@ static LogLevel loglevel_ = LOG_ALL;
 static TCHAR filename_[MAX_PATH] = _T("log.txt");
 static int stdout_ = 1;
 
-static WORD getColor(WORD color);
-static void _vtprintfColored(WORD color, const TCHAR* fmt, va_list ap);
+static int getColor(LogLevel level);
+static void _vtprintfColored(int color, const TCHAR* fmt, va_list ap);
 
 void loggerGetLocal(char* locale, int size) {
   const int s = min(size, LOCALE_CHAR);
@@ -95,10 +105,13 @@ void loggerLog(LogLevel level, const TCHAR* fmt, ...) {
   va_end(ap);
 }
 
-WORD getColor(LogLevel level) {
-  WORD color;
+int getColor(LogLevel level) {
+  int color;
 
   switch (level) {
+  case LOG_INFO:
+    color = LOG_COLOR_CYAN;
+    break;
   case LOG_WARN:
     color = LOG_COLOR_YELLOW;
     break;
@@ -113,7 +126,7 @@ WORD getColor(LogLevel level) {
   return color;
 }
 
-void _vtprintfColored(WORD color, const TCHAR* fmt, va_list ap) {
+void _vtprintfColored(int color, const TCHAR* fmt, va_list ap) {
 #if _MSC_VER
   WORD old_color_attrs;
   CONSOLE_SCREEN_BUFFER_INFO buffer_info;
