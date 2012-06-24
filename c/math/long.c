@@ -120,7 +120,8 @@ void longNeg(Long* dest, const Long* src) {
  * @param[out] s
  */
 void longStr(const Long* self, char *s) {
-  const int radix = 10, hradix = BASE_DEC, length = abs(self->l_);
+  const digit radix = 10, hradix = BASE_DEC;
+  const int length = abs(self->l_);
   int i, j, k, index;
   ddigit n;
   const char digits[] = "0123456789";
@@ -297,19 +298,19 @@ void longSubAbs(Long* dest, const Long* lhs, const Long* rhs) {
   c = 0;
   for (; i < rl; ++i) {
     if (ld[i] < rd[i] + c) {
-      dd[i] = (digit)BASE + ld[i] - rd[i] - c;
+      dd[i] = (digit)(BASE + ld[i] - rd[i] - c);
       c = 1;
     } else {
-      dd[i] = (digit)ld[i] - rd[i] - c;
+      dd[i] = (digit)(ld[i] - rd[i] - c);
       c = 0;
     }
   }
   for (; i < ll; ++i) {
     if (ld[i] < c) {
-      dd[i] = (digit)BASE + ld[i] - c;
+      dd[i] = (digit)(BASE + ld[i] - c);
       c = 1;
     } else {
-      dd[i] = (digit)ld[i] - c;
+      dd[i] = (digit)(ld[i] - c);
       c = 0;
     }
   }

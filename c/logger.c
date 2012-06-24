@@ -137,7 +137,7 @@ void _vtprintfColored(int color, const TCHAR* fmt, va_list ap) {
     _vtprintf(fmt, ap);
     return;
   }
-  
+
 #if _MSC_VER
   stdout_handle = GetStdHandle(STD_OUTPUT_HANDLE);
 
@@ -146,7 +146,7 @@ void _vtprintfColored(int color, const TCHAR* fmt, va_list ap) {
 
   fflush(stdout);
   SetConsoleTextAttribute(stdout_handle,
-    color | FOREGROUND_INTENSITY);
+    (WORD)color | FOREGROUND_INTENSITY);
 
   _vtprintf(fmt, ap);
 
