@@ -4,6 +4,7 @@
  */
 #include "string.h"
 #include "array.h"
+#include "dbg.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -70,11 +71,16 @@ void arrayTest() {
 }
 
 int main(int argc, const char** argv) {
+#ifdef _MSC_VER
+  ::_CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF | _CRTDBG_ALLOC_MEM_DF);
+#endif
+
   stringTest();
   arrayTest();
 
 #ifdef _MSC_VER
   system("pause");
 #endif
+
   return 0;
 }

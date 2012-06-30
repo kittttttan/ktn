@@ -1,8 +1,17 @@
 #include "string.h"
 #include "logger.h"
 
+#ifdef _MSC_VER
+#include <crtdbg.h>
+#endif
+
 int main() {
   TCHAR filename[64];
+
+#ifdef _MSC_VER
+  _CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF | _CRTDBG_ALLOC_MEM_DF);
+#endif
+
   loggerLog(LOG_INFO, _T("info %d\n"), __LINE__);
 
   loggerSetLevel(LOG_NONE);

@@ -4,13 +4,20 @@
 #include <stdlib.h>
 #include <time.h>
 
-int main() {
-#if defined(_MSC_VER)
-  clock_t t = clock();
-#endif // defined(_MSC_VER)
+#ifdef _MSC_VER
+#include <crtdbg.h>
+#define malloc(X) _malloc_dbg(X,_NORMAL_BLOCK,__FILE__,__LINE__)
+#endif
 
+int main() {
   Long u;
   int n;
+
+#ifdef _MSC_VER
+  clock_t t = clock();
+
+  _CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF | _CRTDBG_ALLOC_MEM_DF);
+#endif
 
   basic(7777777, -10000);
 
@@ -24,15 +31,16 @@ int main() {
   printf("fact(%d) =\n", n); fact(&u, n);
   longWriteln(&u);
 
-  printf("pi(%d) =\n", n); pi(&u, n);
-  longWriteln(&u);
+  // FIXME: memory leak
+  //printf("pi(%d) =\n", n); pi(&u, n);
+  //longWriteln(&u);
 
   longFree(&u);
 
-#if defined(_MSC_VER)
+#ifdef _MSC_VER
   printf("%ld ms\n", clock() - t);
   system("pause");
-#endif // defined(_MSC_VER)
+#endif
 
   return 0;
 }

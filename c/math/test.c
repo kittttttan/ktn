@@ -88,6 +88,7 @@ void fact(Long* dest, int n) {
   longFree(&t);
 }
 
+// FIXME: memory leak
 void arccot(Long* dest, Long* n, int m) {
   Long c, m2, a, b, k, l2, t;
   bool s = true;

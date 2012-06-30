@@ -111,7 +111,9 @@ String String::operator-() const {
   }
   temp[i] = _T('\0');
 
-  return String(temp, length_);
+  String res(temp, length_);
+  delete [] temp;
+  return res;
 }
 
 int String::indexOf(const TCHAR c, int from) const {
@@ -148,7 +150,9 @@ String String::toUpperCase() {
     w[i] = towupper(string_[i]);
   }
 
-  return String(w, length_);
+  String res(w, length_);
+  delete [] w;
+  return res;
 }
 
 String String::toLowerCase() {
@@ -159,7 +163,9 @@ String String::toLowerCase() {
     w[i] = towlower(string_[i]);
   }
 
-  return String(w, length_);
+  String res(w, length_);
+  delete [] w;
+  return res;
 }
 
 String String::substr(int from, int length) {
@@ -177,7 +183,9 @@ String String::substr(int from, int length) {
   }
   w[length] = _T('\0');
 
-  return String(w, length);
+  String res(w, length);
+  delete [] w;
+  return res;
 }
 
 String String::slice(int from, int to) {
@@ -195,7 +203,9 @@ String String::slice(int from, int to) {
   }
   w[length] = _T('\0');
 
-  return String(w, length);
+  String res(w, length);
+  delete [] w;
+  return res;
 }
 
 String String::trimLeft() {
@@ -213,7 +223,9 @@ String String::trimLeft() {
     temp[j] = string_[i];
   }
 
-  return String(temp, length);
+  String res(temp, length);
+  delete [] temp;
+  return res;
 }
 
 String String::trimRight() {
@@ -234,7 +246,9 @@ String String::trimRight() {
   }
   temp[j] = _T('\0');
 
-  return String(temp, length);
+  String res(temp, length);
+  delete [] temp;
+  return res;
 }
 
 String String::trim() {
@@ -263,7 +277,9 @@ String String::trim() {
   }
   temp[j] = _T('\0');
 
-  return String(temp, length);
+  String res(temp, length);
+  delete [] temp;
+  return res;
 }
 
 String String::operator+(const String& s) const {
@@ -277,7 +293,9 @@ String String::operator+(const String& s) const {
     w[i + length_] = s.string_[i];
   }
 
-  return String(w, length_ + s.length_);
+  String res(w, length_ + s.length_);
+  delete [] w;
+  return res;
 }
 
 String String::operator-(const TCHAR c) const {
@@ -293,7 +311,9 @@ String String::operator-(const TCHAR c) const {
   }
   temp[length] = _T('\0');
 
-  return String(temp, length);
+  String res(temp, length);
+  delete [] temp;
+  return res;
 }
 
 String String::operator*(int times) const {
@@ -311,7 +331,9 @@ String String::operator*(int times) const {
     }
     w[length] = _T('\0');
 
-    return String(w, length);
+    String res(w, length);
+    delete [] w;
+    return res;
   }
 
   int length = length_ * times;
@@ -323,7 +345,9 @@ String String::operator*(int times) const {
   }
   w[length] = _T('\0');
 
-  return String(w, length);
+  String res(w, length);
+  delete [] w;
+  return res;
 }
 
 String& String::operator+=(const String& b) {

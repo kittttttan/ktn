@@ -102,7 +102,7 @@ Array<T>& Array<T>::operator=(const Array<T>& b) {
   if (this == &b) { return *this; }
   if (length_ != b.length_) {
     length_ = b.length_;
-    delete[] array_;
+    delete [] array_;
   }
   for (int i = 0; i < length_; ++i) {
     array_[i] = b.array_[i];

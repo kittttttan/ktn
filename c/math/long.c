@@ -20,22 +20,22 @@
 #define BASE    ((digit)1 << SHIFT_BIT)
 #define MASK    ((digit)(BASE - 1))
 
-#define longNorm(self) {              \
-  int l = abs(self->l_);              \
-  while (l > 0 && self->d_[l - 1] == 0) { --l; }  \
-  if (l == 0) {                  \
-    self->l_ = 0;                \
-  } else {                    \
-    self->l_ = self->l_ < 0 ? -l : l;      \
-  }                        \
+#define longNorm(self) {                            \
+  int l = abs(self->l_);                            \
+  while (l > 0 && self->d_[l - 1] == 0) { --l; }    \
+  if (l == 0) {                                     \
+    self->l_ = 0;                                   \
+  } else {                                          \
+    self->l_ = self->l_ < 0 ? -l : l;               \
+  }                                                 \
 }
 
-#define LONG_MALLOC_ERROR_CHECK(plong) {          \
-  if (!plong->d_) {                    \
+#define LONG_MALLOC_ERROR_CHECK(plong) {                \
+  if (!plong->d_) {                                     \
     printf("malloc error [%d]%s\n",__LINE__,__FILE__);  \
-    plong->a_ = plong->l_ = 0;              \
-    return;                        \
-  }                            \
+    plong->a_ = plong->l_ = 0;                          \
+    return;                                             \
+  }                                                     \
 }
 
 #ifdef __cplusplus
@@ -618,6 +618,10 @@ void longSqrt(Long* dest, const Long* self) {
     longAdd(&t, &c, dest);
     longRightShift(&c, &t, 1);
   } while (longGt(dest, &c));
+
+  longFree(&c);
+  longFree(&t);
+  longFree(&d);
 }
 
 void longPow(Long* dest, const Long* self, ddigit n) {
