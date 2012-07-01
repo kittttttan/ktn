@@ -31,9 +31,8 @@ int main() {
   printf("fact(%d) =\n", n); fact(&u, n);
   longWriteln(&u);
 
-  // FIXME: memory leak
-  //printf("pi(%d) =\n", n); pi(&u, n);
-  //longWriteln(&u);
+  printf("pi(%d) =\n", n); pi(&u, n);
+  longWriteln(&u);
 
   longFree(&u);
 

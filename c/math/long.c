@@ -372,7 +372,9 @@ void longDivmod(Long* dest, const Long* lhs, const Long* rhs, bool mod) {
   }
   if (longIsOne(rhs)) {
     if (mod) {
-      longInit(dest);
+      longInit(&bb);
+      longClone(dest, &bb);
+      longFree(&bb);
       return;
     }
     longClone(dest, lhs);
@@ -386,7 +388,9 @@ void longDivmod(Long* dest, const Long* lhs, const Long* rhs, bool mod) {
       longClone(dest, lhs);
       return;
     }
-    longInit(dest);
+    longInit(&bb);
+    longClone(dest, &bb);
+    longFree(&bb);
     return;
   }
 
