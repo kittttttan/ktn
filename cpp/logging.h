@@ -7,11 +7,11 @@ namespace ktn {
 
 #define LOGGING
 #ifdef LOGGING
-#define LOGGING_LOG(logging, level, logstr)                     \
-    {                                                           \
-        if (logging.logLevel() >= level) {                      \
-            logging.log(logstr, level, _T(__FILE__), __LINE__); \
-        }                                                       \
+#define LOGGING_LOG(logging, level, logstr)                                     \
+    {                                                                           \
+        if (logging.logLevel() >= level) {                                      \
+            logging.log(logstr, level, _T(__FILE__), __LINE__, _T(__func__));   \
+        }                                                                       \
     }
 #define LOGGING_ERROR(logging, logstr)  LOGGING_LOG(logging, LOG_ERROR, logstr)
 #define LOGGING_WARN(logging, logstr)   LOGGING_LOG(logging, LOG_WARN, logstr)
@@ -36,8 +36,9 @@ public:
     LogLevel logLevel() const { return logLevel_; }
     void logLevel(LogLevel logLevel) { logLevel_ = logLevel; }
 
-    void log(const String& log, LogLevel level, const TCHAR* file, int line) {
-        logFormat_->format(log, level, file, line).out();
+    void log(const String& log, LogLevel level,
+            const TCHAR* file, int line, const TCHAR* func) {
+        logFormat_->format(log, level, file, line, func).out();
     }
 
 private:

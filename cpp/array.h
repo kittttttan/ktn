@@ -158,14 +158,10 @@ T& Array<T>::operator[](int index) {
     if (index < 0) {
         index += length_;
     }
-    if (index > length_) {
-        fprintf(stderr, "Warn: index is too large. %s:%d:\n", __FILE__, __LINE__);
-        index = length_ - 1;
-    } else if (index < 0) {
-        fprintf(stderr, "Warn: index is too small. %s:%d:\n", __FILE__, __LINE__);
-        index = 0;
-    }
-    return array_[index];
+
+    _ASSERTE(0 <= index && index < length_);
+
+    return *(array_ + index);
 }
 
 template<class T>

@@ -5,9 +5,11 @@
 
 #include <stdio.h>
 #include <locale.h>
+#include <vector>
 
 #include "string.h"
 #include "util.h"
+#include "dbg.h"
 
 namespace ktn {
 
@@ -118,14 +120,10 @@ TCHAR& String::operator[](int index) {
     if (index < 0) {
         index += length_;
     }
-    if (index > length_) {
-        fprintf(stderr, "Warn: index is too large. %s:%d:\n", __FILE__, __LINE__);
-        index = length_ - 1;
-    } else if (index < 0) {
-        fprintf(stderr, "Warn: index is too small. %s:%d:\n", __FILE__, __LINE__);
-        index = 0;
-    }
-    return string_[index];
+
+    _ASSERTE(0 <= index && index < length_);
+
+    return *(string_ + index);
 }
 
 bool String::operator!() const {

@@ -1,7 +1,7 @@
 #ifndef LOGFORMAT_H_
 #define LOGFORMAT_H_
 
-#include <ctime>
+#include <time.h>
 #include "string.h"
 
 namespace ktn {
@@ -17,7 +17,8 @@ enum LogLevel {
 class ILogFormat {
 public:
     virtual ~ILogFormat() {}
-    virtual String format(const String& log, LogLevel level, const TCHAR* file, int line) = 0;
+    virtual String format(const String& log, LogLevel level,
+            const TCHAR* file, int line, const TCHAR* func) = 0;
 };
 
 class DefaultLogFormat : public ILogFormat {
@@ -27,10 +28,11 @@ public:
     DefaultLogFormat() {}
     ~DefaultLogFormat() {}
 
-    String format(const String& log, LogLevel level, const TCHAR* file, int line) {
+    String format(const String& log, LogLevel level,
+            const TCHAR* file, int line, const TCHAR* func) {
         TCHAR buf[99];
-        if (_stprintf_s(buf, 99, _T("%07ld %s[%d] %s "),
-                clock(), file, line, logLevelName[level]) == 99) {
+        if (_stprintf_s(buf, 99, _T("%07ld %s[%d]%s %s "),
+                clock(), file, line, func, logLevelName[level]) == 99) {
             TRACE(_T("filled buffer"));
         }
         String str(buf);

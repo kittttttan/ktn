@@ -8,8 +8,6 @@
 
 #include "ulong.h"
 
-namespace ktn { namespace math {
-
 #ifdef _WIN32
 #define OUTPUT_FORMAT    "%I64d"
 #else
@@ -30,6 +28,8 @@ namespace ktn { namespace math {
 #endif
 #define BASE    (1 << SHIFT_BIT)
 #define MASK    (BASE - 1)
+
+namespace ktn { namespace math {
 
 const ULong ULong::ZERO(0);  /**< constant zero */
 const ULong ULong::ONE(1);  /**< constant one */
@@ -73,7 +73,7 @@ ULong::ULong(const char *s, int radix) {
     while (s[index] == '0') { ++index; }
     if (s[index] == '\0') {
         l_ = 0;
-        d_ = NULL;
+        d_ = nullptr;
         return;
     }
 
@@ -125,10 +125,8 @@ ULong::ULong(const char *s, int radix) {
 * @param zero   fill zero flag
 */
 void ULong::alloc(int length, bool zero) {
-    if (length < 1) {
-        fprintf(stderr, "invalid value: ULong::alloc(%d, ...)", length);
-        return;
-    }
+    _ASSERTE(length > 0);
+
     if (l_ != length) {
         l_ = length;
         delete [] d_;
@@ -144,36 +142,6 @@ void ULong::alloc(int length, bool zero) {
     for (int i = 0; i < length; ++i) {
         d_[i] = 0;
     }
-}
-
-bool ULong::operator!() const {
-    return l_ < 1 || (l_ == 1 && d_[0] == 0);
-}
-
-ULong ULong::operator+() const {
-    return *this;
-}
-
-ULong& ULong::operator++() {
-    *this = *this + ONE;
-    return *this;
-}
-
-ULong ULong::operator--(int) {
-    const ULong tmp(*this);
-    --*this;
-    return tmp;
-}
-
-ULong& ULong::operator--() {
-    *this = *this + ONE;
-    return *this;
-}
-
-ULong ULong::operator++(int) {
-    const ULong tmp(*this);
-    ++*this;
-    return tmp;
 }
 
 ULong& ULong::operator=(const ULong& b) {
@@ -202,13 +170,6 @@ void ULong::debug() const {
         printf(OUTPUT_FORMAT " ", d_[i]);
     }
     puts("");
-}
-
-/**
-* Fits length.
-*/
-inline void ULong::norm() {
-    while (l_ > 0 && d_[l_ - 1] == 0) { --l_; }
 }
 
 inline void reverseChar(char* s) {
@@ -779,144 +740,4 @@ ULong ULong::divmod(const ULong& b, bool mod) const {
     return div;
 }
 
-ULong ULong::operator/(const ULong& b) const {
-    return divmod(b, false);
-}
-
-ULong ULong::operator%(const ULong& b) const {
-    return divmod(b, true);
-}
-
-ULong& ULong::operator+=(const ULong& b) {
-    *this = *this + b;
-    return *this;
-}
-
-ULong& ULong::operator-=(const ULong& b) {
-    *this = *this - b;
-    return *this;
-}
-
-ULong& ULong::operator*=(const ULong& b) {
-    *this = *this * b;
-    return *this;
-}
-
-ULong& ULong::operator/=(const ULong& b) {
-    *this = *this / b;
-    return *this;
-}
-
-ULong& ULong::operator%=(const ULong& b) {
-    *this = *this % b;
-    return *this;
-}
-
-ULong& ULong::operator<<=(ddigit n) {
-    *this = *this << n;
-    return *this;
-}
-
-ULong& ULong::operator>>=(ddigit n) {
-    *this = *this >> n;
-    return *this;
-}
-
-bool ULong::operator==(const ULong& b) const {
-    return cmp(b) == 0;
-}
-
-bool ULong::operator!=(const ULong& b) const {
-    return cmp(b) != 0;
-}
-
-bool ULong::operator>(const ULong& b) const {
-    return cmp(b) > 0;
-}
-
-bool ULong::operator<(const ULong& b) const {
-    return cmp(b) < 0;
-}
-
-bool ULong::operator>=(const ULong& b) const {
-    return cmp(b) >= 0;
-}
-
-bool ULong::operator<=(const ULong& b) const {
-    return cmp(b) <= 0;
-}
-
-
-ULong ULong::operator+(ddigit b) const {
-    return *this + ULong(b);
-}
-
-ULong ULong::operator-(ddigit b) const {
-    return *this - ULong(b);
-}
-
-ULong ULong::operator*(ddigit b) const {
-    return *this * ULong(b);
-}
-
-ULong ULong::operator/(ddigit b) const {
-    return *this / ULong(b);
-}
-
-ULong ULong::operator%(ddigit b) const {
-    return *this % ULong(b);
-}
-
-ULong& ULong::operator+=(ddigit b) {
-    *this = *this + b;
-    return *this;
-}
-
-ULong& ULong::operator-=(ddigit b) {
-    *this = *this - b;
-    return *this;
-}
-
-ULong& ULong::operator*=(ddigit b) {
-    *this = *this * b;
-    return *this;
-}
-
-ULong& ULong::operator/=(ddigit b) {
-    *this = *this / b;
-    return *this;
-}
-
-ULong& ULong::operator%=(ddigit b) {
-    *this = *this % b;
-    return *this;
-}
-
-int ULong::cmp(ddigit b) const {
-    return cmp(ULong(b));
-}
-
-bool ULong::operator==(ddigit b) const {
-    return cmp(b) == 0;
-}
-
-bool ULong::operator!=(ddigit b) const {
-    return cmp(b) != 0;
-}
-
-bool ULong::operator>(ddigit b) const {
-    return cmp(b) > 0;
-}
-
-bool ULong::operator<(ddigit b) const {
-    return cmp(b) < 0;
-}
-
-bool ULong::operator>=(ddigit b) const {
-    return cmp(b) >= 0;
-}
-
-bool ULong::operator<=(ddigit b) const {
-    return cmp(b) <= 0;
-}
 }} // namespace ktn math

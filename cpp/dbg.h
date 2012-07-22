@@ -7,8 +7,12 @@
 #include <crtdbg.h>
 #define new new(_NORMAL_BLOCK, __FILE__, __LINE__)
 #else
-#define _ASSERT(expr)   {assert(expr);}
-#define _ASSERTE(expr)  {assert(expr);}
+#define _ASSERTE(expr) if(!(expr))                              \
+    {                                                           \
+        _ftprintf(stderr, _T("%s: %s %s[%d]"),                  \
+            _T(__func__), _T(#expr), _T(__FILE__), __LINE__);   \
+        std::exit(EXIT_FAILURE);                                \
+    }
 #endif
 #endif
 

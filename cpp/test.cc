@@ -31,6 +31,7 @@ void stringTest() {
     String a(_T("水樹")), b(_T("奈々"));
     _tprintf(_T("%s: %d\n"), a.string(), a.length());
     _tprintf(_T("%c\n"), a[-1]);
+    _tprintf(_T("%c\n"), a[7]);
 
     String c = a + b;
     c.out();

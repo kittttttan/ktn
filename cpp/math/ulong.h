@@ -2,9 +2,9 @@
 #define KTN_MATH_ULONG_H_
 
 /**
- * @file  math/ulong.h
- * @brief ULong
- */
+* @file  math/ulong.h
+* @brief ULong
+*/
 
 #include <string>
 #include <iostream>
@@ -21,8 +21,8 @@ typedef long ddigit;
 #endif
 
 /**
- * @brief Unsigned BigInteger.
- */
+* @brief Unsigned BigInteger.
+*/
 class ULong {
 
     friend std::ostream& operator<<(std::ostream& os, const ULong& l);
@@ -56,62 +56,66 @@ public:
     int cmp(const ULong& b) const;
     int cmp(ddigit b) const;
 
-    bool operator!() const;
-    ULong operator+() const;
-    ULong& operator++();
-    ULong operator++(int);
-    ULong& operator--();
-    ULong operator--(int);
+    inline bool operator!() const;
+    inline ULong operator+() const;
+    inline ULong& operator++();
+    inline ULong operator++(int);
+    inline ULong& operator--();
+    inline ULong operator--(int);
 
     ULong operator+(const ULong& b) const;
     ULong operator-(const ULong& b) const;
     ULong operator*(const ULong& b) const;
-    ULong operator/(const ULong& b) const;
-    ULong operator%(const ULong& b) const;
+    inline ULong operator/(const ULong& b) const;
+    inline ULong operator%(const ULong& b) const;
 
-    ULong operator+(ddigit b) const;
-    ULong operator-(ddigit b) const;
-    ULong operator*(ddigit b) const;
-    ULong operator/(ddigit b) const;
-    ULong operator%(ddigit b) const;
+    inline ULong operator+(ddigit b) const;
+    inline ULong operator-(ddigit b) const;
+    inline ULong operator*(ddigit b) const;
+    inline ULong operator/(ddigit b) const;
+    inline ULong operator%(ddigit b) const;
     ULong operator<<(ddigit n) const;
     ULong operator>>(ddigit n) const;
 
     ULong& operator=(const ULong& b);
-    ULong& operator+=(const ULong& b);
-    ULong& operator-=(const ULong& b);
-    ULong& operator*=(const ULong& b);
-    ULong& operator/=(const ULong& b);
-    ULong& operator%=(const ULong& b);
+    inline ULong& operator+=(const ULong& b);
+    inline ULong& operator-=(const ULong& b);
+    inline ULong& operator*=(const ULong& b);
+    inline ULong& operator/=(const ULong& b);
+    inline ULong& operator%=(const ULong& b);
 
-    ULong& operator+=(ddigit b);
-    ULong& operator-=(ddigit b);
-    ULong& operator*=(ddigit b);
-    ULong& operator/=(ddigit b);
-    ULong& operator%=(ddigit b);
-    ULong& operator<<=(ddigit n);
-    ULong& operator>>=(ddigit n);
+    inline ULong& operator+=(ddigit b);
+    inline ULong& operator-=(ddigit b);
+    inline ULong& operator*=(ddigit b);
+    inline ULong& operator/=(ddigit b);
+    inline ULong& operator%=(ddigit b);
+    inline ULong& operator<<=(ddigit n);
+    inline ULong& operator>>=(ddigit n);
 
-    bool operator==(const ULong& b) const;
-    bool operator!=(const ULong& b) const;
-    bool operator<(const ULong& b) const;
-    bool operator>(const ULong& b) const;
-    bool operator<=(const ULong& b) const;
-    bool operator>=(const ULong& b) const;
+    inline bool operator==(const ULong& b) const;
+    inline bool operator!=(const ULong& b) const;
+    inline bool operator<(const ULong& b) const;
+    inline bool operator>(const ULong& b) const;
+    inline bool operator<=(const ULong& b) const;
+    inline bool operator>=(const ULong& b) const;
 
-    bool operator==(ddigit b) const;
-    bool operator!=(ddigit b) const;
-    bool operator<(ddigit b) const;
-    bool operator>(ddigit b) const;
-    bool operator<=(ddigit b) const;
-    bool operator>=(ddigit b) const;
+    inline bool operator==(ddigit b) const;
+    inline bool operator!=(ddigit b) const;
+    inline bool operator<(ddigit b) const;
+    inline bool operator>(ddigit b) const;
+    inline bool operator<=(ddigit b) const;
+    inline bool operator>=(ddigit b) const;
 
 private:
     void alloc(int length, bool zero);
-    void norm();
+    inline void norm();
 
     int l_;      /**< length */
     digit* d_;  /**< digit blocks */
 };
+
 }} // namespace ktn math
+
+#include "ulong.inl"
+
 #endif // KTN_MATH_ULONG_H_
