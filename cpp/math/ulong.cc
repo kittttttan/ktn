@@ -7,20 +7,22 @@
 #include <cstring>
 
 #include "ulong.h"
+#include "../dbg.h"
 
+#define OUTPUT_FORMAT_B    "%04x"
+
+#ifdef USE_64BIT
 #ifdef _WIN32
 #define OUTPUT_FORMAT    "%I64d"
 #else
 #define OUTPUT_FORMAT    "%lld"
 #endif
-#define OUTPUT_FORMAT_B    "%04x"
-
-#ifdef USE_64BIT
 #define SHIFT_BIT  30
 #define SHIFT_DEC  9
 #define BASE_DEC  (1000000000)
 #define getStringLength(l) (l * 241 / 25 + 2)
 #else
+#define OUTPUT_FORMAT    "%d"
 #define SHIFT_BIT  15
 #define SHIFT_DEC  4
 #define BASE_DEC  (10000)

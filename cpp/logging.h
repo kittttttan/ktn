@@ -2,8 +2,7 @@
 #define LOGGING_H_
 
 #include "logformat.h"
-
-namespace ktn {
+#include "dbg.h"
 
 #define LOGGING
 #ifdef LOGGING
@@ -23,14 +22,20 @@ namespace ktn {
 #define LOGGING_INFO(logging, logstr)
 #endif
 
+namespace ktn {
+
 class Logging {
 public:
     static DefaultLogFormat defaultLogFormat;
 
     Logging() :
-        logLevel_(LOG_INFO), logFormat_(&defaultLogFormat) {}
+        logLevel_(LOG_INFO),
+        logFormat_(&defaultLogFormat),
+        filename_(_T("log.txt")) {}
     explicit Logging(ILogFormat* format) :
-        logLevel_(LOG_INFO), logFormat_(format) {}
+        logLevel_(LOG_INFO),
+        logFormat_(format),
+        filename_(_T("log.txt")) {}
     ~Logging() {}
 
     LogLevel logLevel() const { return logLevel_; }
@@ -38,12 +43,20 @@ public:
 
     void log(const String& log, LogLevel level,
             const TCHAR* file, int line, const TCHAR* func) {
-        logFormat_->format(log, level, file, line, func).out();
+        String str = logFormat_->format(log, level, file, line, func);
+        str.out();
+
+        FILE* fp = nullptr;
+        fp = _tfopen(filename_, _T("a,ccs=UTF-8"));
+        if (!fp) { return; }
+        _ftprintf(fp, _T("%s\n"), str.string());
+        fclose(fp);
     }
 
 private:
     LogLevel logLevel_;
     ILogFormat* logFormat_;
+    TCHAR* filename_;
 };
 
 DefaultLogFormat Logging::defaultLogFormat;

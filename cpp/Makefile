@@ -14,5 +14,5 @@ clean:
 .cc.o:
 	$(CXX) $(CFLAGS) -c $<
 
-string.o: string.h tchar.h
-test.o: string.h
+string.o: string.h tchar.h util.h dbg.h
+test.o: string.h array.h dbg.h logging.h

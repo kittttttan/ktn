@@ -9,6 +9,7 @@
 #include <stdio.h>
 
 #include "util.h"
+#include "dbg.h"
 
 namespace ktn {
 

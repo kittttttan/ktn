@@ -5,6 +5,7 @@
 #include <cstdio>
 
 #include "long.h"
+#include "../dbg.h"
 
 namespace ktn { namespace math {
 

@@ -1,6 +1,14 @@
 #ifndef DBG_H_
 #define DBG_H_
 
+#ifndef __func__
+#ifdef __FUNCTION__
+#define __func__ __FUNCTION__
+#else
+#define __func__ ""
+#endif
+#endif
+
 #ifdef _DEBUG
 #ifdef _MSC_VER
 #define _CRTDBG_MAP_ALLOC
@@ -14,18 +22,12 @@
         std::exit(EXIT_FAILURE);                                \
     }
 #endif
-#endif
-
-#ifndef __func__
-#ifdef __FUNCTION__
-#define __func__ __FUNCTION__
 #else
-#define __func__ _T("")
-#endif
+#define _ASSERTE(expr)
 #endif
 
 #ifdef _DEBUG
-#include <cstdio>
+#include <stdio.h>
 #define TRACE(...)                                                      \
     {                                                                   \
         _tprintf(_T("%s[%d]%s "), _T(__FILE__), __LINE__, _T(__func__));\

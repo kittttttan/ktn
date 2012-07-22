@@ -4,6 +4,10 @@
 #include <time.h>
 #include "string.h"
 
+#ifndef _MSC_VER
+#define _stprintf_s(buf, size, ...) _stprintf(buf, __VA_ARGS__)
+#endif
+
 namespace ktn {
 
 enum LogLevel {
