@@ -116,8 +116,11 @@
     <ClInclude Include="array.h" />
     <ClInclude Include="dbg.h" />
     <ClInclude Include="doc.h" />
+    <ClInclude Include="logformat.h" />
+    <ClInclude Include="logging.h" />
     <ClInclude Include="string.h" />
     <ClInclude Include="tchar.h" />
+    <ClInclude Include="util.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="string.cc" />

@@ -15,47 +15,47 @@ namespace ktn { namespace math {
 template<class T, int M, int N=M>
 class Matrix {
 
-template<class FT, int FM, int FN>
-friend std::ostream& operator<<(std::ostream& os, const Matrix<FT, FM, FN>& m);
-//template<class FT, int FM, int FN>
-//friend std::istream& operator>>(std::istream& is, Matrix<FT, FM, FN>& m);
+    template<class FT, int FM, int FN>
+    friend std::ostream& operator<<(std::ostream& os, const Matrix<FT, FM, FN>& m);
+    //template<class FT, int FM, int FN>
+    //friend std::istream& operator>>(std::istream& is, Matrix<FT, FM, FN>& m);
 
 public:
-  Matrix();
-  Matrix(const T& t);
-  Matrix(const Matrix<T, M, N>& b);
-  virtual ~Matrix();
+    Matrix();
+    Matrix(const T& t);
+    Matrix(const Matrix<T, M, N>& b);
+    virtual ~Matrix();
 
-  static const Matrix<T, M, N> ZERO;
-  static const Matrix<T, M, N> ONE;
+    static const Matrix<T, M, N> ZERO;
+    static const Matrix<T, M, N> ONE;
 
-  int row() const { return M; }
-  int col() const { return N; }
+    int row() const { return M; }
+    int col() const { return N; }
 
-  T& at(int x, int y);
-  Matrix<T, N, M> t() const;
+    T& at(int x, int y);
+    Matrix<T, N, M> t() const;
 
-  bool operator!() const;
-  Matrix<T, M, N> operator+() const;
-  Matrix<T, M, N> operator-() const;
+    bool operator!() const;
+    Matrix<T, M, N> operator+() const;
+    Matrix<T, M, N> operator-() const;
 
-  Matrix<T, M, N> operator+(const Matrix<T, M, N>& m);
-  Matrix<T, M, N> operator-(const Matrix<T, M, N>& m);
-  Matrix<T, M, N> operator*(const T& n);
+    Matrix<T, M, N> operator+(const Matrix<T, M, N>& m);
+    Matrix<T, M, N> operator-(const Matrix<T, M, N>& m);
+    Matrix<T, M, N> operator*(const T& n);
 
-  template<int K>
-  Matrix<T, K, N> operator*(const Matrix<T, K, M>& m);
+    template<int K>
+    Matrix<T, K, N> operator*(const Matrix<T, K, M>& m);
 
-  Matrix<T, M, N>& operator=(const Matrix<T, M, N>& m);
-  Matrix<T, M, N>& operator+=(const Matrix<T, M, N>& m);
-  Matrix<T, M, N>& operator-=(const Matrix<T, M, N>& m);
-  Matrix<T, M, N>& operator*=(const T& n);
+    Matrix<T, M, N>& operator=(const Matrix<T, M, N>& m);
+    Matrix<T, M, N>& operator+=(const Matrix<T, M, N>& m);
+    Matrix<T, M, N>& operator-=(const Matrix<T, M, N>& m);
+    Matrix<T, M, N>& operator*=(const T& n);
 
-  bool operator==(const Matrix<T, M, N>& m) const;
-  bool operator!=(const Matrix<T, M, N>& m) const;
+    bool operator==(const Matrix<T, M, N>& m) const;
+    bool operator!=(const Matrix<T, M, N>& m) const;
 
-//private:
-  T** data_;
+    //private:
+    T** data_;
 };
 
 template<class T, int M, int N>
@@ -66,219 +66,235 @@ const Matrix<T, M, N> Matrix<T, M, N>::ONE(T(1));
 
 template<class T, int M, int N>
 Matrix<T, M, N>::Matrix() {
-  data_ = new T*[N];
-  if (!data_) { return; }
-  for (int y = 0; y < N; ++y) {
-    data_[y] = new T[M];
-    if (!data_[y]) { return; }
-    for (int x = 0; x < M; ++x) {
-      data_[y][x] = T();
+    data_ = new T*[N];
+    if (!data_) { return; }
+    for (int y = 0; y < N; ++y) {
+        data_[y] = new T[M];
+        if (!data_[y]) { return; }
+        for (int x = 0; x < M; ++x) {
+            data_[y][x] = T();
+        }
     }
-  }
 }
 
 template<class T, int M, int N>
 Matrix<T, M, N>::Matrix(const T& t) {
-  data_ = new T*[N];
-  if (!data_) { return; }
-  for (int y = 0; y < N; ++y) {
-    data_[y] = new T[M];
-    if (!data_[y]) { return; }
-    for (int x = 0; x < M; ++x) {
-      if (x == y) {
-        data_[y][x] = t;
-      } else {
-        data_[y][x] = T();
-      }
+    try {
+        data_ = new T*[N];
+    } catch (std::bad_alloc) {
+        data_ = nullptr;
+        return;
     }
-  }
+    for (int y = 0; y < N; ++y) {
+        try {
+            data_[y] = new T[M];
+        } catch (std::bad_alloc) {
+            data_[y] = nullptr;
+            return;
+        }
+        for (int x = 0; x < M; ++x) {
+            if (x == y) {
+                data_[y][x] = t;
+            } else {
+                data_[y][x] = T();
+            }
+        }
+    }
 }
 
 template<class T, int M, int N>
 Matrix<T, M, N>::Matrix(const Matrix<T, M, N>& b) {
-  if (this == &b) { return; }
-  data_ = new T*[N];
-  if (!data_) { return; }
-  for (int y = 0; y < N; ++y) {
-    data_[y] = new T[M];
-    if (!data_[y]) { return; }
-    for (int x = 0; x < M; ++x) {
-      data_[y][x] = b.data_[y][x];
+    if (this == &b) { return; }
+    try {
+        data_ = new T*[N];
+    } catch (std::bad_alloc) {
+        data_ = nullptr;
+        return;
     }
-  }
+    for (int y = 0; y < N; ++y) {
+        try {
+            data_[y] = new T[M];
+        } catch (std::bad_alloc) {
+            data_[y] = nullptr;
+            return;
+        }
+        for (int x = 0; x < M; ++x) {
+            data_[y][x] = b.data_[y][x];
+        }
+    }
 }
 
 template<class T, int M, int N>
 Matrix<T, M, N>::~Matrix() {
-  for (int y = 0; y < N; ++y) {
-    delete[] data_[y];
-  }
-  delete[] data_;
+    for (int y = 0; y < N; ++y) {
+        delete[] data_[y];
+    }
+    delete[] data_;
 }
 
 /**
- * @param x from 1 to M
- * @param y from 1 to N
- */
+* @param x from 1 to M
+* @param y from 1 to N
+*/
 template<class T, int M, int N>
 T& Matrix<T, M, N>::at(int x, int y) {
-  if (x < 1) { x = 1; } else if (x > M) { x = M; }
-  if (y < 1) { y = 1; } else if (y > N) { y = N; }
-  return data_[y - 1][x - 1];
+    if (x < 1) { x = 1; } else if (x > M) { x = M; }
+    if (y < 1) { y = 1; } else if (y > N) { y = N; }
+    return data_[y - 1][x - 1];
 }
 
 /**
- * Transpose
- */
+* Transpose
+*/
 template<class T, int M, int N>
 Matrix<T, N, M> Matrix<T, M, N>::t() const {
-  Matrix<T, N, M> m;
-  for (int y = 0; y < N; ++y) {
-    for (int x = 0; x < M; ++x) {
-      m.data_[x][y] = data_[y][x];
+    Matrix<T, N, M> m;
+    for (int y = 0; y < N; ++y) {
+        for (int x = 0; x < M; ++x) {
+            m.data_[x][y] = data_[y][x];
+        }
     }
-  }
-  return m;
+    return m;
 }
 
 template<class T, int M, int N>
 std::ostream& operator<<(std::ostream& os, const Matrix<T, M, N>& m) {
-  for (int y = 0; y < N; ++y) {
-    for (int x = 0; x < M; ++x) {
-      os << m.data_[y][x] << ",";
+    for (int y = 0; y < N; ++y) {
+        for (int x = 0; x < M; ++x) {
+            os << m.data_[y][x] << ",";
+        }
+        os << std::endl;
     }
-    os << std::endl;
-  }
-  return os;
+    return os;
 }
 /*
 template<class T, int M, int N>
 std::istream& operator<<(std::istream& is, Matrix<T, M, N>& c) {
-  return is;
+return is;
 }
 */
 
 template<class T, int M, int N>
 bool Matrix<T, M, N>::operator!() const {
-  for (int y = 0; y < N; ++y) {
-    for (int x = 0; x < M; ++x) {
-      if (!!data_[y][x]) { return false; }
+    for (int y = 0; y < N; ++y) {
+        for (int x = 0; x < M; ++x) {
+            if (!!data_[y][x]) { return false; }
+        }
     }
-  }
-  return true;
+    return true;
 }
 
 template<class T, int M, int N>
 Matrix<T, M, N> Matrix<T, M, N>::operator+() const {
-  return *this;
+    return *this;
 }
 
 template<class T, int M, int N>
 Matrix<T, M, N> Matrix<T, M, N>::operator-() const {
-  Matrix<T, M, N> temp;
-  for (int y = 0; y < N; ++y) {
-    for (int x = 0; x < M; ++x) {
-      temp.data_[y][x] = -temp.data_[y][x];
+    Matrix<T, M, N> temp;
+    for (int y = 0; y < N; ++y) {
+        for (int x = 0; x < M; ++x) {
+            temp.data_[y][x] = -temp.data_[y][x];
+        }
     }
-  }
-  return temp;
+    return temp;
 }
 
 template<class T, int M, int N>
 Matrix<T, M, N>& Matrix<T, M, N>::operator=(const Matrix<T, M, N>& b) {
-  if (this == &b) { return *this; }
-  for (int y = 0; y < N; ++y) {
-    for (int x = 0; x < M; ++x) {
-      data_[y][x] = b.data_[y][x];
+    if (this == &b) { return *this; }
+    for (int y = 0; y < N; ++y) {
+        for (int x = 0; x < M; ++x) {
+            data_[y][x] = b.data_[y][x];
+        }
     }
-  }
-  return *this;
+    return *this;
 }
 
 template<class T, int M, int N>
 Matrix<T, M, N> Matrix<T, M, N>::operator+(const Matrix<T, M, N>& b) {
-  Matrix<T, M, N> m;
-  for (int y = 0; y < N; ++y) {
-    for (int x = 0; x < M; ++x) {
-      m.data_[y][x] = data_[y][x] + b.data_[y][x];
+    Matrix<T, M, N> m;
+    for (int y = 0; y < N; ++y) {
+        for (int x = 0; x < M; ++x) {
+            m.data_[y][x] = data_[y][x] + b.data_[y][x];
+        }
     }
-  }
-  return m;
+    return m;
 }
 
 template<class T, int M, int N>
 Matrix<T, M, N> Matrix<T, M, N>::operator-(const Matrix<T, M, N>& b) {
-  Matrix<T, M, N> m;
-  for (int y = 0; y < N; ++y) {
-    for (int x = 0; x < M; ++x) {
-      m.data_[y][x] = data_[y][x] - b.data_[y][x];
+    Matrix<T, M, N> m;
+    for (int y = 0; y < N; ++y) {
+        for (int x = 0; x < M; ++x) {
+            m.data_[y][x] = data_[y][x] - b.data_[y][x];
+        }
     }
-  }
-  return m;
+    return m;
 }
 
 template<class T, int M, int N>
 Matrix<T, M, N> Matrix<T, M, N>::operator*(const T& n) {
-  Matrix<T, M, N> m;
-  for (int y = 0; y < N; ++y) {
-    for (int x = 0; x < M; ++x) {
-      m.data_[y][x] = data_[y][x] * n;
+    Matrix<T, M, N> m;
+    for (int y = 0; y < N; ++y) {
+        for (int x = 0; x < M; ++x) {
+            m.data_[y][x] = data_[y][x] * n;
+        }
     }
-  }
-  return m;
+    return m;
 }
 
 template<class T, int M, int N>
 template<int K>
 Matrix<T, K, N> Matrix<T, M, N>::operator*(const Matrix<T, K, M>& b) {
-  Matrix<T, K, N> m;
-  for (int y = 0; y < N; ++y) {
-    for (int x = 0; x < K; ++x) {
-      m.data_[y][x] = T();
-      for (int i = 0; i < M; ++i) {
-        m.data_[y][x] += data_[y][i] * b.data_[i][x];
-      }
+    Matrix<T, K, N> m;
+    for (int y = 0; y < N; ++y) {
+        for (int x = 0; x < K; ++x) {
+            m.data_[y][x] = T();
+            for (int i = 0; i < M; ++i) {
+                m.data_[y][x] += data_[y][i] * b.data_[i][x];
+            }
+        }
     }
-  }
-  return m;
+    return m;
 }
 
 template<class T, int M, int N>
 Matrix<T, M, N>& Matrix<T, M, N>::operator+=(const Matrix<T, M, N>& b) {
-  *this = *this + b;
-  return *this;
+    *this = *this + b;
+    return *this;
 }
 
 template<class T, int M, int N>
 Matrix<T, M, N>& Matrix<T, M, N>::operator-=(const Matrix<T, M, N>& b) {
-  *this = *this - b;
-  return *this;
+    *this = *this - b;
+    return *this;
 }
 
 template<class T, int M, int N>
 Matrix<T, M, N>& Matrix<T, M, N>::operator*=(const T& n) {
-  *this = *this * n;
-  return *this;
+    *this = *this * n;
+    return *this;
 }
 
 template<class T, int M, int N>
 bool Matrix<T, M, N>::operator==(const Matrix<T, M, N>& b) const {
-  for (int y = 0; y < N; ++y) {
-    for (int x = 0; x < M; ++x) {
-      if (data_[y][x] != b.data_[y][x]) { return false; }
+    for (int y = 0; y < N; ++y) {
+        for (int x = 0; x < M; ++x) {
+            if (data_[y][x] != b.data_[y][x]) { return false; }
+        }
     }
-  }
-  return true;
+    return true;
 }
 
 template<class T, int M, int N>
 bool Matrix<T, M, N>::operator!=(const Matrix<T, M, N>& b) const {
-  for (int y = 0; y < N; ++y) {
-    for (int x = 0; x < M; ++x) {
-      if (data_[y][x] == b.data_[y][x]) { return false; }
+    for (int y = 0; y < N; ++y) {
+        for (int x = 0; x < M; ++x) {
+            if (data_[y][x] == b.data_[y][x]) { return false; }
+        }
     }
-  }
-  return true;
+    return true;
 }
 
 

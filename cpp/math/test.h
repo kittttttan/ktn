@@ -7,24 +7,24 @@
 
 template <typename Integer>
 Integer fib(int n) {
-  Integer a(1), b(0);
-  for (int i = 1; i < n; ++i) {
-    const Integer c(a);
-    a += b;
-    b = c;
-  }
+    Integer a(1), b(0);
+    for (int i = 1; i < n; ++i) {
+        const Integer c(a);
+        a += b;
+        b = c;
+    }
 
-  return a;
+    return a;
 }
 
 template <typename Integer>
 Integer fact(int n) {
-  Integer a(1);
-  for (int i = 2; i <= n; ++i) {
-    a *= i;
-  }
+    Integer a(1);
+    for (int i = 2; i <= n; ++i) {
+        a *= i;
+    }
 
-  return a;
+    return a;
 }
 
 void ulongBasic();
