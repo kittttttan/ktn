@@ -24,7 +24,7 @@ int main() {
   loggerSetLevel(LOG_ALL);
   LOGGER_WARN(_T("WARN %d\n"), __LINE__);
   LOGGER_ERROR(_T("ERROR %d\n"), __LINE__);
-  LOGGER_INFO(_T("日本語\n"));
+  LOGGER_INFO0(_T("日本語\n"));
 
   loggerGetFilename(filename, 63);
   TRACE(_T("output: %s ...\n"), filename);
