@@ -1,7 +1,7 @@
 CXX = g++
 CFLAGS = -g -Wall -O2 -Dnullptr=NULL
 TARGET = test
-OBJS = test.o string.o
+OBJS = test.o string.o stringw.o
 
 all: $(TARGET)
 
@@ -15,4 +15,5 @@ clean:
 	$(CXX) $(CFLAGS) -c $<
 
 string.o: string.h util.h dbg.h
+stringw.o:
 test.o: string.h array.h dbg.h logging.h

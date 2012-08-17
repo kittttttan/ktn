@@ -1,3 +1,4 @@
+#pragma once
 #ifndef DBG_H_
 #define DBG_H_
 
@@ -18,15 +19,23 @@
 #endif
 
 #ifdef _DEBUG
-#include <stdio.h>
-#define TRACE(...)                                                      \
-    {                                                                   \
-        _tprintf(_T("%s[%d]%s "), _T(__FILE__), __LINE__, _T(__func__));\
-        _tprintf(__VA_ARGS__);                                          \
-        _tprintf(_T("\n"));                                             \
+#include <cstdio>
+#include <tchar.h>
+#define TRACE(...)                                        \
+    {                                                     \
+        printf("%s[%d]%s ", __FILE__, __LINE__, __func__);\
+        printf(__VA_ARGS__);                              \
+        printf("\n");                                     \
+    }
+#define TRACEW(...)                                                 \
+    {                                                               \
+        wprintf(L"%s[%d]%s ", _T(__FILE__), __LINE__, _T(__func__));\
+        wprintf(__VA_ARGS__);                                       \
+        wprintf(L"\n");                                             \
     }
 #else
 #define TRACE(...)
+#define TRACEW(...)
 #endif
 
 #endif // DBG_H_

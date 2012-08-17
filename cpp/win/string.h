@@ -1,3 +1,4 @@
+#pragma once
 #ifndef KTN_STRING_H_
 #define KTN_STRING_H_
 
@@ -6,15 +7,6 @@
  * @brief String
  */
 #include <iostream>
-#include <tchar.h>
-
-#ifdef _UNICODE
-#define _tostream wostream
-#define _tistream wistream
-#else
-#define _tostream ostream
-#define _tistream oistream
-#endif
 
 namespace ktn {
 
@@ -23,22 +15,22 @@ namespace ktn {
  */
 class String {
 
-    friend std::_tostream& operator<<(std::_tostream& os, const String& s);
-    //friend std::_tistream& operator>>(std::_tistream &is, String& s);
+    friend std::ostream& operator<<(std::ostream& os, const String& s);
+    //friend std::istream& operator>>(std::istream &is, String& s);
 
 public:
     String();
     explicit String(int n);
-    explicit String(const TCHAR* s);
+    explicit String(const char* s);
     String(const String& s);
     ~String();
 
-    TCHAR* string() const { return string_; }
+    char* string() const { return string_; }
     int length() const { return length_; }
 
     void out() const;
-    int indexOf(const TCHAR c, int from=0) const;
-    int lastIndexOf(const TCHAR c, int from=0) const;
+    int indexOf(const char c, int from=0) const;
+    int lastIndexOf(const char c, int from=0) const;
     String trim();
     String trimLeft();
     String trimRight();
@@ -47,26 +39,26 @@ public:
     String substr(int from, int length);
     String slice(int from, int to=-1);
 
-    TCHAR& operator[](int index);
+    char& operator[](int index);
     bool operator!() const;
     String operator-() const;
 
     String operator+(const String& s) const;
-    String operator-(const TCHAR c) const;
+    String operator-(const char c) const;
     String operator*(int times) const;
 
     String& operator=(const String& s);
     String& operator+=(const String& b);
-    String& operator-=(const TCHAR c);
+    String& operator-=(const char c);
     String& operator*=(int times);
 
     bool operator==(const String& s) const;
     bool operator!=(const String& s) const;
 
 private:
-    String(const TCHAR* s, int length);
+    String(const char* s, int length);
 
-    TCHAR* string_;
+    char* string_;
     int length_;
 };
 

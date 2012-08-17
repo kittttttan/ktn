@@ -1,3 +1,4 @@
+#pragma once
 #ifndef KTN_STRING_H_
 #define KTN_STRING_H_
 

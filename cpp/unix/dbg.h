@@ -1,3 +1,4 @@
+#pragma once
 #ifndef DBG_H_
 #define DBG_H_
 
@@ -17,7 +18,7 @@
 #endif
 
 #ifdef _DEBUG
-#include <stdio.h>
+#include <cstdio>
 #define TRACE(...)                                        \
     {                                                     \
         printf("%s[%d]%s ", __FILE__, __LINE__, __func__);\

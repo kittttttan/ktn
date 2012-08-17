@@ -1,3 +1,4 @@
+#pragma once
 #ifndef KTN_MATH_ULONG_INL_
 #define KTN_MATH_ULONG_INL_
 

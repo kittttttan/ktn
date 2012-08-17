@@ -1,3 +1,4 @@
+#pragma once
 #ifndef KTN_MATH_VECTOR_H_
 #define KTN_MATH_VECTOR_H_
 /**

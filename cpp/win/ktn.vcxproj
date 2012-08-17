@@ -117,12 +117,17 @@
     <ClInclude Include="dbg.h" />
     <ClInclude Include="doc.h" />
     <ClInclude Include="logformat.h" />
+    <ClInclude Include="logformatw.h" />
     <ClInclude Include="logging.h" />
+    <ClInclude Include="loggingw.h" />
+    <ClInclude Include="loglevel.h" />
     <ClInclude Include="string.h" />
+    <ClInclude Include="stringw.h" />
     <ClInclude Include="util.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="string.cc" />
+    <ClCompile Include="stringw.cc" />
     <ClCompile Include="test.cc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

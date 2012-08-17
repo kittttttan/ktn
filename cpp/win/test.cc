@@ -2,56 +2,50 @@
  * @file  cpp/test.cc
  * @brief test for String
  */
-#include "string.h"
-#include "array.h"
 #include "dbg.h"
 #include "logging.h"
+#include "loggingw.h"
+#include "string.h"
+#include "stringw.h"
+#include "array.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <locale.h>
-
-#ifdef _UNICODE
-#define _tcout wcout
-#else
-#define _tcout cout
-#endif
+#include <cstdio>
+#include <cstdlib>
+#include <clocale>
 
 using namespace ktn;
 
 void stringTest() {
-#ifdef _UNICODE
     setlocale(LC_CTYPE, "");
-#endif
 
     Logging logging;
-    String title(_T("Samples for String class"));
+    String title("Samples for String class");
     LOGGING_INFO(logging, title);
 
-    String a(_T("水樹")), b(_T("奈々"));
-    _tprintf(_T("%s: %d\n"), a.string(), a.length());
-    _tprintf(_T("%c\n"), a[-1]);
+    StringW a(L"水樹"), b(L"奈々");
+    wprintf(L"%s: %d\n", a.string(), a.length());
+    wprintf(L"%c\n", a[-1]);
 
-    String c = a + b;
+    StringW c = a + b;
     c.out();
     (-c).out();
-    std::_tcout << c << std::endl;
+    std::wcout << c << std::endl;
 
-    _tprintf(_T("%d\n"), c.indexOf(_T('々')));
-    _tprintf(_T("%d\n"), c.lastIndexOf(_T('水'), 2));
-    _tprintf(_T("%s\n"), c.slice(2).string());
-    _tprintf(_T("%s\n"), c.slice(0, -3).string());
-    _tprintf(_T("%s\n"), c.substr(2, 2).string());
+    wprintf(L"%d\n", c.indexOf(L'々'));
+    wprintf(L"%d\n", c.lastIndexOf(L'水', 2));
+    wprintf(L"%s\n", c.slice(2).string());
+    wprintf(L"%s\n", c.slice(0, -3).string());
+    wprintf(L"%s\n", c.substr(2, 2).string());
 
-    String space(_T("  Nana  Mizuki   "));
-    _tprintf(_T("'%s'\n"), space.toUpperCase().string());
-    _tprintf(_T("'%s'\n"), space.toLowerCase().string());
-    _tprintf(_T("'%s'\n"), space.trimLeft().string());
-    _tprintf(_T("'%s'\n"), space.trimRight().string());
-    _tprintf(_T("'%s'\n"), space.trim().string());
-    _tprintf(_T("'%s'\n"), (space - L' ').string());
+    String space("  Nana  Mizuki   ");
+    printf("'%s'\n", space.toUpperCase().string());
+    printf("'%s'\n", space.toLowerCase().string());
+    printf("'%s'\n", space.trimLeft().string());
+    printf("'%s'\n", space.trimRight().string());
+    printf("'%s'\n", space.trim().string());
+    printf("'%s'\n", (space - ' ').string());
 
-    String d = b * 7;
+    StringW d = b * 7;
     d.out();
 
     d = b * -3;

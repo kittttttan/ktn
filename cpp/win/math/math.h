@@ -1,3 +1,4 @@
+#pragma once
 #ifndef KTN_MATH_MATH_H_
 #define KTN_MATH_MATH_H_
 

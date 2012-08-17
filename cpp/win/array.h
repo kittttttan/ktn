@@ -1,3 +1,4 @@
+#pragma once
 #ifndef KTN_ARRAY_H_
 #define KTN_ARRAY_H_
 
@@ -6,7 +7,7 @@
  * @brief Array
  */
 #include <iostream>
-#include <stdio.h>
+#include <cstdio>
 
 #include "util.h"
 #include "dbg.h"
@@ -28,6 +29,8 @@ class Array {
 
     template<class FT>
     friend std::ostream& operator<<(std::ostream& os, const Array<FT>& a);
+    template<class FT>
+    friend std::wostream& operator<<(std::wostream& os, const Array<FT>& a);
     //template<class FT>
     //friend std::istream& operator>>(std::istream &is, Array<FT>& a);
 
@@ -140,6 +143,19 @@ std::ostream& operator<<(std::ostream& os, const Array<T>& a) {
         }
     }
     std::cout << "]";
+    return os;
+}
+
+template<class T>
+std::wostream& operator<<(std::wostream& os, const Array<T>& a) {
+    std::wcout << L"[";
+    if (a.length_ > 0) {
+        std::wcout << a.array_[0];
+        for (int i = 1; i < a.length_; ++i) {
+            std::wcout << L"," << a.array_[i];
+        }
+    }
+    std::wcout << L"]";
     return os;
 }
 /*
