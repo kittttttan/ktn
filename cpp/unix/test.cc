@@ -18,7 +18,7 @@ void stringTest() {
     String title("Samples for String class");
     LOGGING_INFO(logging, title);
 
-    String a("水樹"), b("奈々");
+    String a("Nana"), b("Mizuki");
     printf("%s: %d\n", a.string(), a.length());
     printf("%c\n", a[-1]);
 
@@ -27,8 +27,8 @@ void stringTest() {
     (-c).out();
     std::cout << c << std::endl;
 
-    printf("%d\n", c.indexOf('々'));
-    printf("%d\n", c.lastIndexOf('水', 2));
+    printf("%d\n", c.indexOf('i'));
+    printf("%d\n", c.lastIndexOf('a', 2));
     printf("%s\n", c.slice(2).string());
     printf("%s\n", c.slice(0, -3).string());
     printf("%s\n", c.substr(2, 2).string());

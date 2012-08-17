@@ -148,6 +148,6 @@ void vprintfColored(int color, const char* fmt, va_list ap) {
     }
 
     printf("\033[0;3%dm", color);
-    printf(fmt, ap);
+    vprintf(fmt, ap);
     printf("\033[m");
 }
