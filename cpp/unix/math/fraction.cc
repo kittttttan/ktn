@@ -24,7 +24,11 @@ Fraction::Fraction(ddigit a) : d_(1) {
 Fraction::Fraction(const ULong& a, const ULong& b, bool s) : s_(s) {
     n_ = a;
     d_ = b;
-    if (!d_) { fprintf(stderr, "ZeroDivision: Fraction"); d_ = ULong(1); return; }
+    if (!d_) {
+      fprintf(stderr, "ZeroDivision: Fraction");
+      d_ = ULong(1);
+      return;
+    }
     cancel();
 }
 

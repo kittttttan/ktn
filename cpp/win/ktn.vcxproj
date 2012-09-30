@@ -114,6 +114,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="array.h" />
+    <ClInclude Include="date.h" />
     <ClInclude Include="dbg.h" />
     <ClInclude Include="doc.h" />
     <ClInclude Include="logformat.h" />
@@ -126,6 +127,7 @@
     <ClInclude Include="util.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="date.cc" />
     <ClCompile Include="string.cc" />
     <ClCompile Include="stringw.cc" />
     <ClCompile Include="test.cc" />

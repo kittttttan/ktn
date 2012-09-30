@@ -244,6 +244,8 @@ StringW StringW::substr(int from, int length) {
 }
 
 StringW StringW::slice(int from, int to) {
+    if (length_ < 1) { return StringW(); }
+
     from %= length_;
     to %= length_;
     if (from < 0) { from += length_; }
@@ -295,7 +297,7 @@ StringW StringW::trimLeft() {
 }
 
 StringW StringW::trimRight() {
-    if (length_ == 0) { return StringW(); }
+    if (length_ < 1) { return StringW(); }
 
     int i = length_ - 1;
     for (; i; --i) {
@@ -323,7 +325,7 @@ StringW StringW::trimRight() {
 }
 
 StringW StringW::trim() {
-    if (length_ == 0) { return StringW(); }
+    if (length_ < 1) { return StringW(); }
 
     int first = 0;
     for (; first < length_; ++first) {
@@ -403,7 +405,7 @@ StringW StringW::operator-(const wchar_t c) const {
 }
 
 StringW StringW::operator*(int times) const {
-    if (times == 0) {
+    if (length_ < 1 || times == 0) {
         return StringW();
     } else if (times < 0) {
         times = -times;

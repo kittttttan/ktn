@@ -245,6 +245,8 @@ String String::substr(int from, int length) {
 }
 
 String String::slice(int from, int to) {
+    if (length_ < 1) { return String(); }
+  
     from %= length_;
     to %= length_;
     if (from < 0) { from += length_; }
@@ -296,7 +298,7 @@ String String::trimLeft() {
 }
 
 String String::trimRight() {
-    if (length_ == 0) { return String(); }
+    if (length_ < 1) { return String(); }
 
     int i = length_ - 1;
     for (; i; --i) {
@@ -324,7 +326,7 @@ String String::trimRight() {
 }
 
 String String::trim() {
-    if (length_ == 0) { return String(); }
+    if (length_ < 1) { return String(); }
 
     int first = 0;
     for (; first < length_; ++first) {
@@ -404,7 +406,7 @@ String String::operator-(const char c) const {
 }
 
 String String::operator*(int times) const {
-    if (times == 0) {
+    if (length_ < 1 || times == 0) {
         return String();
     } else if (times < 0) {
         times = -times;
