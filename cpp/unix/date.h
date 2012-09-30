@@ -7,6 +7,7 @@ namespace ktn {
 
 class Date {
     friend std::ostream& operator<<(std::ostream& os, const Date& d);
+    friend std::wostream& operator<<(std::wostream& os, const Date& d);
 public:
     Date();
     Date(const Date& date);
@@ -54,6 +55,7 @@ public:
     void setDateFormat(char* format) { dateformat_ = format; }
 
     std::string str() const;
+    std::wstring wstr() const;
     Date& operator=(const Date& d);
     Date& operator+=(time_t time);
     Date& operator-=(time_t time);

@@ -65,33 +65,33 @@ void arrayTest() {
 
 void dateTest() {
     Date d;
-    std::cout << d.str() << std::endl;
-    std::cout << (d + Date::MINUTE) << std::endl;
-    std::cout << (d - Date::DAY) << std::endl;
+    std::wcout << d << std::endl;
+    std::wcout << (d + Date::MINUTE) << std::endl;
+    std::wcout << (d - Date::DAY) << std::endl;
 
     d += Date::WEEK;
-    std::cout << d << std::endl;
+    std::wcout << d << std::endl;
 
     Date d2(d);
     d2.setMonth(2);
-    std::cout << d2 << std::endl;
+    std::wcout << d2 << std::endl;
 
     d2.addMonth(-2);
-    std::cout << d2 << std::endl;
+    std::wcout << d2 << std::endl;
 
     d2.setDateFormat("%Y/%m/%d");
-    std::cout << d2 << std::endl;
+    std::wcout << d2 << std::endl;
 
-    std::cout.setf(std::ios::boolalpha);
-    std::cout << "d < d2 == " << (d < d2) << std::endl;
+    std::wcout.setf(std::ios::boolalpha);
+    std::wcout << L"d < d2 == " << (d < d2) << std::endl;
 
-    std::cout << Date::parse("1980-01-21") << std::endl;
-    std::cout << Date::parse("2000") << std::endl;
+    std::wcout << Date::parse("1980-01-21") << std::endl;
+    std::wcout << Date::parse("2000") << std::endl;
 }
 
 int main(int argc, const char** argv) {
-    //stringTest();
-    //arrayTest();
+    stringTest();
+    arrayTest();
     dateTest();
 
     return 0;

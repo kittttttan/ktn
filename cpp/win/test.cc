@@ -71,7 +71,7 @@ void arrayTest() {
 
 void dateTest() {
     Date d;
-    std::cout << d.str() << std::endl;
+    std::cout << d << std::endl;
     std::cout << (d + Date::MINUTE) << std::endl;
     std::cout << (d - Date::DAY) << std::endl;
 

@@ -1,6 +1,7 @@
 #include "date.h"
 #include <sstream>
 #include <cstring>
+#include <cstdlib>
 
 namespace ktn {
 
@@ -52,6 +53,10 @@ std::ostream& operator<<(std::ostream& os, const Date& d) {
     return os << d.str();
 }
 
+std::wostream& operator<<(std::wostream& os, const Date& d) {
+    return os << d.wstr();
+}
+
 Date Date::parse(const char* str) {
     std::istringstream is(str);
     int year = 1900, month = 1, day = 1,
@@ -80,6 +85,19 @@ std::string Date::str() const {
         (dateformat_ ? dateformat_ : defaultDateFormat), &date_);
     
     return std::string(res);
+}
+
+std::wstring Date::wstr() const {
+    char res[dateFormatMaxLength];
+    strftime(res, dateFormatMaxLength - 1,
+        (dateformat_ ? dateformat_ : defaultDateFormat), &date_);
+    
+    const size_t newsize = 2 * dateFormatMaxLength;
+    size_t convertedChars = 0;
+    wchar_t wcstring[newsize];
+    mbstowcs_s(&convertedChars, wcstring, newsize, res, _TRUNCATE);
+
+    return std::wstring(wcstring);
 }
 
 Date Date::operator+(time_t time) const {
