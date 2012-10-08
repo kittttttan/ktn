@@ -13,42 +13,39 @@ namespace ktn {
 /**
  * @brief String
  */
-class StringW {
-
+class StringW
+{
     friend std::wostream& operator<<(std::wostream& os, const StringW& s);
-    //friend std::wistream& operator>>(std::wistream &is, String& s);
+    friend std::wistream& operator>>(std::wistream &is, StringW& s);
 
 public:
     StringW();
-    explicit StringW(int n);
     explicit StringW(const wchar_t* s);
+    explicit StringW(const std::wstring& s);
     StringW(const StringW& s);
     ~StringW();
 
-    wchar_t* string() const { return string_; }
-    int length() const { return length_; }
+    const std::wstring& str() const { return str_; }
 
-    void out() const;
-    int indexOf(const wchar_t c, int from=0) const;
-    int lastIndexOf(const wchar_t c, int from=0) const;
-    StringW trim();
-    StringW trimLeft();
-    StringW trimRight();
-    StringW toUpperCase();
-    StringW toLowerCase();
-    StringW substr(int from, int length);
-    StringW slice(int from, int to=-1);
+    size_t indexOf(const wchar_t c, int from=0) const;
+    size_t lastIndexOf(const wchar_t c, int from=0) const;
+    StringW& trim(const wchar_t* delim=L" \t\r\n");
+    StringW& trimLeft(const wchar_t* delim=L" \t\r\n");
+    StringW& trimRight(const wchar_t* delim=L" \t\r\n");
+    StringW& toUpperCase();
+    StringW& toLowerCase();
+    StringW& substr(int from, int length);
+    StringW& slice(int from, int to=-1);
 
     wchar_t& operator[](int index);
     bool operator!() const;
     StringW operator-() const;
 
     StringW operator+(const StringW& s) const;
-    StringW operator-(const wchar_t c) const;
-    StringW operator*(int times) const;
 
     StringW& operator=(const StringW& s);
     StringW& operator+=(const StringW& b);
+    StringW& operator+=(const wchar_t* w);
     StringW& operator-=(const wchar_t c);
     StringW& operator*=(int times);
 
@@ -56,10 +53,7 @@ public:
     bool operator!=(const StringW& s) const;
 
 private:
-    StringW(const wchar_t* s, int length);
-
-    wchar_t* string_;
-    int length_;
+    std::wstring str_;
 };
 
 } // namespace ktn

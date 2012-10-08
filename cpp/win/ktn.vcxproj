@@ -113,24 +113,33 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="array.h" />
     <ClInclude Include="date.h" />
+    <ClInclude Include="date_format.h" />
     <ClInclude Include="dbg.h" />
     <ClInclude Include="doc.h" />
+    <ClInclude Include="httprequest.h" />
+    <ClInclude Include="httpresponse.h" />
+    <ClInclude Include="httpserver.h" />
     <ClInclude Include="logformat.h" />
     <ClInclude Include="logformatw.h" />
-    <ClInclude Include="logging.h" />
-    <ClInclude Include="loggingw.h" />
+    <ClInclude Include="logger.h" />
+    <ClInclude Include="loggerw.h" />
     <ClInclude Include="loglevel.h" />
     <ClInclude Include="string.h" />
     <ClInclude Include="stringw.h" />
+    <ClInclude Include="uri.h" />
     <ClInclude Include="util.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="date.cc" />
+    <ClCompile Include="date_format.cc" />
+    <ClCompile Include="httprequest.cc" />
+    <ClCompile Include="httpresponse.cc" />
+    <ClCompile Include="httpserver.cc" />
     <ClCompile Include="string.cc" />
     <ClCompile Include="stringw.cc" />
     <ClCompile Include="test.cc" />
+    <ClCompile Include="uri.cc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

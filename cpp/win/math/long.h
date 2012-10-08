@@ -7,19 +7,19 @@
  * @brief Long
  */
 
+#include "ulong.h"
 #include <string>
 #include <iostream>
-#include "ulong.h"
 
 namespace ktn { namespace math {
 
 /**
  * @brief Signed BigInteger.
  */
-class Long {
-
+class Long
+{
     friend std::ostream& operator<<(std::ostream& os, const Long& l);
-    //friend std::istream& operator>>(std::istream &is, Long& l);
+    friend std::istream& operator>>(std::istream &is, Long& l);
 
 public:
     Long() : u_(), s_(true) {}

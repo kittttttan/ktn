@@ -7,7 +7,8 @@
 #include "math.h"
 
 template <typename Integer>
-Integer fib(int n) {
+Integer fib(int n)
+{
     Integer a(1), b(0);
     for (int i = 1; i < n; ++i) {
         const Integer c(a);
@@ -19,7 +20,8 @@ Integer fib(int n) {
 }
 
 template <typename Integer>
-Integer fact(int n) {
+Integer fact(int n)
+{
     Integer a(1);
     for (int i = 2; i <= n; ++i) {
         a *= i;

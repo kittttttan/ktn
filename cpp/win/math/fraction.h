@@ -7,19 +7,19 @@
  * @brief Fraction
  */
 
+#include "ulong.h"
 #include <string>
 #include <iostream>
-#include "ulong.h"
 
 namespace ktn { namespace math {
 
 /**
  * @brief Fraction
  */
-class Fraction {
-
+class Fraction
+{
     friend std::ostream& operator<<(std::ostream& os, const Fraction& f);
-    //friend std::istream& operator>>(std::istream& is, Fraction& f);
+    friend std::istream& operator>>(std::istream& is, Fraction& f);
 
 public:
     explicit Fraction() : s_(true), n_(0), d_(1) {}

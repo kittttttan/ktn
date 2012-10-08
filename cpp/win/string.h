@@ -13,42 +13,39 @@ namespace ktn {
 /**
  * @brief String
  */
-class String {
-
+class String
+{
     friend std::ostream& operator<<(std::ostream& os, const String& s);
-    //friend std::istream& operator>>(std::istream &is, String& s);
+    friend std::istream& operator>>(std::istream &is, String& s);
 
 public:
     String();
-    explicit String(int n);
     explicit String(const char* s);
+    explicit String(const std::string& s);
     String(const String& s);
     ~String();
 
-    char* string() const { return string_; }
-    int length() const { return length_; }
+    const std::string& str() const { return str_; }
 
-    void out() const;
-    int indexOf(const char c, int from=0) const;
-    int lastIndexOf(const char c, int from=0) const;
-    String trim();
-    String trimLeft();
-    String trimRight();
-    String toUpperCase();
-    String toLowerCase();
-    String substr(int from, int length);
-    String slice(int from, int to=-1);
+    size_t indexOf(const char c, int from=0) const;
+    size_t lastIndexOf(const char c, int from=0) const;
+    String& trim(const char* delim=" \t\r\n");
+    String& trimLeft(const char* delim=" \t\r\n");
+    String& trimRight(const char* delim=" \t\r\n");
+    String& toUpperCase();
+    String& toLowerCase();
+    String& substr(int from, int length);
+    String& slice(int from, int to=-1);
 
     char& operator[](int index);
     bool operator!() const;
     String operator-() const;
 
     String operator+(const String& s) const;
-    String operator-(const char c) const;
-    String operator*(int times) const;
 
     String& operator=(const String& s);
     String& operator+=(const String& b);
+    String& operator+=(const char* b);
     String& operator-=(const char c);
     String& operator*=(int times);
 
@@ -56,10 +53,7 @@ public:
     bool operator!=(const String& s) const;
 
 private:
-    String(const char* s, int length);
-
-    char* string_;
-    int length_;
+    std::string str_;
 };
 
 } // namespace ktn

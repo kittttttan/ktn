@@ -2,9 +2,11 @@
 #ifndef LOGFORMAT_H_
 #define LOGFORMAT_H_
 
-#include <ctime>
 #include "string.h"
 #include "loglevel.h"
+#include <ctime>
+#include <sstream>
+#include <iomanip>
 
 namespace ktn {
 
@@ -22,13 +24,12 @@ public:
 
     String format(const String& log, LogLevel::Level level,
             const char* file, int line, const char* func) {
-        char buf[99];
-        if (sprintf_s(buf, 99, "%07ld %s[%d]%s %s ",
-                clock(), file, line, func, LogLevel::LevelName[level]) == 99) {
-            TRACE("filled buffer");
-        }
-        String str(buf);
-        return str + log;
+        std::ostringstream os;
+        os << std::setw(7) << std::setfill('0') << clock() << " "
+           << file << "[" << line << "]"
+           << func << " " << LogLevel::LevelName[level] << " "
+           << log;
+        return String(os.str());
     }
 };
 

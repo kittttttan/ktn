@@ -24,10 +24,10 @@ typedef long ddigit;
 /**
 * @brief Unsigned BigInteger.
 */
-class ULong {
-
+class ULong
+{
     friend std::ostream& operator<<(std::ostream& os, const ULong& l);
-    //friend std::istream& operator>>(std::istream& is, ULong& l);
+    friend std::istream& operator>>(std::istream& is, ULong& l);
 
 public:
     explicit ULong() : l_(0), d_(nullptr) {}

@@ -3,105 +3,140 @@
  * @brief test for String
  */
 #include "dbg.h"
-#include "logging.h"
-#include "loggingw.h"
+#include "logger.h"
+#include "loggerw.h"
 #include "string.h"
 #include "stringw.h"
-#include "array.h"
 #include "date.h"
 
 #include <cstdio>
 #include <cstdlib>
 #include <clocale>
+#include <sstream>
 
 using namespace ktn;
 
-void stringTest() {
+void stringWTest()
+{
     setlocale(LC_CTYPE, "");
 
-    Logging logging;
-    String title("Samples for String class");
-    LOGGING_INFO(logging, title);
+    Logger logger;
+    String title("sample");
+    LOGGER_INFO(logger, title);
+
+    LoggerW loggerw;
+    StringW titlew(L"UTF-8 サンプル");
+    LOGGERW_INFO(loggerw, titlew);
 
     StringW a(L"水樹"), b(L"奈々");
-    wprintf(L"%s: %d\n", a.string(), a.length());
-    wprintf(L"%c\n", a[-1]);
+    std::wcout << a[-1] << std::endl;
 
     StringW c = a + b;
-    c.out();
-    (-c).out();
     std::wcout << c << std::endl;
+    std::wcout << (-c) << std::endl;
 
-    wprintf(L"%d\n", c.indexOf(L'々'));
-    wprintf(L"%d\n", c.lastIndexOf(L'水', 2));
-    wprintf(L"%s\n", c.slice(2).string());
-    wprintf(L"%s\n", c.slice(0, -3).string());
-    wprintf(L"%s\n", c.substr(2, 2).string());
+    std::wcout << c.indexOf(L'々') << std::endl;
+    std::wcout << c.lastIndexOf(L'水', 2) << std::endl;
+    std::wcout << StringW(c).slice(2) << std::endl;
+    std::wcout << StringW(c).slice(1, -2) << std::endl;
+    std::wcout << StringW(c).substr(2, 2) << std::endl;
 
-    String space("  Nana  Mizuki   ");
-    printf("'%s'\n", space.toUpperCase().string());
-    printf("'%s'\n", space.toLowerCase().string());
-    printf("'%s'\n", space.trimLeft().string());
-    printf("'%s'\n", space.trimRight().string());
-    printf("'%s'\n", space.trim().string());
-    printf("'%s'\n", (space - ' ').string());
+    StringW d = b;
+    b *= 3;
+    std::wcout << b << std::endl;
 
-    StringW d = b * 7;
-    d.out();
-
-    d = b * -3;
-    d.out();
+    b *= -2;
+    std::wcout << b << std::endl;
 }
 
-void arrayTest() {
-    int a[] = {1,2,3,4,5,6,7};
-    Array<int> arr(a, 7);
-    std::cout << arr << std::endl;
-    std::cout << arr[1] << std::endl;
+void stringTest()
+{
+    String str("  Nana  Mizuki   ");
+    std::cout << str << std::endl;
+    std::cout << (-str) << std::endl;
 
-    Array<int> arr2(3);
-    std::cout << arr2 << std::endl;
+    printf("index 3: %c\n", str[3]);
+    printf("index of a: %d\n", str.indexOf('a'));
+    printf("last index of i: %d\n", str.lastIndexOf('i', 7));
 
-    Array<int> c = arr + arr2;
-    std::cout << c << std::endl;
+    std::cout << String(str).slice(2) << std::endl;
+    std::cout << String(str).slice(3, -7) << std::endl;
+    std::cout << String(str).substr(2, 2) << std::endl;
 
-    c.reverse();
-    std::cout << c << std::endl;
+    String cases(str);
+    printf("'%s'\n", cases.toUpperCase().str().c_str());
+    printf("'%s'\n", cases.toLowerCase().str().c_str());
+    printf("'%s'\n", String(str).trimLeft().str().c_str());
+    printf("'%s'\n", String(str).trimRight().str().c_str());
+    printf("'%s'\n", String(str).trim().str().c_str());
+    str -= ' ';
+    printf("'%s'\n", str.str().c_str());
+    str *= -3;
+    printf("'%s'\n", str.str().c_str());
 }
 
-void dateTest() {
+void dateTest()
+{
     Date d;
     std::cout << d << std::endl;
-    std::cout << (d + Date::MINUTE) << std::endl;
+    std::cout << (d + 3 * Date::MINUTE) << std::endl;
     std::cout << (d - Date::DAY) << std::endl;
 
     d += Date::WEEK;
     std::cout << d << std::endl;
 
     Date d2(d);
-    d2.setMonth(2);
-    std::cout << d2 << std::endl;
-
-    d2.addMonth(-2);
-    std::cout << d2 << std::endl;
-
-    d2.setDateFormat("%Y/%m/%d");
-    std::cout << d2 << std::endl;
+    std::cout << d2.month(2) << std::endl;
+    std::cout << d2.addMonth(-2) << std::endl;
 
     std::cout.setf(std::ios::boolalpha);
     std::cout << "d < d2 == " << (d < d2) << std::endl;
 
     std::cout << Date::parse("1980-01-21") << std::endl;
     std::cout << Date::parse("2000") << std::endl;
+
+    std::istringstream is("2000-01-21");
+    is >> d;
+    std::cout << d << std::endl;
 }
 
-int main(int argc, const char** argv) {
+void perform()
+{
+    const int cnt = 9999;
+    bool show = false;
+    clock_t t1, t2, t0 = clock();
+
+    {
+        std::string st("test");
+        for (int i = 0; i < cnt; ++i) {
+            st += "loop";
+        }
+        if (show) printf("%s\n", st.c_str());
+    }
+    t1 = clock();
+
+    {
+        String str("test");
+        for (int i = 0; i < cnt; ++i) {
+            str += "loop";
+        }
+        if (show) printf("%s\n", str.str().c_str());
+    }
+    t2 = clock();
+
+    printf("%ldms\n", t1 - t0);
+    printf("%ldms\n", t2 - t1);
+}
+
+int main(int argc, const char** argv)
+{
     _CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF | _CRTDBG_ALLOC_MEM_DF);
 
+    stringWTest();
     stringTest();
-    arrayTest();
     dateTest();
 
+    //perform();
     system("pause");
 
     return 0;

@@ -12,8 +12,8 @@ namespace ktn { namespace math {
  * @brief Vector
  */
 template<class T, int N>
-class Vector {
-
+class Vector
+{
     template<class FT, int FN>
     friend std::ostream& operator<<(std::ostream& os, const Vector<FT, FN>& v);
     //template<class FT, int FN>
@@ -54,7 +54,8 @@ template<class T, int N>
 const Vector<T, N> Vector<T, N>::ZERO;
 
 template<class T, int N>
-Vector<T, N>::Vector() {
+Vector<T, N>::Vector()
+{
     try {
         data_ = new T[N];
     } catch (std::bad_alloc) {
@@ -67,7 +68,8 @@ Vector<T, N>::Vector() {
 }
 
 template<class T, int N>
-Vector<T, N>::Vector(const Vector<T, N>& b) {
+Vector<T, N>::Vector(const Vector<T, N>& b)
+{
     try {
         data_ = new T[N];
     } catch (std::bad_alloc) {
@@ -80,7 +82,8 @@ Vector<T, N>::Vector(const Vector<T, N>& b) {
 }
 
 template<class T, int N>
-Vector<T, N>& Vector<T, N>::operator=(const Vector<T, N>& b) {
+Vector<T, N>& Vector<T, N>::operator=(const Vector<T, N>& b)
+{
     if (this == &b) { return *this; }
     for (int i = 0; i < N; ++i) {
         data_[i] = b.data_[i];
@@ -90,12 +93,14 @@ Vector<T, N>& Vector<T, N>::operator=(const Vector<T, N>& b) {
 }
 
 template<class T, int N>
-Vector<T, N>::~Vector() {
+Vector<T, N>::~Vector()
+{
     delete[] data_;
 }
 
 template<class T, int N>
-std::ostream& operator<<(std::ostream& os, const Vector<T, N>& v) {
+std::ostream& operator<<(std::ostream& os, const Vector<T, N>& v)
+{
     os << "(" << v.data_[0];
     for (int x = 1; x < N; ++x) {
         os << "," << v.data_[x];
@@ -105,12 +110,14 @@ std::ostream& operator<<(std::ostream& os, const Vector<T, N>& v) {
 }
 
 template<class T, int N>
-T& Vector<T, N>::operator[](int index) {
+T& Vector<T, N>::operator[](int index)
+{
     return data_[index];
 }
 
 template<class T, int N>
-bool Vector<T, N>::operator!() const {
+bool Vector<T, N>::operator!() const
+{
     for (int i = 0; i < N; ++i) {
         if (!!data_[i]) { return false; }
     }
@@ -118,12 +125,14 @@ bool Vector<T, N>::operator!() const {
 }
 
 template<class T, int N>
-Vector<T, N> Vector<T, N>::operator+() const {
+Vector<T, N> Vector<T, N>::operator+() const
+{
     return *this;
 }
 
 template<class T, int N>
-Vector<T, N> Vector<T, N>::operator-() const {
+Vector<T, N> Vector<T, N>::operator-() const
+{
     Vector<T, N> v;
     for (int i = 0; i < N; ++i) {
         v.data_[i] = -data_[i];
@@ -132,7 +141,8 @@ Vector<T, N> Vector<T, N>::operator-() const {
 }
 
 template<class T, int N>
-Vector<T, N> Vector<T, N>::operator+(const Vector<T, N>& v) {
+Vector<T, N> Vector<T, N>::operator+(const Vector<T, N>& v)
+{
     Vector<T, N> w;
     for (int i = 0; i < N; ++i) {
         w.data_[i] = data_[i] + v.data_[i];
@@ -141,7 +151,8 @@ Vector<T, N> Vector<T, N>::operator+(const Vector<T, N>& v) {
 }
 
 template<class T, int N>
-Vector<T, N> Vector<T, N>::operator-(const Vector<T, N>& v) {
+Vector<T, N> Vector<T, N>::operator-(const Vector<T, N>& v)
+{
     Vector<T, N> w;
     for (int i = 0; i < N; ++i) {
         w.data_[i] = data_[i] - v.data_[i];
@@ -150,7 +161,8 @@ Vector<T, N> Vector<T, N>::operator-(const Vector<T, N>& v) {
 }
 
 template<class T, int N>
-Vector<T, N> Vector<T, N>::operator*(const T& n) {
+Vector<T, N> Vector<T, N>::operator*(const T& n)
+{
     Vector<T, N> w;
     for (int i = 0; i < N; ++i) {
         w.data_[i] = data_[i] * n;
@@ -162,7 +174,8 @@ Vector<T, N> Vector<T, N>::operator*(const T& n) {
 * Dot product
 */
 template<class T, int N>
-T Vector<T, N>::operator*(const Vector<T, N>& v) {
+T Vector<T, N>::operator*(const Vector<T, N>& v)
+{
     T t = 0;
     for (int i = 0; i < N; ++i) {
         t += data_[i] * v.data_[i];
@@ -171,7 +184,8 @@ T Vector<T, N>::operator*(const Vector<T, N>& v) {
 }
 
 template<class T, int N>
-Vector<T, N>& Vector<T, N>::operator+=(const Vector<T, N>& b) {
+Vector<T, N>& Vector<T, N>::operator+=(const Vector<T, N>& b)
+{
     for (int i = 0; i < N; ++i) {
         data_[i] += b.data_[i];
     }
@@ -180,7 +194,8 @@ Vector<T, N>& Vector<T, N>::operator+=(const Vector<T, N>& b) {
 }
 
 template<class T, int N>
-Vector<T, N>& Vector<T, N>::operator-=(const Vector<T, N>& b) {
+Vector<T, N>& Vector<T, N>::operator-=(const Vector<T, N>& b)
+{
     for (int i = 0; i < N; ++i) {
         data_[i] -= b.data_[i];
     }
@@ -189,7 +204,8 @@ Vector<T, N>& Vector<T, N>::operator-=(const Vector<T, N>& b) {
 }
 
 template<class T, int N>
-Vector<T, N>& Vector<T, N>::operator*=(const T& n) {
+Vector<T, N>& Vector<T, N>::operator*=(const T& n)
+{
     for (int i = 0; i < N; ++i) {
         data_[i] *= n;
     }
@@ -198,7 +214,8 @@ Vector<T, N>& Vector<T, N>::operator*=(const T& n) {
 }
 
 template<class T, int N>
-bool Vector<T, N>::operator==(const Vector<T, N>& v) const {
+bool Vector<T, N>::operator==(const Vector<T, N>& v) const
+{
     for (int i = 0; i < N; ++i) {
         if (data_[i] != v.data_[i]) { return false; }
     }
@@ -206,7 +223,8 @@ bool Vector<T, N>::operator==(const Vector<T, N>& v) const {
 }
 
 template<class T, int N>
-bool Vector<T, N>::operator!=(const Vector<T, N>& v) const {
+bool Vector<T, N>::operator!=(const Vector<T, N>& v) const
+{
     for (int i = 0; i < N; ++i) {
         if (data_[i] == v.data_[i]) { return false; }
     }

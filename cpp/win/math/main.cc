@@ -4,7 +4,8 @@
 
 #include "test.h"
 
-int main(int argc, char** argv) {
+int main(int argc, char** argv)
+{
     srand(static_cast<unsigned int>(time(NULL)));
 
     clock_t t = clock();

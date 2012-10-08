@@ -14,8 +14,8 @@ namespace ktn { namespace math {
  * MxN Matrix
  */
 template<class T, int M, int N=M>
-class Matrix {
-
+class Matrix
+{
     template<class FT, int FM, int FN>
     friend std::ostream& operator<<(std::ostream& os, const Matrix<FT, FM, FN>& m);
     //template<class FT, int FM, int FN>
@@ -66,7 +66,8 @@ template<class T, int M, int N>
 const Matrix<T, M, N> Matrix<T, M, N>::ONE(T(1));
 
 template<class T, int M, int N>
-Matrix<T, M, N>::Matrix() {
+Matrix<T, M, N>::Matrix()
+{
     data_ = new T*[N];
     if (!data_) { return; }
     for (int y = 0; y < N; ++y) {
@@ -79,7 +80,8 @@ Matrix<T, M, N>::Matrix() {
 }
 
 template<class T, int M, int N>
-Matrix<T, M, N>::Matrix(const T& t) {
+Matrix<T, M, N>::Matrix(const T& t)
+{
     try {
         data_ = new T*[N];
     } catch (std::bad_alloc) {
@@ -104,7 +106,8 @@ Matrix<T, M, N>::Matrix(const T& t) {
 }
 
 template<class T, int M, int N>
-Matrix<T, M, N>::Matrix(const Matrix<T, M, N>& b) {
+Matrix<T, M, N>::Matrix(const Matrix<T, M, N>& b)
+{
     if (this == &b) { return; }
     try {
         data_ = new T*[N];
@@ -126,7 +129,8 @@ Matrix<T, M, N>::Matrix(const Matrix<T, M, N>& b) {
 }
 
 template<class T, int M, int N>
-Matrix<T, M, N>::~Matrix() {
+Matrix<T, M, N>::~Matrix()
+{
     for (int y = 0; y < N; ++y) {
         delete[] data_[y];
     }
@@ -138,7 +142,8 @@ Matrix<T, M, N>::~Matrix() {
 * @param y from 1 to N
 */
 template<class T, int M, int N>
-T& Matrix<T, M, N>::at(int x, int y) {
+T& Matrix<T, M, N>::at(int x, int y)
+{
     if (x < 1) { x = 1; } else if (x > M) { x = M; }
     if (y < 1) { y = 1; } else if (y > N) { y = N; }
     return data_[y - 1][x - 1];
@@ -148,7 +153,8 @@ T& Matrix<T, M, N>::at(int x, int y) {
 * Transpose
 */
 template<class T, int M, int N>
-Matrix<T, N, M> Matrix<T, M, N>::t() const {
+Matrix<T, N, M> Matrix<T, M, N>::t() const
+{
     Matrix<T, N, M> m;
     for (int y = 0; y < N; ++y) {
         for (int x = 0; x < M; ++x) {
@@ -159,7 +165,8 @@ Matrix<T, N, M> Matrix<T, M, N>::t() const {
 }
 
 template<class T, int M, int N>
-std::ostream& operator<<(std::ostream& os, const Matrix<T, M, N>& m) {
+std::ostream& operator<<(std::ostream& os, const Matrix<T, M, N>& m)
+{
     for (int y = 0; y < N; ++y) {
         for (int x = 0; x < M; ++x) {
             os << m.data_[y][x] << ",";
@@ -170,13 +177,15 @@ std::ostream& operator<<(std::ostream& os, const Matrix<T, M, N>& m) {
 }
 /*
 template<class T, int M, int N>
-std::istream& operator<<(std::istream& is, Matrix<T, M, N>& c) {
+std::istream& operator<<(std::istream& is, Matrix<T, M, N>& c)
+{
 return is;
 }
 */
 
 template<class T, int M, int N>
-bool Matrix<T, M, N>::operator!() const {
+bool Matrix<T, M, N>::operator!() const
+{
     for (int y = 0; y < N; ++y) {
         for (int x = 0; x < M; ++x) {
             if (!!data_[y][x]) { return false; }
@@ -186,12 +195,14 @@ bool Matrix<T, M, N>::operator!() const {
 }
 
 template<class T, int M, int N>
-Matrix<T, M, N> Matrix<T, M, N>::operator+() const {
+Matrix<T, M, N> Matrix<T, M, N>::operator+() const
+{
     return *this;
 }
 
 template<class T, int M, int N>
-Matrix<T, M, N> Matrix<T, M, N>::operator-() const {
+Matrix<T, M, N> Matrix<T, M, N>::operator-() const
+{
     Matrix<T, M, N> temp;
     for (int y = 0; y < N; ++y) {
         for (int x = 0; x < M; ++x) {
@@ -202,7 +213,8 @@ Matrix<T, M, N> Matrix<T, M, N>::operator-() const {
 }
 
 template<class T, int M, int N>
-Matrix<T, M, N>& Matrix<T, M, N>::operator=(const Matrix<T, M, N>& b) {
+Matrix<T, M, N>& Matrix<T, M, N>::operator=(const Matrix<T, M, N>& b)
+{
     if (this == &b) { return *this; }
     for (int y = 0; y < N; ++y) {
         for (int x = 0; x < M; ++x) {
@@ -213,7 +225,8 @@ Matrix<T, M, N>& Matrix<T, M, N>::operator=(const Matrix<T, M, N>& b) {
 }
 
 template<class T, int M, int N>
-Matrix<T, M, N> Matrix<T, M, N>::operator+(const Matrix<T, M, N>& b) {
+Matrix<T, M, N> Matrix<T, M, N>::operator+(const Matrix<T, M, N>& b)
+{
     Matrix<T, M, N> m;
     for (int y = 0; y < N; ++y) {
         for (int x = 0; x < M; ++x) {
@@ -224,7 +237,8 @@ Matrix<T, M, N> Matrix<T, M, N>::operator+(const Matrix<T, M, N>& b) {
 }
 
 template<class T, int M, int N>
-Matrix<T, M, N> Matrix<T, M, N>::operator-(const Matrix<T, M, N>& b) {
+Matrix<T, M, N> Matrix<T, M, N>::operator-(const Matrix<T, M, N>& b)
+{
     Matrix<T, M, N> m;
     for (int y = 0; y < N; ++y) {
         for (int x = 0; x < M; ++x) {
@@ -235,7 +249,8 @@ Matrix<T, M, N> Matrix<T, M, N>::operator-(const Matrix<T, M, N>& b) {
 }
 
 template<class T, int M, int N>
-Matrix<T, M, N> Matrix<T, M, N>::operator*(const T& n) {
+Matrix<T, M, N> Matrix<T, M, N>::operator*(const T& n)
+{
     Matrix<T, M, N> m;
     for (int y = 0; y < N; ++y) {
         for (int x = 0; x < M; ++x) {
@@ -247,7 +262,8 @@ Matrix<T, M, N> Matrix<T, M, N>::operator*(const T& n) {
 
 template<class T, int M, int N>
 template<int K>
-Matrix<T, K, N> Matrix<T, M, N>::operator*(const Matrix<T, K, M>& b) {
+Matrix<T, K, N> Matrix<T, M, N>::operator*(const Matrix<T, K, M>& b)
+{
     Matrix<T, K, N> m;
     for (int y = 0; y < N; ++y) {
         for (int x = 0; x < K; ++x) {
@@ -261,25 +277,29 @@ Matrix<T, K, N> Matrix<T, M, N>::operator*(const Matrix<T, K, M>& b) {
 }
 
 template<class T, int M, int N>
-Matrix<T, M, N>& Matrix<T, M, N>::operator+=(const Matrix<T, M, N>& b) {
+Matrix<T, M, N>& Matrix<T, M, N>::operator+=(const Matrix<T, M, N>& b)
+{
     *this = *this + b;
     return *this;
 }
 
 template<class T, int M, int N>
-Matrix<T, M, N>& Matrix<T, M, N>::operator-=(const Matrix<T, M, N>& b) {
+Matrix<T, M, N>& Matrix<T, M, N>::operator-=(const Matrix<T, M, N>& b)
+{
     *this = *this - b;
     return *this;
 }
 
 template<class T, int M, int N>
-Matrix<T, M, N>& Matrix<T, M, N>::operator*=(const T& n) {
+Matrix<T, M, N>& Matrix<T, M, N>::operator*=(const T& n)
+{
     *this = *this * n;
     return *this;
 }
 
 template<class T, int M, int N>
-bool Matrix<T, M, N>::operator==(const Matrix<T, M, N>& b) const {
+bool Matrix<T, M, N>::operator==(const Matrix<T, M, N>& b) const
+{
     for (int y = 0; y < N; ++y) {
         for (int x = 0; x < M; ++x) {
             if (data_[y][x] != b.data_[y][x]) { return false; }
@@ -289,7 +309,8 @@ bool Matrix<T, M, N>::operator==(const Matrix<T, M, N>& b) const {
 }
 
 template<class T, int M, int N>
-bool Matrix<T, M, N>::operator!=(const Matrix<T, M, N>& b) const {
+bool Matrix<T, M, N>::operator!=(const Matrix<T, M, N>& b) const
+{
     for (int y = 0; y < N; ++y) {
         for (int x = 0; x < M; ++x) {
             if (data_[y][x] == b.data_[y][x]) { return false; }

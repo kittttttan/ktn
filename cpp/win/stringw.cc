@@ -3,482 +3,226 @@
  * @brief StringW
  */
 
-#include <cstdio>
-#include <clocale>
-
 #include "stringw.h"
 #include "util.h"
 #include "dbg.h"
 
+#include <cstdio>
+#include <clocale>
+#include <algorithm>
+#include <cassert>
+#include <sstream>
+
 namespace ktn {
 
-StringW::StringW() :
-    string_(nullptr),
-    length_(0)
+StringW::StringW()
 {
+
 }
 
-StringW::StringW(const wchar_t* s) {
-    int length = 0;
-    while (*s != L'\0') {
-        ++length;
-        ++s;
-    }
+StringW::StringW(const wchar_t* s) :
+    str_(s)
+{
 
-    try {
-        string_ = new wchar_t[length + 1];
-    } catch (std::bad_alloc) {
-        string_ = nullptr;
-        length_ = 0;
-        return;
-    }
-
-    length_ = length;
-    s -= length;
-    for (int i = 0; i < length + 1; ++i) {
-        string_[i] = *s;
-        ++s;
-    }
 }
 
-StringW::StringW(const wchar_t* s, int length) {
-    try {
-        string_ = new wchar_t[length + 1];
-    } catch (std::bad_alloc) {
-        string_ = nullptr;
-        length_ = 0;
-        return;
-    }
+StringW::StringW(const std::wstring& s) :
+    str_(s)
+{
 
-    length_ = length;
-    for (int i = 0; i < length + 1; ++i) {
-        string_[i] = *s;
-        ++s;
-    }
 }
 
-StringW::StringW(const StringW& s) {
+StringW::StringW(const StringW& s)
+{
     if (this == &s) { return; }
 
-    try {
-        string_ = new wchar_t[s.length_ + 1];
-    } catch (std::bad_alloc) {
-        length_ = 0;
-        return;
-    }
-
-    length_ = s.length_;
-
-    for (int i = 0; i < length_ + 1; ++i) {
-        string_[i] = s.string_[i];
-    }
+    str_ = s.str_;
 }
 
-StringW::~StringW() {
-    SAFE_DELETE_ARRAY(string_);
+StringW::~StringW()
+{
+
 }
 
-StringW& StringW::operator=(const StringW& s) {
+StringW& StringW::operator=(const StringW& s)
+{
     if (this == &s) { return *this; }
 
-    if (length_ < s.length_) {
-        delete [] string_;
-        try {
-            string_ = new wchar_t[s.length_ + 1];
-        } catch (std::bad_alloc) {
-            string_ = nullptr;
-            length_ = 0;
-            return *this;
-        }
-        length_ = s.length_;
-    }
-    for (int i = 0; i < length_ + 1; ++i) {
-        string_[i] = s.string_[i];
-    }
+    str_ = s.str_;
 
     return *this;
 }
 
-void StringW::out() const {
-    if (length_ == 0 || string_ == nullptr) {
-        puts("");
-        return;
-    }
-    wprintf(L"%s\n", string_);
+std::wostream& operator<<(std::wostream& os, const StringW& s)
+{
+    return os << s.str_.c_str();
 }
 
-std::wostream& operator<<(std::wostream& os, const StringW& s) {
-    return os << s.string_;
+std::wistream& operator>>(std::wistream& is, StringW& s)
+{
+    std::wstring str;
+    is >> str;
+    s.str_ = str;
+    return is;
 }
 
-//std::wistream& operator<<(std::wistream& is, StringW& s) {
-//    return is;
-//}
-
-wchar_t& StringW::operator[](int index) {
+wchar_t& StringW::operator[](int index)
+{
     if (index < 0) {
-        index += length_;
+        index += static_cast<int>(str_.size());
     }
 
-    _ASSERTE(0 <= index && index < length_);
-
-    return *(string_ + index);
+    return str_[index];
 }
 
-bool StringW::operator!() const {
-    return length_ == 0 || !string_;
+bool StringW::operator!() const
+{
+    return str_.empty();
 }
 
-StringW StringW::operator-() const {
-    wchar_t* temp = nullptr;
-    try {
-        temp = new wchar_t[length_ + 1];
-    } catch (std::bad_alloc) {
-        return StringW();
-    }
-
-    int i = 0;
-    for (; i < length_; ++i) {
-        temp[i] = string_[length_ - 1 - i];
-    }
-    temp[i] = L'\0';
-
-    StringW res(temp, length_);
-    SAFE_DELETE_ARRAY(temp);
-
+StringW StringW::operator-() const
+{
+    StringW res(*this);
+    std::reverse(res.str_.begin(), res.str_.end());
     return res;
 }
 
-int StringW::indexOf(const wchar_t c, int from) const {
-    int index = -1;
-    for (int i = from; i < length_; ++i) {
-        if (string_[i] == c) {
-            index = i;
-            break;
-        }
-    }
-
-    return index;
+size_t StringW::indexOf(const wchar_t c, int from) const
+{
+    return str_.find(c);
 }
 
-int StringW::lastIndexOf(const wchar_t c, int from) const {
-    int index = -1;
-    if (from < 0) {
-        from = 0;
-    } else if (from > length_ - 1) {
-        from = length_ - 1;
-    }
-    for (int i = from; i; --i) {
-        if (string_[i] == c) {
-            index = i;
-            break;
-        }
-    }
-
-    return index;
+size_t StringW::lastIndexOf(const wchar_t c, int from) const
+{
+    return str_.rfind(c);
 }
 
-StringW StringW::toUpperCase() {
-    wchar_t* w = nullptr;
-    try {
-        w = new wchar_t[length_ + 1];
-    } catch (std::bad_alloc) {
-        return StringW();
-    }
-
-    for (int i = 0; i < length_ + 1; ++i) {
-        w[i] = towupper(string_[i]);
-    }
-
-    StringW res(w, length_);
-    SAFE_DELETE_ARRAY(w);
-
-    return res;
+StringW& StringW::toUpperCase()
+{
+    std::transform(str_.begin(), str_.end(), str_.begin(), ::toupper);
+    return *this;
 }
 
-StringW StringW::toLowerCase() {
-    wchar_t* w = nullptr;
-    try {
-        w = new wchar_t[length_ + 1];
-    } catch (std::bad_alloc) {
-        return StringW();
-    }
-
-    for (int i = 0; i < length_ + 1; ++i) {
-        w[i] = towlower(string_[i]);
-    }
-
-    StringW res(w, length_);
-    SAFE_DELETE_ARRAY(w);
-
-    return res;
+StringW& StringW::toLowerCase()
+{
+    std::transform(str_.begin(), str_.end(), str_.begin(), ::tolower);
+    return *this;
 }
 
-StringW StringW::substr(int from, int length) {
-    if (length < 1) {
-        return StringW();
-    } else if (length > length_) {
+StringW& StringW::substr(int from, int length)
+{
+    str_ = str_.substr(from, length);
+    return *this;
+}
+
+StringW& StringW::slice(int from, int to)
+{
+    if (str_.empty()) return *this;
+
+    int size = static_cast<int>(str_.size());
+    assert(size);
+    from %= size;
+    to %= size;
+    if (from < 0) { from += size; }
+    if (to < 0) { to += size; }
+
+    int length = to - from + 1;
+    if (length <= 0) { str_ = L""; return *this; }
+
+    return substr(from, length);
+}
+
+StringW& StringW::trimLeft(const wchar_t* delim)
+{
+    const size_t p1 = str_.find_first_not_of(delim);
+    if (p1 == std::string::npos) {
+        str_ = L"";
         return *this;
     }
-    if (from < 0) { from = 0; }
-    if (from + length > length_) {
-        length = length_ - from;
-    }
-
-    wchar_t* w = nullptr;
-    try {
-        w = new wchar_t[length + 1];
-    } catch (std::bad_alloc) {
-        return StringW();
-    }
-
-    for (int i = 0; i < length; ++i) {
-        w[i] = string_[from + i];
-    }
-    w[length] = L'\0';
-
-    StringW res(w, length);
-    SAFE_DELETE_ARRAY(w);
-
-    return res;
-}
-
-StringW StringW::slice(int from, int to) {
-    if (length_ < 1) { return StringW(); }
-
-    from %= length_;
-    to %= length_;
-    if (from < 0) { from += length_; }
-    if (to < 0) { to += length_; }
-    int length = to - from + 1;
-    if (length <= 0) { return StringW(); }
-
-    wchar_t* w = nullptr;
-    try {
-        w = new wchar_t[length + 1];
-    } catch (std::bad_alloc) {
-        return StringW();
-    }
-
-    for (int i = 0; i < length; ++i) {
-        w[i] = string_[from + i];
-    }
-    w[length] = L'\0';
-
-    StringW res(w, length);
-    SAFE_DELETE_ARRAY(w);
-
-    return res;
-}
-
-StringW StringW::trimLeft() {
-    int i = 0;
-    for (; i < length_; ++i) {
-        if (iswspace(string_[i]) == 0) {
-            break;
-        }
-    }
-    int length = length_ - i;
-    wchar_t* temp = nullptr;
-    try {
-        temp = new wchar_t[length + 1];
-    } catch (std::bad_alloc) {
-        return StringW();
-    }
-
-    for (int j = 0; i < length_ + 1; ++i, ++j) {
-        temp[j] = string_[i];
-    }
-
-    StringW res(temp, length);
-    SAFE_DELETE_ARRAY(temp);
-
-    return res;
-}
-
-StringW StringW::trimRight() {
-    if (length_ < 1) { return StringW(); }
-
-    int i = length_ - 1;
-    for (; i; --i) {
-        if (iswspace(string_[i]) == 0) {
-            break;
-        }
-    }
-    int length = i + 1;
-    wchar_t* temp = nullptr;
-    try {
-        temp = new wchar_t[length + 1];
-    } catch (std::bad_alloc) {
-        return StringW();
-    }
-    int j = 0;
-    for (i = 0; i < length; ++i, ++j) {
-        temp[j] = string_[i];
-    }
-    temp[j] = L'\0';
-
-    StringW res(temp, length);
-    SAFE_DELETE_ARRAY(temp);
-
-    return res;
-}
-
-StringW StringW::trim() {
-    if (length_ < 1) { return StringW(); }
-
-    int first = 0;
-    for (; first < length_; ++first) {
-        if (iswspace(string_[first]) == 0) {
-            break;
-        }
-    }
-    int last = length_ - 1;
-    for (; last; --last) {
-        if (iswspace(string_[last]) == 0) {
-            break;
-        }
-    }
-
-    int length = last - first + 1;
-    wchar_t* temp = nullptr;
-    try {
-        temp = new wchar_t[length + 1];
-    } catch (std::bad_alloc) {
-        return StringW();
-    }
-
-    int j = 0;
-    for (int i = first; i < last + 1; ++i, ++j) {
-        temp[j] = string_[i];
-    }
-    temp[j] = L'\0';
-
-    StringW res(temp, length);
-    SAFE_DELETE_ARRAY(temp);
-
-    return res;
-}
-
-StringW StringW::operator+(const StringW& s) const {
-    wchar_t* w = nullptr;
-    try {
-        w = new wchar_t[length_ + s.length_ + 1];
-    } catch (std::bad_alloc) {
-        return StringW();
-    }
-
-    for (int i = 0; i < length_; ++i) {
-        w[i] = string_[i];
-    }
-    for (int i = 0; i < s.length_ + 1; ++i) {
-        w[i + length_] = s.string_[i];
-    }
-
-    StringW res(w, length_ + s.length_);
-    SAFE_DELETE_ARRAY(w);
-
-    return res;
-}
-
-StringW StringW::operator-(const wchar_t c) const {
-    wchar_t* temp = nullptr;
-    try {
-        temp = new wchar_t[length_ + 1];
-    } catch (std::bad_alloc) {
-        return StringW();
-    }
-
-    int length = 0;
-    for (int i = 0; i < length_; ++i) {
-        if (string_[i] != c) {
-            temp[length] = string_[i];
-            ++length;
-        }
-    }
-    temp[length] = L'\0';
-
-    StringW res(temp, length);
-    SAFE_DELETE_ARRAY(temp);
-
-    return res;
-}
-
-StringW StringW::operator*(int times) const {
-    if (length_ < 1 || times == 0) {
-        return StringW();
-    } else if (times < 0) {
-        times = -times;
-
-        int length = length_ * times;
-        wchar_t* w = nullptr;
-        try {
-            w = new wchar_t[length + 1];
-        } catch (std::bad_alloc) {
-            return StringW();
-        }
-
-        for (int i = 0; i < length; ++i) {
-            w[i] = string_[length_ - 1 - i % length_];
-        }
-        w[length] = L'\0';
-
-        StringW res(w, length);
-        SAFE_DELETE_ARRAY(w);
-
-        return res;
-    }
-
-    int length = length_ * times;
-    wchar_t* w = nullptr;
-    try {
-        w = new wchar_t[length + 1];
-    } catch (std::bad_alloc) {
-        return StringW();
-    }
-
-    for (int i = 0; i < length; ++i) {
-        w[i] = string_[i % length_];
-    }
-    w[length] = L'\0';
-
-    StringW res(w, length);
-    SAFE_DELETE_ARRAY(w);
-
-    return res;
-}
-
-StringW& StringW::operator+=(const StringW& b) {
-    *this = *this + b;
+    str_ = str_.substr(p1);
     return *this;
 }
 
-StringW& StringW::operator-=(const wchar_t c) {
-    *this = *this - c;
+StringW& StringW::trimRight(const wchar_t* delim)
+{
+    const size_t p2 = str_.find_last_not_of(delim);
+    str_ = str_.substr(0, p2 + 1);
     return *this;
 }
 
-StringW& StringW::operator*=(int times) {
-    *this = *this * times;
+StringW& StringW::trim(const wchar_t* delim)
+{
+    const size_t p1 = str_.find_first_not_of(delim);
+    if(p1 == std::string::npos){
+        str_ = L"";
+        return *this;
+    }
+    const size_t p2 = str_.find_last_not_of(delim);
+    str_ = str_.substr(p1, p2 - p1 + 1);
     return *this;
 }
 
-bool StringW::operator==(const StringW& s) const {
+StringW StringW::operator+(const StringW& s) const
+{
+    std::wstring n(str_);
+    n += s.str_;
+    return StringW(n);
+}
+
+StringW& StringW::operator+=(const StringW& b)
+{
+    str_ += b.str_;
+    return *this;
+}
+
+StringW& StringW::operator+=(const wchar_t* b)
+{
+    str_ += b;
+    return *this;
+}
+
+StringW& StringW::operator-=(const wchar_t c)
+{
+    str_.erase(
+        std::remove_if(str_.begin(), str_.end(),
+            [c](wchar_t ch) -> bool { return ch == c; }),
+        str_.end()
+    );
+    return *this;
+}
+
+StringW& StringW::operator*=(int times)
+{
+    if (!times) {
+        str_ = L"";
+        return *this;
+    }
+
+    std::wstring str(str_);
+    if (times < 0) {
+        for (int i = 1; i < -times; ++i) {
+            str_ += str;
+        }
+        std::reverse(str_.begin(), str_.end());
+    } else {
+        for (int i = 1; i < times; ++i) {
+            str_ += str;
+        }
+    }
+
+    return *this;
+}
+
+bool StringW::operator==(const StringW& s) const
+{
     if (this == &s) { return true; }
-    if (length_ != s.length_) { return false; }
-    for (int i = 0; i < length_; ++i) {
-        if (string_[i] != s.string_[i]) { return false; }
-    }
-    return true;
+    return str_.compare(s.str_) == 0;
 }
 
-bool StringW::operator!=(const StringW& s) const {
+bool StringW::operator!=(const StringW& s) const
+{
     if (this == &s) { return false; }
-    if (length_ != s.length_) { return true; }
-    for (int i = 0; i < length_; ++i) {
-        if (string_[i] != s.string_[i]) { return true; }
-    }
-    return false;
+    return str_.compare(s.str_) != 0;
 }
 
 } // namespace ktn

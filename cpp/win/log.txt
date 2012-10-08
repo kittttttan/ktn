@@ -1,0 +1,8 @@
+0000151 test.cc[25]stringTest INFO sample
+0000155 test.cc[29]stringTest INFO UTF-8 サンプル
+0000124 test.cc[25]stringTest INFO sample
+0000124 test.cc[29]stringTest INFO UTF-8 サンプル
+0000101 test.cc[25]stringWTest INFO sample
+0000105 test.cc[29]stringWTest INFO UTF-8 サンプル
+0000101 test.cc[25]stringWTest INFO sample
+0000105 test.cc[29]stringWTest INFO UTF-8 サンプル

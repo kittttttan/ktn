@@ -2,9 +2,9 @@
 #ifndef LOGFORMATW_H_
 #define LOGFORMATW_H_
 
-#include <ctime>
 #include "stringw.h"
 #include "loglevel.h"
+#include <ctime>
 
 namespace ktn {
 
@@ -24,13 +24,12 @@ public:
 
     StringW format(const StringW& log, LogLevel::Level level,
             const wchar_t* file, int line, const wchar_t* func) {
-        wchar_t buf[99];
-        if (swprintf_s(buf, 99, L"%07ld %s[%d]%s %s ",
-                clock(), file, line, func, LogLevel::LevelNameW[level]) == 99) {
-            TRACE("filled buffer");
-        }
-        StringW str(buf);
-        return str + log;
+        std::wostringstream os;
+        os << std::setw(7) << std::setfill(L'0') << clock() << L" "
+           << file << L"[" << line << L"]"
+           << func << L" " << LogLevel::LevelNameW[level] << L" "
+           << log;
+        return StringW(os.str());
     }
 };
 
