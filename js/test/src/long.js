@@ -3,21 +3,21 @@
 
 // Init: define print & load module
 var print, _T, _S = '',
-    long;
+    lng;
 if (typeof window !== 'undefined') {
   // browser
   print = function(a) { _S += a + '\n'; };
   _T = G.document.getElementById('log');
-  long = Long;
+  lng = Long;
 } else if (typeof load !== 'undefined') {
   // V8
   print = G.print;
-  load('../lib/long.js');
-  long = Long;
+  load('../lib/lng.js');
+  lng = Long;
 } else if (typeof require !== 'undefined') {
   // node
   print = console.log;
-  long = require('../lib/long.js').Long;
+  lng = require('../lib/lng.js').Long;
 }
 
 /**
@@ -26,8 +26,8 @@ if (typeof window !== 'undefined') {
  */
 function basic() {
   var r = (Math.random() * 4 | 0) + 3,
-      a = long.random(r),
-      b = long.num(100000);
+      a = lng.random(r),
+      b = lng.num(100000);
   return [
       '    a = ',a, '\n    b = ',b.toString(), '\na + b = ',a.add(b),
       '\na - b = ',a.sub(b), '\na * b = ',a.mul(b),
@@ -44,9 +44,9 @@ function basic() {
  * @returns {Long} a!
  */
 function fact(a) {
-  var f = long.num(1);
+  var f = lng.num(1);
   for (var i = 2; i < a + 1; ++i) {
-    f = f.mul(long.num(i));
+    f = f.mul(lng.num(i));
   }
   return f;
 }
@@ -57,8 +57,8 @@ function fact(a) {
  * @returns {Long} <var>a</var>th fibonacchi number
  */
 function fib(a) {
-  var b = long.num(0);
-  for (var i = 0, c = long.num(1), d; i < a; ++i) {
+  var b = lng.num(0);
+  for (var i = 0, c = lng.num(1), d; i < a; ++i) {
     d = b.clone();
     b = b.add(c);
     c = d;
@@ -67,24 +67,24 @@ function fib(a) {
 }
 
 /**
- * test for longSquare
+ * test for lngSquare
  * @param {number} a
  */
 function square(a) {
   for (var i = 1, t; i < a; ++i) {
-    t = long.random(i);
+    t = lng.random(i);
     print(t.mul(t).equal(t.square()));
   }
 }
 
 /**
- * Compares performance longMul vs longSquare
+ * Compares performance lngMul vs lngSquare
  * @param {number} a
  */
 function sqvsmul(a) {
   var nums = [];
   for (var i = 0; i < a; ++i) {
-    nums[i] = long.random(i + 1);
+    nums[i] = lng.random(i + 1);
   }
   var t0 = Date.now();
   for (i = 0; i < a; ++i) {
@@ -100,26 +100,26 @@ function sqvsmul(a) {
 }
 
 /**
- * test for longGcdBin
+ * test for lngGcdBin
  * @param {number} a
  */
 function gcd(a) {
   for (var i = 0, b, c; i < a; ++i) {
-    b = long.random(i + 20);
-    c = long.random(i + 20);
+    b = lng.random(i + 20);
+    c = lng.random(i + 20);
     print(b.gcd(c).equal(b._gcd(c)));
   }
 }
 
 /**
- * Compares performance longGcd vs longGcdBin
+ * Compares performance lngGcd vs lngGcdBin
  * @param {number} a
  */
 function gcdvsbin(a) {
   var m = [], n = [];
   for (var i = 0; i < a; ++i) {
-    m[i] = long.random(i + 20);
-    n[i] = long.random(i + 20);
+    m[i] = lng.random(i + 20);
+    n[i] = lng.random(i + 20);
   }
   var t0 = Date.now();
   for (i = 0; i < a; ++i) {
@@ -141,11 +141,11 @@ function gcdvsbin(a) {
  */
 function pi(a) {
   if (!a) { a = 1; }
-  var n = long.num(10).pow(a);
+  var n = lng.num(10).pow(a);
 
   function arccot(m) {
     var c = n, a = c.div(m), b = a.clone(), m2 = m.square(),
-        k = long.num(1), s = true, l2 = long.num(2);
+        k = lng.num(1), s = true, l2 = lng.num(2);
     while (c.isNonZero()) {
       b = b.div(m2);
       k = k.add(l2);
@@ -160,7 +160,7 @@ function pi(a) {
     return a;
   }
 
-  var a5 = arccot(long.num(5)), a239 = arccot(long.num(239));
+  var a5 = arccot(lng.num(5)), a239 = arccot(lng.num(239));
   //print(a5);
   //print(a239);
   return a5.leftShift(2).sub(a239).leftShift(2);

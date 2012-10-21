@@ -579,7 +579,6 @@ export class Long {
     if (nb < 2 && !bd[0]) {
       // zero division
       throw 'zero division';
-      return new Long();
       //if (modulus || na < 2 && !ad[0]) { return NaN; }
       //if (a._s === b._s) { return Infinity; }
       //return -Infinity;

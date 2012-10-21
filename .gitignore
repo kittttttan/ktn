@@ -12,4 +12,6 @@ ipch/
 *.o
 *.exe
 
+js/lib/*.js
+js/test/*.js
 ts/*/*.js
