@@ -8,7 +8,7 @@
  * Links:
  *   - [github repository](https://github.com/kittttttan/ktn)
  *
- * @date 2012-03-18 Test
+ * @date 2012-10-18 Test
  * @author kittttttan
  */
 /**

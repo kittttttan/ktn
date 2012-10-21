@@ -75,6 +75,10 @@ function Long() {
     if (n) {
       a._d[1] = n & MASK;
     }
+    n >>>= SHIFT;
+    if (n) {
+      a._d[2] = n & MASK;
+    }
     return a;
   };
   var longNum = Long.num;
@@ -86,7 +90,7 @@ function Long() {
    * @returns {Long}
    */
   Long.str = function(str, /** @default 10 */base) {
-    if (base === 16) { return longByte(str); }
+    //if (base === 16) { return longByte(str); }
     if (!base) { base = 10; }
 
     var index = 0, sign = true, len;
@@ -158,12 +162,10 @@ function Long() {
       }
 
       var a1 = a.substr(0, i),
-          a2 = a.substr(i + 2, a.length - (i + 2)),
-          fpt = a1.indeaOf('.', 0);
-      if (fpt < 0) {
-        // '.' is not found
-        a2 = parseInt(a2, 10);
-      } else {
+          a2 = parseInt(a.substr(i + 2, a.length - (i + 2)), 10),
+          fpt = a1.indexOf('.', 0);
+      if (fpt >= 0) {
+        // '.' is found
         var np = a1.length - (fpt + 1);
         a1 = a1.substr(0, fpt) + a1.substr(fpt + 1, np);
         a2 -= np;
@@ -188,20 +190,6 @@ function Long() {
     }
     return longNorm(r);
   };
-
-  /**
-   * 1
-   * @constant
-   * @type {Long}
-   */
-  Long.ONE = longNum(1);
-
-  /**
-   * 0
-   * @constant
-   * @type {Long}
-   */
-  Long.ZERO = new Long();
 
   /**
    * Set length.
@@ -246,6 +234,7 @@ function Long() {
 
   /**
    * Converts hex to Long.
+   * @deprecated buggy
    * @param {string} str For example 'ff' or '-123456789abcdef' etc.
    * @returns {Long}
    */
@@ -811,14 +800,16 @@ function Long() {
           nb = bd.length;
       if (nb < 2 && !bd[0]) {
         // zero division
-        if (modulus || na < 2 && !ad[0]) { return NaN; }
-        if (a._s === b._s) { return Infinity; }
-        return -Infinity;
+        throw 'zero division';
+        return new Long();
+        //if (modulus || na < 2 && !ad[0]) { return NaN; }
+        //if (a._s === b._s) { return Infinity; }
+        //return -Infinity;
       }
 
       var albl = na === nb;
       if (na < nb || (albl && ad[na - 1] < bd[nb - 1])) {
-        if (modulus) { return longNum(a); }
+        if (modulus) { return a; }
         return new Long();
       }
 
@@ -1017,7 +1008,9 @@ function Long() {
       if (al < bd.length) { return this._s ? -1 : 1; }
       if (al > bd.length) { return this._s ? 1 : -1; }
       do { --al; } while (al && ad[al] === bd[al]);
-      if (!al && ad[0] === bd[0]) { return this._s - b._s; }
+      if (!al && ad[0] === bd[0]) {
+        return (this._s ? 1 : 0) - (b._s ? 1 : 0);
+      }
       if (ad[al] > bd[al]) { return this._s ? 1 : -1; }
       return this._s ? -1 : 1;
     },
@@ -1083,6 +1076,20 @@ function Long() {
       return z;
     }
   };
+
+  /**
+   * 1
+   * @constant
+   * @type {Long}
+   */
+  Long.ONE = longNum(1);
+
+  /**
+   * 0
+   * @constant
+   * @type {Long}
+   */
+  Long.ZERO = new Long();
 }());
 
 // exports for node

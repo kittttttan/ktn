@@ -18,3 +18,6 @@ Set environment variables below.
 ## JavaScript
 
 [doc](http://kittttttan.web.fc2.com/js/)
+
+## TypeScript
+
