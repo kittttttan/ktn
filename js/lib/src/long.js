@@ -118,7 +118,7 @@ function Long() {
       c = str.charAt(index);
       ++index;
       if (!c) { break; }
-      n = parseInt(c, 10);
+      n = parseInt(c, base);
       for (var i = 0;;) {
         for (; i < bl; ++i) {
           n += zd[i] * base;

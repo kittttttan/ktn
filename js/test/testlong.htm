@@ -26,6 +26,9 @@ test("init", function() {
   equal(Long.num(2147483647).toString(), Long.str("2147483647").toString(), "2147483647");
   equal(Long.num(1234567890).toString(), Long.str("1234567890").toString(), "1234567890");
   equal(Long.longint(12345678900).toString(), Long.str("12345678900").toString(), "12345678900");
+
+  equal(Long.str("1234567", 8).toString(), Long.num(01234567).toString(), "01234567");
+  equal(Long.str("ffff", 16).toString(), Long.num(0xffff).toString(), "0xffff");
 });
 
 test("basic", function() {
