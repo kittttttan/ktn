@@ -20,9 +20,9 @@ void stringWTest()
 {
     setlocale(LC_CTYPE, "");
 
-    Logger logger;
-    String title("sample");
-    LOGGER_INFO(logger, title);
+    LOGGER_INIT;
+    LOGGER("StringTest");
+    LOGGER_INFO("sample");
 
     LoggerW loggerw;
     StringW titlew(L"UTF-8 サンプル");

@@ -2,7 +2,6 @@
 #ifndef LOGFORMAT_H_
 #define LOGFORMAT_H_
 
-#include "string.h"
 #include "loglevel.h"
 #include <ctime>
 #include <sstream>
@@ -13,8 +12,8 @@ namespace ktn {
 class ILogFormat {
 public:
     virtual ~ILogFormat() {}
-    virtual String format(const String& log, LogLevel::Level level,
-            const char* file, int line, const char* func) = 0;
+    virtual std::string format(const char* log, LogLevel::Level level,
+            const char* file, const char* name, int line, const char* func) = 0;
 };
 
 class DefaultLogFormat : public ILogFormat {
@@ -22,14 +21,18 @@ public:
     DefaultLogFormat() {}
     ~DefaultLogFormat() {}
 
-    String format(const String& log, LogLevel::Level level,
-            const char* file, int line, const char* func) {
+    std::string format(const char* log, LogLevel::Level level,
+            const char* file, const char* name, int line, const char* func) {
         std::ostringstream os;
-        os << std::setw(7) << std::setfill('0') << clock() << " "
-           << file << "[" << line << "]"
-           << func << " " << LogLevel::LevelName[level] << " "
+        os << std::setw(7) << std::setfill('0') << clock() << " ";
+        if (line >= 0) {
+           os << file << "[" << line << "]";
+        }
+        os << func << " "
+           << name << " "
+           << LogLevel::LevelName[level] << " "
            << log;
-        return String(os.str());
+        return std::string(os.str());
     }
 };
 

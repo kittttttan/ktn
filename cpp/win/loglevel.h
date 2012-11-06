@@ -5,15 +5,15 @@
 namespace ktn {
 
 namespace LogLevel {
-    enum Level {
+    static enum Level {
         NONE = 0,
-        ERROR,
+        ERR,    // define ERROR in wingdi.h
         WARN,
         INFO,
         ALL,
     };
 
-    const char* LevelName[] = {
+    static const char* LevelName[] = {
         "NONE",
         "ERROR",
         "WARN",
@@ -21,7 +21,7 @@ namespace LogLevel {
         "ALL",
     };
 
-    const wchar_t* LevelNameW[] = {
+    static const wchar_t* LevelNameW[] = {
         L"NONE",
         L"ERROR",
         L"WARN",

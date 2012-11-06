@@ -136,6 +136,7 @@
     <ClCompile Include="httprequest.cc" />
     <ClCompile Include="httpresponse.cc" />
     <ClCompile Include="httpserver.cc" />
+    <ClCompile Include="logger.cc" />
     <ClCompile Include="string.cc" />
     <ClCompile Include="stringw.cc" />
     <ClCompile Include="test.cc" />

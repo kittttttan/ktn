@@ -50,6 +50,8 @@ Date& Date::time(time_t t)
     if (err) {
         throw std::runtime_error("Failed localtime_s");
     }
+
+    return *this;
 }
 
 std::ostream& operator<<(std::ostream& os, const Date& d)

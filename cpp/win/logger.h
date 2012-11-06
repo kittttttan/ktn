@@ -3,25 +3,32 @@
 #define LOGGER_H_
 
 #include "logformat.h"
-#include "dbg.h"
 #include <fstream>
+#include <iostream>
+#include <queue>
+#include <Windows.h>
 
-#define LOGGER
-#ifdef LOGGER
-#define LOGGER_LOG(logger, level, logstr)                             \
-    {                                                                 \
-        if (logger.logLevel() >= level) {                             \
-            logger.log(logstr, level, __FILE__, __LINE__, __func__);  \
-        }                                                             \
-    }
-#define LOGGER_ERROR(logging, logstr)  LOGGER_LOG(logging, LogLevel::ERROR, logstr)
-#define LOGGER_WARN(logging, logstr)   LOGGER_LOG(logging, LogLevel::WARN, logstr)
-#define LOGGER_INFO(logging, logstr)   LOGGER_LOG(logging, LogLevel::INFO, logstr)
+#ifdef LOGGER_OFF
+#define LOGGER_INIT     ((void)0)
+#define LOGGER(name)    ((void)0)
+#define LOGGER_LEVEL(level)         ((void)0)
+#define LOGGER_LOG(level, logstr)   ((void)0)
+#define LOGGER_ERROR(logstr)        ((void)0)
+#define LOGGER_WARN(logstr)         ((void)0)
+#define LOGGER_INFO(logstr)         ((void)0)
 #else
-#define LOGGER_LOG(logging, level, logstr)
-#define LOGGER_ERROR(logging, logstr)
-#define LOGGER_WARN(logging, logstr)
-#define LOGGER_INFO(logging, logstr)
+#define LOGGER_INIT  ktn::Logger*logger=nullptr
+#define LOGGER(name) { logger = ktn::Logger::getInstance(name); }
+#define LOGGER_LEVEL(level) { logger->logLevel(level); }
+#define LOGGER_LOG(level, logstr)                                           \
+    do {                                                                    \
+        if (logger->logLevel() >= level) {                                  \
+            logger->log(logstr, level, __FILE__, __LINE__, __FUNCTION__);   \
+        }                                                                   \
+    } while(0)
+#define LOGGER_ERROR(logstr)  LOGGER_LOG(ktn::LogLevel::ERR, logstr)
+#define LOGGER_WARN(logstr)   LOGGER_LOG(ktn::LogLevel::WARN, logstr)
+#define LOGGER_INFO(logstr)   LOGGER_LOG(ktn::LogLevel::INFO, logstr)
 #endif
 
 namespace ktn {
@@ -29,36 +36,37 @@ namespace ktn {
 class Logger {
 public:
     static DefaultLogFormat defaultLogFormat;
+    static const DWORD maxWaitTime;
 
-    Logger() :
-        logLevel_(LogLevel::INFO),
-        logFormat_(&defaultLogFormat),
-        filename_("log.txt") {}
-    explicit Logger(ILogFormat* format) :
-        logLevel_(LogLevel::INFO),
-        logFormat_(format),
-        filename_("log.txt") {}
-    ~Logger() {}
+    static Logger* getInstance(const char* name);
+    static std::string& name() { return name_; }
+
+    ~Logger();
 
     LogLevel::Level logLevel() const { return logLevel_; }
     void logLevel(LogLevel::Level logLevel) { logLevel_ = logLevel; }
 
-    void log(const String& log, LogLevel::Level level,
-            const char* file, int line, const char* func) {
-        String str = logFormat_->format(log, level, file, line, func);
-        std::cout << str << std::endl;
-
-        std::ofstream ofs(filename_, std::ios::app);
-        ofs << str << std::endl;
-    }
+    void log(const char* log, LogLevel::Level level,
+            const char* file, int line, const char* func);
 
 private:
+    static HANDLE hWriteEvent_;
+    static HANDLE hThread_;
+    static std::string name_;
+
+    static void process();
+
+    Logger();
+    Logger(const Logger& rhs);
+    Logger& operator=(const Logger& rhs);
+
+    void write();
+
     LogLevel::Level logLevel_;
     ILogFormat* logFormat_;
     char* filename_;
+    std::queue<std::string> queue_;
 };
-
-DefaultLogFormat Logger::defaultLogFormat;
 
 } // namespace ktn
 
