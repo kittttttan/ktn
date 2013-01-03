@@ -34,11 +34,11 @@ public:
     LoggerW() :
         logLevel_(LogLevel::INFO),
         logFormat_(&defaultLogFormat),
-        filename_(L"log.txt") {}
+        filename_(L"ktn.log") {}
     explicit LoggerW(ILogFormatW* format) :
         logLevel_(LogLevel::INFO),
         logFormat_(format),
-        filename_(L"log.txt") {}
+        filename_(L"ktn.log") {}
     ~LoggerW() {}
 
     LogLevel::Level logLevel() const { return logLevel_; }

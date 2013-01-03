@@ -16,7 +16,7 @@ if (typeof require !== 'undefined') {
   var Long = require('../lib/long.js').Long;
 }
 if (typeof Long === 'undefined') {
-  throw 'Decimal requires Long';
+  throw new Error('Decimal requires Long');
 }
 
 /**

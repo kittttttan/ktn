@@ -100,10 +100,9 @@ void dateTest()
     std::cout << d << std::endl;
 }
 
-void perform()
+void perform(bool show = false)
 {
     const int cnt = 9999;
-    bool show = false;
     clock_t t1, t2, t0 = clock();
 
     {

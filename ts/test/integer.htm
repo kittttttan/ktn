@@ -1,44 +1,40 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
-<title>Test long.js</title>
+<title>Test Integer.js</title>
 <link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-git.css">
 <script src="http://code.jquery.com/qunit/qunit-git.js"></script>
-<script>
-if (typeof exports === 'undefined') {
-  exports = {};
-}
-</script>
-<script src="../lib/long.js"></script>
-<h1 id="qunit-header">Test long.js</h1>
+<script src="../lib/integer.js"></script>
+<h1 id="qunit-header">Test Integer.js</h1>
 <h2 id="qunit-banner"></h2>
 <div id="qunit-testrunner-toolbar"></div>
 <h2 id="qunit-userAgent"></h2>
 <ol id="qunit-tests"></ol>
 <div id="qunit-fixture">test markup</div>
 <script>
-module("Long");
+var Integer = ktn.Integer;
+module("Integer");
 
 test("init", function() {
-  equal(new Long().toString(), Long.str("0").toString(), "0");
-  equal(Long.ZERO.toString(), Long.str("0").toString(), "0");
-  equal(Long.num(0).toString(), Long.str("0").toString(), "0");
-  equal(true, Long.str("0").eq(Long.ZERO), "0 == 0");
+  equal(new Integer().toString(), Integer.str("0").toString(), "0");
+  equal(Integer.ZERO.toString(), Integer.str("0").toString(), "0");
+  equal(Integer.num(0).toString(), Integer.str("0").toString(), "0");
+  equal(true, Integer.str("0").eq(Integer.ZERO), "0 == 0");
   
-  equal(Long.num(1).toString(), Long.str("1").toString(), "1");
-  equal(Long.ONE.toString(), Long.str("1").toString(), "1");
+  equal(Integer.num(1).toString(), Integer.str("1").toString(), "1");
+  equal(Integer.ONE.toString(), Integer.str("1").toString(), "1");
 
-  equal(Long.num(123456789).toString(), Long.str("123456789").toString(), "123456789");
-  equal(Long.num(2147483647).toString(), Long.str("2147483647").toString(), "2147483647");
-  equal(Long.num(1234567890).toString(), Long.str("1234567890").toString(), "1234567890");
-  equal(Long.longint(12345678900).toString(), Long.str("12345678900").toString(), "12345678900");
+  equal(Integer.num(123456789).toString(), Integer.str("123456789").toString(), "123456789");
+  equal(Integer.num(2147483647).toString(), Integer.str("2147483647").toString(), "2147483647");
+  equal(Integer.num(1234567890).toString(), Integer.str("1234567890").toString(), "1234567890");
+  equal(Integer.integer(12345678900).toString(), Integer.str("12345678900").toString(), "12345678900");
 
-  equal(Long.str("1234567", 8).toString(), Long.num(01234567).toString(), "01234567");
-  equal(Long.str("ffff", 16).toString(), Long.num(0xffff).toString(), "0xffff");
+  equal(Integer.str("1234567", 8).toString(), Integer.num(01234567).toString(), "01234567");
+  equal(Integer.str("ffff", 16).toString(), Integer.num(0xffff).toString(), "0xffff");
 });
 
 test("basic", function() {
-  var a = Long.str("1234567890"),
-      b = Long.num(10).pow(7);
+  var a = Integer.str("1234567890"),
+      b = Integer.num(10).pow(7);
   equal(a.toString(), "1234567890", "1234567890");
   equal(b.toString(), "10000000", "10000000");
   equal(a.add(b).toString(), "1244567890", "1234567890 + 10000000 = 1244567890");
@@ -49,8 +45,8 @@ test("basic", function() {
 });
 
 function fib(a) {
-  var b = Long.num(0);
-  for (var i = 0, c = Long.num(1), d; i < a; ++i) {
+  var b = Integer.num(0);
+  for (var i = 0, c = Integer.num(1), d; i < a; ++i) {
     d = b.clone();
     b = b.add(c);
     c = d;
@@ -68,9 +64,9 @@ test("fib", function(){
 });
 
 function fact(a) {
-  var f = Long.num(1);
+  var f = Integer.num(1);
   for (var i = 2; i < a + 1; ++i) {
-    f = f.mul(Long.num(i));
+    f = f.mul(Integer.num(i));
   }
   return f;
 }

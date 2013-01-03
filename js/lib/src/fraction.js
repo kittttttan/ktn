@@ -16,7 +16,7 @@ if (typeof require !== 'undefined') {
   var Long = require('../lib/long.js').Long;
 }
 if (typeof Long === 'undefined') {
-  throw 'Fraction requires Long';
+  throw new Error('Fraction requires Long');
 }
 
 /**

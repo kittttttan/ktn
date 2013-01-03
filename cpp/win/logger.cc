@@ -19,7 +19,7 @@ Logger* Logger::getInstance(const char* name)
 Logger::Logger() :
     logLevel_(LogLevel::INFO),
     logFormat_(&defaultLogFormat),
-    filename_("log.txt")
+    filename_("ktn.log")
 {
     hWriteEvent_ = ::CreateEventA(NULL, FALSE, TRUE, "LogWriteEvent");
 }

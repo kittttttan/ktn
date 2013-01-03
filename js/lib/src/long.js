@@ -1,14 +1,14 @@
 /**
- * @fileOverview Big Integer in JavaScript.
+ * @file Big Integer in JavaScript.
  * @version 2012-03-25
- * @url https://github.com/kittttttan/ktn
  * @example
  *   var a = Long.str("12345678909876543210");
  *   var b = Long.num(7777777);
  *   var c = a.mul(b);
- *   c.toString() // === '96021937474622850618244170'
+ *   console.log(c.toString()); // === '96021937474622850618244170'
  * @license
  * Based on:
+ * <pre>
  *   BigInt.js - Arbitrary size integer math package for JavaScript
  *   Copyright (C) 2000 Masanao Izumo <iz@onicos.co.jp>
  *   Version: 1.0.1
@@ -23,10 +23,13 @@
  *   but WITHOUT ANY WARRANTY; without even the implied warranty of
  *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *   GNU General Public License for more details.
+ * </pre>
  */
 
 /**
  * Big integer.
+ * @global
+ * @constructor
  * @class Big integer
  * @property {Array.<number>} _d Digits [d0, d1, ..., dn]
  * @property {boolean} _s Sign +, -. false means -.
@@ -59,9 +62,9 @@ function Long() {
 
   // static
   /**
-   * Convert integer to Long.
+   * Converts integer to Long.
    * @param {number} n
-   * @returns {Long}
+   * @return {Long}
    */
   Long.num = function(n) {
     var a = new Long();
@@ -86,10 +89,10 @@ function Long() {
   /**
    * Converts string to Long.
    * @param {string} str For example '-9' or 'FF' etc.
-   * @param {number} base 2, 8, 10 or 16
-   * @returns {Long}
+   * @param {number} [base=10] 2, 8, 10 or 16
+   * @return {Long}
    */
-  Long.str = function(str, /** @default 10 */base) {
+  Long.str = function(str, base) {
     //if (base === 16) { return longByte(str); }
     if (!base) { base = 10; }
 
@@ -139,7 +142,7 @@ function Long() {
   /**
    * Converts anything to Long.
    * @param {Object} a
-   * @returns {Long}
+   * @return {Long}
    */
   Long.longint = function(a) {
     if (typeof a === 'object') {
@@ -180,7 +183,7 @@ function Long() {
   /**
    * Random.
    * @param {number} a Length
-   * @returns {Long}
+   * @return {Long}
    */
   Long.random = function(a) {
     var r = longAlloc(a, true),
@@ -209,7 +212,7 @@ function Long() {
    * @private
    * @param {Long} a
    * @param {number} b Length
-   * @returns {Long}
+   * @return {Long}
    */
   function longFillZero(a, b) {
     var d = a._d;
@@ -220,7 +223,7 @@ function Long() {
   /**
    * Delete following zeros. [2, 0, 1, 0, 0] -> [2, 0, 1]
    * @param {Long} a
-   * @returns {Long}
+   * @return {Long}
    */
   function longNorm(a) {
     var d = a._d,
@@ -236,7 +239,7 @@ function Long() {
    * Converts hex to Long.
    * @deprecated buggy
    * @param {string} str For example 'ff' or '-123456789abcdef' etc.
-   * @returns {Long}
+   * @return {Long}
    */
   function longByte(str) {
     if (!str) { return new Long(); }
@@ -267,7 +270,7 @@ function Long() {
   /**
    * Right shift by 1.
    * @param {Long} a
-   * @returns {Long} a >> 1
+   * @return {Long} a >> 1
    */
   function longHalf(a) {
     var d = a._d,
@@ -282,7 +285,7 @@ function Long() {
   /**
    * Left shift by 1.
    * @param {Long} a
-   * @returns {Long} a << 1
+   * @return {Long} a << 1
    */
   function longDouble(a) {
     var d = a._d,
@@ -300,7 +303,7 @@ function Long() {
   /**
    * Get length of bit
    * @param {Long} a
-   * @returns {number}
+   * @return {number}
    */
   function longBitLength(a) {
     var ad = a._d;
@@ -311,7 +314,7 @@ function Long() {
    * Multiply with Karatsuba Method.
    * @param {Long} x
    * @param {Long} y
-   * @returns {Long} x * y
+   * @return {Long} x * y
    */
   function longK(x, y) {
     var N = longBitLength(x),
@@ -339,11 +342,11 @@ function Long() {
   /**
    * Convert Long to String.
    * @param {Long} a
-   * @param {number} b Base 2 or 16
-   * @returns {string}
+   * @param {number} [b=16] Base 2 or 16
+   * @return {string}
    * @deprecated
    */
-  function longToByte(a, /** @default 16 */b) {
+  function longToByte(a, b) {
     var d = a._d,
         i = d.length - 1,
         s = a._s ? '' : '-',
@@ -368,10 +371,10 @@ function Long() {
 
     /**
      * Convert Long to String.
-     * @param {number} b Base 2, 8, 10 or 16
-     * @returns {string}
+     * @param {number} [b=10] Base 2, 8, 10 or 16
+     * @return {string}
      */
-    toString: function(/** @default 10 */b) {
+    toString: function(b) {
       if (!b) { b = 10; }
       //if (b === 2 || b === 16) { return longToByte(this, b); }
 
@@ -428,7 +431,7 @@ function Long() {
 
     /**
      * Convert Long to number.
-     * @returns {number}
+     * @return {number}
      */
     valueOf: function() {
       var f = 0.0,
@@ -439,14 +442,14 @@ function Long() {
       return f;
     },
 
-    /** @returns {Array.<number>} */
+    /** @return {Array.<number>} */
     getDigits: function() { return this._d; },
-    /** @returns {boolean} */
+    /** @return {boolean} */
     getSign: function() { return this._s; },
 
     /**
      * Copy Long.
-     * @returns {Long}
+     * @return {Long}
      */
     clone: function() {
       var b = new Long();
@@ -458,7 +461,7 @@ function Long() {
     /**
      * Add zeros and shift decimal.
      * @param {number} b Number of zeros.
-     * @returns {Long} this * 10<sup>n</sup>
+     * @return {Long} this * 10<sup>n</sup>
      */
     addzero: function(b) {
       var zeros = '',
@@ -472,7 +475,7 @@ function Long() {
     /**
      * <<
      * @param {number} b
-     * @returns {Long}
+     * @return {Long}
      */
     leftShift: function(b) {
       var a = this.clone(),
@@ -499,7 +502,7 @@ function Long() {
     /**
      * >>
      * @param {number} b
-     * @returns {Long}
+     * @return {Long}
      */
     rightShift: function(b) {
       var a = this.clone(),
@@ -521,16 +524,16 @@ function Long() {
       return longNorm(c);
     },
 
-    /** @returns {boolean} */
+    /** @return {boolean} */
     isOdd: function() { return !!(this._d[0] & 1); },
-    /** @returns {boolean} */
+    /** @return {boolean} */
     isEven: function() { return !(this._d[0] & 1); },
-    /** @returns {boolean} */
+    /** @return {boolean} */
     isNonZero: function() { return (this._d.length > 1 || this._d[0]); },
 
     /**
      * Fast squaring.
-     * @returns {Long} this * this
+     * @return {Long} this * this
      */
     square: function() {
       var a = this.clone(),
@@ -566,7 +569,7 @@ function Long() {
 
     /**
      * Square root.
-     * @returns {Long} <code>&radic;</code>this
+     * @return {Long} <code>&radic;</code>this
      */
     sqrt: function() {
       var b = this.clone(),
@@ -586,7 +589,7 @@ function Long() {
     /**
      * Pow.
      * @param {number} b
-     * @returns {Long|number} this<sup>b</sup>
+     * @return {Long|number} this<sup>b</sup>
      */
     pow: function(b) {
       if (!b) { return longNum(1); }
@@ -603,7 +606,7 @@ function Long() {
     /**
      * Greatest Common Divisor.
      * @param {Long} b
-     * @returns {Long}
+     * @return {Long}
      */
     gcd: function(b) {
       var c, a = this.clone();
@@ -617,7 +620,7 @@ function Long() {
     /**
      * Greatest Common Divisor.
      * @param {Long} b
-     * @returns {Long}
+     * @return {Long}
      */
     gcdBin: function(b) {
       if (this.cmpAbs(b) < 0) { return b._gcd(this); }
@@ -650,7 +653,7 @@ function Long() {
      * Add absolute values of Long.
      * @param {Long} b
      * @param {boolean} sign
-     * @returns {Long} <br>
+     * @return {Long}
      *    |this| + |b| (sign == true)<br>
      *  -(|this| + |b|) (else)
      */
@@ -687,7 +690,7 @@ function Long() {
      * Subtract absolute values of Long.
      * @param {Long} b
      * @param {boolean} sign
-     * @returns {Long} <br>
+     * @return {Long}
      *     ||this| - |b|| (sign == true)<br>
      *    -||this| - |b|| (else)
      */
@@ -726,7 +729,7 @@ function Long() {
     /**
      * Addition.
      * @param {Long} b
-     * @returns {Long} this + b
+     * @return {Long} this + b
      */
     add: function(b) {
       if (this._s !== b._s) {
@@ -741,7 +744,7 @@ function Long() {
     /**
      * Subtraction.
      * @param {Long} b
-     * @returns {Long} this - b
+     * @return {Long} this - b
      */
     sub: function(b) {
       if (this._s === b._s) {
@@ -756,7 +759,7 @@ function Long() {
     /**
      * Multiplication.
      * @param {Long} b
-     * @returns {Long} this * b
+     * @return {Long} this * b
      */
     mul: function(b) {
       // if (this.equal(b)) { return this.square(); }
@@ -788,7 +791,7 @@ function Long() {
      * Division or Mod.
      * @param {Long} b
      * @param {boolean} modulus If true then mod, else div.
-     * @returns {Long} <br>
+     * @return {Long}
      *    this % b (modulus == true)<br>
      *    this / b (else)
      */
@@ -925,7 +928,7 @@ function Long() {
     /**
      * Division.
      * @param {Long} b
-     * @returns {Long} this / b
+     * @return {Long} this / b
      */
     div: function(b) {
       return this.divmod(b, false);
@@ -934,7 +937,7 @@ function Long() {
     /**
      * Modulo.
      * @param {Long} b
-     * @returns {Long} this % b
+     * @return {Long} this % b
      */
     mod: function(b) {
       return this.divmod(b, true);
@@ -942,38 +945,38 @@ function Long() {
 
     /**
      * @param {object} a
-     * @returns {Long}
+     * @return {Long}
      */
     _add_: function(a) { return this.add(longint(a)); },
 
     /**
      * @param {object} a
-     * @returns {Long}
+     * @return {Long}
      */
     _sub_: function(a) { return this.sub(longint(a)); },
 
     /**
      * @param {object} a
-     * @returns {Long}
+     * @return {Long}
      */
     _mul_: function(a) { return this.mul(longint(a)); },
 
     /**
      * @param {object} a
-     * @returns {Long}
+     * @return {Long}
      */
     _div_: function(a) { return this.divmod(longint(a), false); },
 
     /**
      * @param {object} a
-     * @returns {Long}
+     * @return {Long}
      */
     _mod_: function(a) { return this.divmod(longint(a), true); },
 
     /**
      * Compare between two absolute values of Long objects.
      * @param {Long} b
-     * @returns {number} <br>
+     * @return {number}
      *    -1 (|this| < |b|)<br>
      *     0 (|this| = |b|)<br>
      *     1 (|this| > |b|)
@@ -993,7 +996,7 @@ function Long() {
     /**
      * Compare between two Long.
      * @param {Long} b
-     * @returns {number} <br>
+     * @return {number}
      *    -1 (this < b)<br>
      *     0 (this = b)<br>
      *     1 (this > b)
@@ -1017,7 +1020,7 @@ function Long() {
     /**
      * ==
      * @param {Long} b
-     * @returns {boolean}
+     * @return {boolean}
      */
     eq: function(b) {
       if (this === b) { return true; }
@@ -1036,7 +1039,7 @@ function Long() {
     /**
      * ===
      * @param {Long} b
-     * @returns {boolean}
+     * @return {boolean}
      */
     equal: function(b) {
       if (this === b) { return true; }
@@ -1052,12 +1055,12 @@ function Long() {
       return true;
     },
 
-    /** @returns {number} */
+    /** @return {number} */
     _co_: function() { return 1; },
 
     /**
      * Absolute Long.
-     * @returns {Long} |this|
+     * @return {Long} |this|
      */
     abs: function(){
       var z = this.clone();
@@ -1067,7 +1070,7 @@ function Long() {
 
     /**
      * Negate Long.
-     * @returns {Long} -this
+     * @return {Long} -this
      */
     neg: function() {
       var z = this.clone();
@@ -1078,14 +1081,14 @@ function Long() {
 
   /**
    * 1
-   * @constant
+   * @const
    * @type {Long}
    */
   Long.ONE = longNum(1);
 
   /**
    * 0
-   * @constant
+   * @const
    * @type {Long}
    */
   Long.ZERO = new Long();

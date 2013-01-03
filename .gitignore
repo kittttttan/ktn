@@ -11,6 +11,7 @@ ipch/
 *.suo
 *.o
 *.exe
+*.log
 
 js/lib/*.js
 js/test/*.js
