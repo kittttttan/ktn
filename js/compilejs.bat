@@ -9,10 +9,12 @@ set COMPILE=java -jar %COMPILER%
 
 cd /d %~d0%~p0
 
+echo %DATE% %TIME% > js.log
+
 for %%i in (lib/src/*.js) do (
-  %COMPILE% --js lib/src/%%i --js_output_file lib/%%~ni.js
+  %COMPILE% --js lib/src/%%i --js_output_file lib/%%~ni.js 2>> js.log
 )
 
 for %%i in (test/src/*.js) do (
-  %COMPILE% --js test/src/%%i --js_output_file test/%%~ni.js
+  %COMPILE% --js test/src/%%i --js_output_file test/%%~ni.js 2>> js.log
 )

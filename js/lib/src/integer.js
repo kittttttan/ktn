@@ -1,11 +1,11 @@
 /**
  * @file Big Integer in JavaScript.
- * @version 2012-03-25
  * @example
- *   var a = Long.str("12345678909876543210");
- *   var b = Long.num(7777777);
+ *   var a = ktn.Integer.str("12345678909876543210");
+ *   var b = ktn.Integer.num(7777777);
  *   var c = a.mul(b);
  *   console.log(c.toString()); // === '96021937474622850618244170'
+ * @author kittttttan
  * @license
  * Based on:
  * <pre>
@@ -27,21 +27,25 @@
  */
 
 /**
- * Big integer.
- * @global
- * @constructor
- * @class Big integer
- * @property {Array.<number>} _d Digits [d0, d1, ..., dn]
- * @property {boolean} _s Sign +, -. false means -.
+ * @namespace
  */
-function Long() {
-  this._d = [0];
-  this._s = true;
-}
+var ktn = ktn || {};
 
-(function(){
+ktn.Integer = (function() {
   "use strict";
   
+  /**
+   * Integer
+   * @memberof ktn
+   * @constructor
+   * @property {number[]} _d Digits [d0, d1, ..., dn]
+   * @property {boolean} _s Sign +, -. false means -.
+   */
+  function Integer() {
+    this._d = [0];
+    this._s = true;
+  }
+
   /**
    * @private
    * @const
@@ -62,12 +66,13 @@ function Long() {
 
   // static
   /**
-   * Converts integer to Long.
+   * Converts integer to Integer.
+   * @memberof ktn.Integer
    * @param {number} n
-   * @return {Long}
+   * @returns {ktn.Integer}
    */
-  Long.num = function(n) {
-    var a = new Long();
+  Integer.num = function(n) {
+    var a = new Integer();
     if (n < 0) {
       n = -n;
       a._s = false;
@@ -84,16 +89,16 @@ function Long() {
     }
     return a;
   };
-  var longNum = Long.num;
+  var longNum = Integer.num;
 
   /**
-   * Converts string to Long.
+   * Converts string to Integer.
+   * @memberof ktn.Integer
    * @param {string} str For example '-9' or 'FF' etc.
    * @param {number} [base=10] 2, 8, 10 or 16
-   * @return {Long}
+   * @returns {ktn.Integer}
    */
-  Long.str = function(str, base) {
-    //if (base === 16) { return longByte(str); }
+  Integer.str = function(str, base) {
     if (!base) { base = 10; }
 
     var index = 0, sign = true, len;
@@ -105,7 +110,7 @@ function Long() {
     }
     // Ignore following zeros. '00102' is regarded as '102'.
     while (str.charAt(index) === '0') { ++index; }
-    if (!str.charAt(index)) { return new Long(); }
+    if (!str.charAt(index)) { return new Integer(); }
     if (base === 8) {
       len = 3 * (str.length + 1 - index);
     } else {
@@ -135,19 +140,20 @@ function Long() {
         }
       }
     }
-    return longNorm(z);
+    return norm(z);
   };
-  var longStr = Long.str;
+  var longStr = Integer.str;
 
   /**
-   * Converts anything to Long.
+   * Converts anything to Integer.
+   * @memberof ktn.Integer
    * @param {Object} a
-   * @return {Long}
+   * @returns {ktn.Integer}
    */
-  Long.longint = function(a) {
+  Integer.any = function(a) {
     if (typeof a === 'object') {
-      if (a instanceof Long) { return a.clone(); }
-      return new Long();
+      if (a instanceof Integer) { return a.clone(); }
+      return new Integer();
     }
     if (typeof a === 'string') {
       return longStr(a);
@@ -176,22 +182,23 @@ function Long() {
       for (; a2 > 0; --a2) { a1 += '0'; }
       return longStr(a1);
     }
-    return new Long();
+    return new Integer();
   };
-  var longint = Long.longint;
+  var any = Integer.any;
 
   /**
    * Random.
+   * @memberof ktn.Integer
    * @param {number} a Length
-   * @return {Long}
+   * @returns {ktn.Integer}
    */
-  Long.random = function(a) {
+  Integer.random = function(a) {
     var r = longAlloc(a, true),
         rd = r._d;
     for (var i = 0; i < a; ++i) {
       rd[i] = Math.random() * BASE | 0;
     }
-    return longNorm(r);
+    return norm(r);
   };
 
   /**
@@ -201,7 +208,7 @@ function Long() {
    * @param {boolean} sign
    */
   function longAlloc(length, sign) {
-    var a = new Long();
+    var a = new Integer();
     a._s = sign ? true : false;
     a._d.length = length;
     return a;
@@ -210,9 +217,9 @@ function Long() {
   /**
    * Assign zero to initialize.
    * @private
-   * @param {Long} a
+   * @param {ktn.Integer} a
    * @param {number} b Length
-   * @return {Long}
+   * @returns {ktn.Integer}
    */
   function longFillZero(a, b) {
     var d = a._d;
@@ -222,10 +229,10 @@ function Long() {
 
   /**
    * Delete following zeros. [2, 0, 1, 0, 0] -> [2, 0, 1]
-   * @param {Long} a
-   * @return {Long}
+   * @param {ktn.Integer} a
+   * @returns {ktn.Integer}
    */
-  function longNorm(a) {
+  function norm(a) {
     var d = a._d,
         l = d.length;
     do { --l; } while (l && !d[l]);
@@ -236,41 +243,9 @@ function Long() {
   }
 
   /**
-   * Converts hex to Long.
-   * @deprecated buggy
-   * @param {string} str For example 'ff' or '-123456789abcdef' etc.
-   * @return {Long}
-   */
-  function longByte(str) {
-    if (!str) { return new Long(); }
-
-    var s = true;
-    if (str.charAt(0) === '-') {
-      if (str.length < 2) { return new Long(); }
-      s = false;
-      str = str.substring(1);
-    }
-
-    var d = [], t, n;
-    for (;;) {
-      t = str.slice(-4);
-      if (!t) { break; }
-      n = parseInt(t, 16);
-      if (isNaN(n)) { break; }
-      d.push(n);
-      str = str.slice(0, -4);
-    }
-
-    var z = new Long();
-    z._s = s;
-    z._d = d;
-    return longNorm(z);
-  }
-
-  /**
    * Right shift by 1.
-   * @param {Long} a
-   * @return {Long} a >> 1
+   * @param {ktn.Integer} a
+   * @returns {ktn.Integer} a >> 1
    */
   function longHalf(a) {
     var d = a._d,
@@ -279,13 +254,13 @@ function Long() {
       d[i] = (((d[i + 1] & 1) << SHIFT) + d[i]) >>> 1;
     }
     d[l] >>>= 1;
-    return longNorm(a);
+    return norm(a);
   }
 
   /**
    * Left shift by 1.
-   * @param {Long} a
-   * @return {Long} a << 1
+   * @param {ktn.Integer} a
+   * @returns {ktn.Integer} a << 1
    */
   function longDouble(a) {
     var d = a._d,
@@ -297,13 +272,13 @@ function Long() {
       c = t >>> SHIFT;
     }
     if (c) { d[l] = c; }
-    return longNorm(a);
+    return norm(a);
   }
 
   /**
    * Get length of bit
-   * @param {Long} a
-   * @return {number}
+   * @param {ktn.Integer} a
+   * @returns {number}
    */
   function longBitLength(a) {
     var ad = a._d;
@@ -312,9 +287,9 @@ function Long() {
 
   /**
    * Multiply with Karatsuba Method.
-   * @param {Long} x
-   * @param {Long} y
-   * @return {Long} x * y
+   * @param {ktn.Integer} x
+   * @param {ktn.Integer} y
+   * @returns {ktn.Integer} x * y
    */
   function longK(x, y) {
     var N = longBitLength(x),
@@ -339,44 +314,17 @@ function Long() {
     return ac.add(abcd.sub(ac).sub(bd).leftShift(N)).add(bd.leftShift(N << 1));
   }
 
-  /**
-   * Convert Long to String.
-   * @param {Long} a
-   * @param {number} [b=16] Base 2 or 16
-   * @return {string}
-   * @deprecated
-   */
-  function longToByte(a, b) {
-    var d = a._d,
-        i = d.length - 1,
-        s = a._s ? '' : '-',
-        z, l = 0;
-    if (b === 2) {
-      z = '0000000000000000';
-      l = -16;
-    } else {
-      b = 16;
-      z = '0000';
-      l = -4;
-    }
-    s += d[i].toString(b);
-    while (i--) {
-      s += (z + d[i].toString(b)).slice(l);
-    }
-    return s;
-  }
-
-  Long.prototype = {
-    constructor: Long,
+  Integer.prototype = {
+    constructor: Integer,
 
     /**
-     * Convert Long to String.
+     * Convert Integer to String.
+     * @memberof ktn.Integer#
      * @param {number} [b=10] Base 2, 8, 10 or 16
-     * @return {string}
+     * @returns {string}
      */
     toString: function(b) {
       if (!b) { b = 10; }
-      //if (b === 2 || b === 16) { return longToByte(this, b); }
 
       var i = this._d.length;
       if (i < 2 && !this._d[0]) { return '0'; }
@@ -430,8 +378,9 @@ function Long() {
     },
 
     /**
-     * Convert Long to number.
-     * @return {number}
+     * Convert Integer to number.
+     * @memberof ktn.Integer#
+     * @returns {number}
      */
     valueOf: function() {
       var f = 0.0,
@@ -442,17 +391,25 @@ function Long() {
       return f;
     },
 
-    /** @return {Array.<number>} */
+    /**
+     * @memberof ktn.Integer#
+     * @returns {number[]}
+     */
     getDigits: function() { return this._d; },
-    /** @return {boolean} */
+    
+    /**
+     * @memberof ktn.Integer#
+     * @returns {boolean}
+     */
     getSign: function() { return this._s; },
 
     /**
-     * Copy Long.
-     * @return {Long}
+     * Copy Integer.
+     * @memberof ktn.Integer#
+     * @returns {ktn.Integer}
      */
     clone: function() {
-      var b = new Long();
+      var b = new Integer();
       b._s = this._s;
       b._d = Array.prototype.concat.call(this._d);
       return b;
@@ -460,8 +417,9 @@ function Long() {
 
     /**
      * Add zeros and shift decimal.
+     * @memberof ktn.Integer#
      * @param {number} b Number of zeros.
-     * @return {Long} this * 10<sup>n</sup>
+     * @returns {ktn.Integer} this * 10<sup>n</sup>
      */
     addzero: function(b) {
       var zeros = '',
@@ -474,8 +432,9 @@ function Long() {
 
     /**
      * <<
+     * @memberof ktn.Integer#
      * @param {number} b
-     * @return {Long}
+     * @returns {ktn.Integer}
      */
     leftShift: function(b) {
       var a = this.clone(),
@@ -496,13 +455,14 @@ function Long() {
         carry = t >> SHIFT;
       }
       cd[i + d] = carry;
-      return longNorm(c);
+      return norm(c);
     },
 
     /**
      * >>
+     * @memberof ktn.Integer#
      * @param {number} b
-     * @return {Long}
+     * @returns {ktn.Integer}
      */
     rightShift: function(b) {
       var a = this.clone(),
@@ -511,7 +471,7 @@ function Long() {
           d = b >> 4,
           bb = b & 0xf,
           mask = (1 << bb) - 1;
-      if (l <= d) { return new Long(); }
+      if (l <= d) { return new Integer(); }
 
       var cl = l - d,
           c = longAlloc(cl, a._s),
@@ -521,19 +481,31 @@ function Long() {
         cd[i] = ((ad[i + d + 1] & mask) << (SHIFT - bb)) + (ad[i + d] >> bb);
       }
       cd[i] = ad[i + d] >> bb;
-      return longNorm(c);
+      return norm(c);
     },
 
-    /** @return {boolean} */
+    /**
+     * @memberof ktn.Integer#
+     * @returns {boolean}
+     */
     isOdd: function() { return !!(this._d[0] & 1); },
-    /** @return {boolean} */
+    
+    /**
+     * @memberof ktn.Integer#
+     * @returns {boolean}
+     */
     isEven: function() { return !(this._d[0] & 1); },
-    /** @return {boolean} */
+    
+    /**
+     * @memberof ktn.Integer#
+     * @returns {boolean}
+     */
     isNonZero: function() { return (this._d.length > 1 || this._d[0]); },
 
     /**
      * Fast squaring.
-     * @return {Long} this * this
+     * @memberof ktn.Integer#
+     * @returns {ktn.Integer} this * this
      */
     square: function() {
       var a = this.clone(),
@@ -564,12 +536,13 @@ function Long() {
         w[i + t] = u;
       }
 
-      return longNorm(s);
+      return norm(s);
     },
 
     /**
      * Square root.
-     * @return {Long} <code>&radic;</code>this
+     * @memberof ktn.Integer#
+     * @returns {ktn.Integer} <code>&radic;</code>this
      */
     sqrt: function() {
       var b = this.clone(),
@@ -588,8 +561,9 @@ function Long() {
 
     /**
      * Pow.
+     * @memberof ktn.Integer#
      * @param {number} b
-     * @return {Long|number} this<sup>b</sup>
+     * @returns {ktn.Integer|number} this<sup>b</sup>
      */
     pow: function(b) {
       if (!b) { return longNum(1); }
@@ -605,8 +579,9 @@ function Long() {
 
     /**
      * Greatest Common Divisor.
-     * @param {Long} b
-     * @return {Long}
+     * @memberof ktn.Integer#
+     * @param {ktn.Integer} b
+     * @returns {ktn.Integer}
      */
     gcd: function(b) {
       var c;
@@ -620,8 +595,9 @@ function Long() {
 
     /**
      * Greatest Common Divisor.
-     * @param {Long} b
-     * @return {Long}
+     * @memberof ktn.Integer#
+     * @param {ktn.Integer} b
+     * @returns {ktn.Integer}
      */
     gcdBin: function(b) {
       if (this.cmpAbs(b) < 0) { return b._gcd(this); }
@@ -655,10 +631,11 @@ function Long() {
     },
 
     /**
-     * Add absolute values of Long.
-     * @param {Long} b
+     * Add absolute values of Integer.
+     * @memberof ktn.Integer#
+     * @param {ktn.Integer} b
      * @param {boolean} sign
-     * @return {Long}
+     * @returns {ktn.Integer}
      *    |this| + |b| (sign == true)<br>
      *  -(|this| + |b|) (else)
      */
@@ -688,14 +665,15 @@ function Long() {
         zd[i] = ad[i];
       }
       zd[i] = num & MASK;
-      return longNorm(z);
+      return norm(z);
     },
 
     /**
-     * Subtract absolute values of Long.
-     * @param {Long} b
+     * Subtract absolute values of Integer.
+     * @memberof ktn.Integer#
+     * @param {ktn.Integer} b
      * @param {boolean} sign
-     * @return {Long}
+     * @returns {ktn.Integer}
      *     ||this| - |b|| (sign == true)<br>
      *    -||this| - |b|| (else)
      */
@@ -728,13 +706,14 @@ function Long() {
           c = 0;
         }
       }
-      return longNorm(z);
+      return norm(z);
     },
 
     /**
      * Addition.
-     * @param {Long} b
-     * @return {Long} this + b
+     * @memberof ktn.Integer#
+     * @param {ktn.Integer} b
+     * @returns {ktn.Integer} this + b
      */
     add: function(b) {
       if (this._s !== b._s) {
@@ -748,8 +727,9 @@ function Long() {
 
     /**
      * Subtraction.
-     * @param {Long} b
-     * @return {Long} this - b
+     * @memberof ktn.Integer#
+     * @param {ktn.Integer} b
+     * @returns {ktn.Integer} this - b
      */
     sub: function(b) {
       if (this._s === b._s) {
@@ -763,8 +743,9 @@ function Long() {
 
     /**
      * Multiplication.
-     * @param {Long} b
-     * @return {Long} this * b
+     * @memberof ktn.Integer#
+     * @param {ktn.Integer} b
+     * @returns {ktn.Integer} this * b
      */
     mul: function(b) {
       // if (this.equal(b)) { return this.square(); }
@@ -788,15 +769,16 @@ function Long() {
         }
         if (n) { zd[i + j] = n; }
       }
-      return longNorm(z);
+      return norm(z);
     },
 
     
     /**
      * Division or Mod.
-     * @param {Long} b
+     * @memberof ktn.Integer#
+     * @param {ktn.Integer} b
      * @param {boolean} modulus If true then mod, else div.
-     * @return {Long}
+     * @returns {ktn.Integer}
      *    this % b (modulus == true)<br>
      *    this / b (else)
      */
@@ -817,7 +799,7 @@ function Long() {
       var albl = na === nb;
       if (na < nb || (albl && ad[na - 1] < bd[nb - 1])) {
         if (modulus) { return a; }
-        return new Long();
+        return new Integer();
       }
 
       var dd = 0, z, zd, t = 0, i = 0;
@@ -836,7 +818,7 @@ function Long() {
           return longNum(t);
         }
         z._s = a._s === b._s;
-        return longNorm(z);
+        return norm(z);
       }
 
       z = longAlloc(albl ? na + 2 : na + 1, a._s === b._s);
@@ -921,19 +903,20 @@ function Long() {
         }
         zd.length = nb;
         div._s = a._s;
-        return longNorm(div);
+        return norm(div);
       }
 
       j = (albl ? na + 2 : na + 1) - nb;
       for (i = 0; i < j; ++i) { zd[i] = zd[i + nb]; }
       zd.length = j;
-      return longNorm(div);
+      return norm(div);
     },
 
     /**
      * Division.
-     * @param {Long} b
-     * @return {Long} this / b
+     * @memberof ktn.Integer#
+     * @param {ktn.Integer} b
+     * @returns {ktn.Integer} this / b
      */
     div: function(b) {
       return this.divmod(b, false);
@@ -941,8 +924,9 @@ function Long() {
 
     /**
      * Modulo.
-     * @param {Long} b
-     * @return {Long} this % b
+     * @memberof ktn.Integer#
+     * @param {ktn.Integer} b
+     * @returns {ktn.Integer} this % b
      */
     mod: function(b) {
       return this.divmod(b, true);
@@ -950,38 +934,39 @@ function Long() {
 
     /**
      * @param {object} a
-     * @return {Long}
+     * @returns {ktn.Integer}
      */
-    _add_: function(a) { return this.add(longint(a)); },
+    _add_: function(a) { return this.add(any(a)); },
 
     /**
      * @param {object} a
-     * @return {Long}
+     * @returns {ktn.Integer}
      */
-    _sub_: function(a) { return this.sub(longint(a)); },
+    _sub_: function(a) { return this.sub(any(a)); },
 
     /**
      * @param {object} a
-     * @return {Long}
+     * @returns {ktn.Integer}
      */
-    _mul_: function(a) { return this.mul(longint(a)); },
+    _mul_: function(a) { return this.mul(any(a)); },
 
     /**
      * @param {object} a
-     * @return {Long}
+     * @returns {ktn.Integer}
      */
-    _div_: function(a) { return this.divmod(longint(a), false); },
+    _div_: function(a) { return this.divmod(any(a), false); },
 
     /**
      * @param {object} a
-     * @return {Long}
+     * @returns {ktn.Integer}
      */
-    _mod_: function(a) { return this.divmod(longint(a), true); },
+    _mod_: function(a) { return this.divmod(any(a), true); },
 
     /**
-     * Compare between two absolute values of Long objects.
-     * @param {Long} b
-     * @return {number}
+     * Compare between two absolute values of Integer objects.
+     * @memberof ktn.Integer#
+     * @param {ktn.Integer} b
+     * @returns {number}
      *    -1 (|this| < |b|)<br>
      *     0 (|this| = |b|)<br>
      *     1 (|this| > |b|)
@@ -999,9 +984,10 @@ function Long() {
     },
 
     /**
-     * Compare between two Long.
-     * @param {Long} b
-     * @return {number}
+     * Compare between two Integer.
+     * @memberof ktn.Integer#
+     * @param {ktn.Integer} b
+     * @returns {number}
      *    -1 (this < b)<br>
      *     0 (this = b)<br>
      *     1 (this > b)
@@ -1024,12 +1010,13 @@ function Long() {
 
     /**
      * ==
-     * @param {Long} b
-     * @return {boolean}
+     * @memberof ktn.Integer#
+     * @param {ktn.Integer} b
+     * @returns {boolean}
      */
     eq: function(b) {
       if (this === b) { return true; }
-      b = longint(b);
+      b = any(b);
       if (this._s !== b._s) { return false; }
       var ad = this._d,
           bd = b._d,
@@ -1043,12 +1030,13 @@ function Long() {
 
     /**
      * ===
-     * @param {Long} b
-     * @return {boolean}
+     * @memberof ktn.Integer#
+     * @param {ktn.Integer} b
+     * @returns {boolean}
      */
     equal: function(b) {
       if (this === b) { return true; }
-      if (!(b instanceof Long)) { return false; }
+      if (!(b instanceof Integer)) { return false; }
       if (this._s !== b._s) { return false; }
       var ad = this._d,
           bd = b._d,
@@ -1060,12 +1048,13 @@ function Long() {
       return true;
     },
 
-    /** @return {number} */
+    /** @returns {number} */
     _co_: function() { return 1; },
 
     /**
-     * Absolute Long.
-     * @return {Long} |this|
+     * Absolute Integer.
+     * @memberof ktn.Integer#
+     * @returns {ktn.Integer} |this|
      */
     abs: function(){
       var z = this.clone();
@@ -1074,8 +1063,9 @@ function Long() {
     },
 
     /**
-     * Negate Long.
-     * @return {Long} -this
+     * Negate Integer.
+     * @memberof ktn.Integer#
+     * @returns {ktn.Integer} -this
      */
     neg: function() {
       var z = this.clone();
@@ -1086,20 +1076,22 @@ function Long() {
 
   /**
    * 1
-   * @const
-   * @type {Long}
+   * @memberof ktn.Integer
+   * @returns {ktn.Integer} 1
    */
-  Long.ONE = longNum(1);
+  Integer.one = function() { return longNum(1); };
 
   /**
    * 0
-   * @const
-   * @type {Long}
+   * @memberof ktn.Integer
+   * @returns {ktn.Integer} 0
    */
-  Long.ZERO = new Long();
+  Integer.zero = function(){ return new Integer(); };
+
+  return Integer;
 }());
 
 // exports for node
 if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-  module.exports.Long = Long;
+  module.exports.Integer = ktn.Integer;
 }

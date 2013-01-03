@@ -1,31 +1,34 @@
+/**
+ * @file Samples for Decimal
+ */
 (function(G) {
 "use strict";
 var print, _T, _S = '',
-    frac, dec;
+    Rational, Decimal;
 if (typeof window !== 'undefined') {
   // browser
   print = function(a) { _S += a + '\n'; };
   _T = G.document.getElementById('log');
-  frac = Fraction;
-  dec = Decimal;
+  Rational = G.ktn.Rational;
+  Decimal = G.ktn.Decimal;
 } else if (typeof load !== 'undefined') {
   // V8
   print = G.print;
-  load('../lib/long.js');
-  load('../lib/fraction.js');
+  load('../lib/integer.js');
+  load('../lib/rational.js');
   load('../lib/decimal.js');
-  frac = Fraction;
-  dec = Decimal;
+  Rational = G.ktn.Rational;
+  Decimal = G.ktn.Decimal;
 } else if (typeof require !== 'undefined') {
   // node
   print = console.log;
-  frac = require('../lib/fraction.js').Fraction;
-  dec = require('../lib/decimal.js').Decimal;
+  Rational = require('../lib/rational.js').Rational;
+  Decimal = require('../lib/decimal.js').Decimal;
 }
 
 function basic() {
-  var a = dec.dec(1, 2);
-  var b = dec.str('0.0777');
+  var a = Decimal.dec(1, 2);
+  var b = Decimal.str('0.0777');
   return ['a = ',a, '\nb = ',b,
           '\na + b = ',a.add(b), '\na - b = ',a.sub(b),
           '\na * b = ',a.mul(b), '\na / b = ',a.div(b)
@@ -40,9 +43,11 @@ function basic() {
  */
 function exp(a) {
   a = a || 10;
-  var i = 2, e = frac.num(2), b = frac.num(1);
+  var i = 2;
+  var e = Rational.num(2);
+  var b = Rational.num(1);
   for (; i < a; i++) {
-       b = b.mul(frac.num(1, i, true));
+       b = b.mul(Rational.num(1, i, true));
        e = e.add(b);
   }
   return e;
@@ -55,7 +60,7 @@ print(basic());
 
 var e = exp(20);
 print('e ~= ' + e.toString());
-print('  ~= ' + dec.frac(e, 30).toString());
+print('  ~= ' + Decimal.rat(e, 30).toString());
 
 print('\nTime: '+ (Date.now() - d) + 'ms');
 

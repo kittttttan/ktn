@@ -1,15 +1,15 @@
 {
   "name": "ktn",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "JavaScript Libraries for Mathematics.",
-  "keywords": ["math", "big integer", "fraction", "decimal"],
+  "keywords": ["math", "big integer", "rational", "decimal"],
   "engines": ["v8", "node", "rhino"],
-  "main": "./lib/long.js",
+  "main": "./lib/integer.js",
   "directories" : {
     "lib" : "./lib"
   },
   "scripts": {
-    "test": "node ./test/long.js"
+    "test": "node ./test/integer.js"
   },
   "homepage": "https://github.com/kittttttan/ktn",
   "repositories": [

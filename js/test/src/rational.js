@@ -1,27 +1,30 @@
+/**
+ * @file Samples for Rational
+ */
 (function(G) {
 "use strict";
 var print, _T, _S = '',
-    frac;
+    Rational;
 if (typeof window !== 'undefined') {
   // browser
   print = function(a) { _S += a + '\n'; };
   _T = G.document.getElementById('log');
-  frac = Fraction;
+  Rational = G.ktn.Rational;
 } else if (typeof load !== 'undefined') {
   // V8
   print = G.print;
-  load('../lib/long.js');
-  load('../lib/fraction.js');
-  frac = Fraction;
+  load('../lib/integer.js');
+  load('../lib/rational.js');
+  Rational = G.ktn.Rational;
 } else if (typeof require !== 'undefined') {
   // node
   print = console.log;
-  frac = require('../lib/fraction.js').Fraction;
+  Rational = require('../lib/rational.js').Rational;
 }
 
 function basic() {
-  var a = frac.num(1024, 78);
-  var b = frac.str('-123/777');
+  var a = Rational.num(1024, 78);
+  var b = Rational.str('-123/777');
   return ['a = ',a, '\nb = ',b,
          '\na + b = ',a.add(b), '\na - b = ',a.sub(b),
          '\na * b = ',a.mul(b), '\na / b = ',a.div(b)
@@ -36,9 +39,9 @@ function basic() {
  */
 function exp(a) {
   a = a || 10;
-  var i = 2, e = frac.num(2), b = frac.num(1);
+  var i = 2, e = Rational.num(2), b = Rational.num(1);
   for (; i < a; i++) {
-       b = b.mul(frac.num(1, i, true));
+       b = b.mul(Rational.num(1, i, true));
        e = e.add(b);
   }
   return e;
