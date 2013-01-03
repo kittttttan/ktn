@@ -1,4 +1,6 @@
 module ktn {
+  'use strict';
+
   export class Integer {
     private static SHIFT: number = 15;
     private static BASE: number = 1 << Integer.SHIFT;
@@ -11,17 +13,37 @@ module ktn {
       this._d = [0];
       this._s = true;
     }
-      
-    public
-    //get
-    digits(): number[] {
+    
+    public digits(): number[] {
+      return this._d;
+    }
+    public sign(): bool;
+    public sign(s: bool): void;
+    public sign(s?: bool) {
+      if (!arguments.length) { return this._s; }
+      this._s = s;
+    }
+    // for ES5
+    /*
+    public get digits(): number[] {
       return this._d;
     }
     
-    public
-    //get
-    sign(): bool {
+    public get sign(): bool {
       return this._s;
+    }
+    
+    public set sign(s: bool): void {
+      this._s = s;
+    }
+    */
+    
+    public static zero(): Integer {
+      return new Integer();
+    }
+    
+    public static one(): Integer {
+      return Integer.num(1);
     }
     
     public static num(n: number): Integer {
@@ -45,8 +67,6 @@ module ktn {
     }
     
     public static str(str: string, base?: number = 10): Integer {
-      //if (base === 16) { return IntegerByte(str); }
-
       var index: number = 0,
           sign: bool = true,
           len: number;
@@ -91,7 +111,7 @@ module ktn {
       return norm(z);
     }
     
-    public static integer(a: any): Integer {
+    public static any(a: any): Integer {
       if (typeof a === 'object') {
         if (a instanceof Integer) { return a.clone(); }
         return new Integer();
@@ -134,10 +154,6 @@ module ktn {
       }
       return norm(r);
     }
-
-    
-    public static ZERO: Integer = new Integer();
-    public static ONE: Integer = Integer.num(1);
     
     private static alloc(length: number, sign: bool): Integer {
       var a: Integer = new Integer();
@@ -432,24 +448,27 @@ module ktn {
       if (this.cmpAbs(b) < 0) { return b.gcd(this); }
 
       var g: Integer = Integer.num(1),
-          a: Integer = this.clone();
+          a: Integer = this.abs();
+      b = b.abs();
       while (!(a._d[0] & 1) && !(b._d[0] & 1)) {
-        a = Integer.half(a);
-        b = Integer.half(b);
-        g = Integer.dbl(g);
+        Integer.half(a);
+        Integer.half(b);
+        Integer.dbl(g);
       }
       
       while (a.isNonZero()) {
         while (!(a._d[0] & 1)) {
-          a = Integer.half(a);
+          Integer.half(a);
         }
         while (!(b._d[0] & 1)) {
-          b = Integer.half(b);
+          Integer.half(b);
         }
         if (a.cmpAbs(b) < 0) {
-          b = Integer.half(b.sub(a));
+          b = b.sub(a);
+          Integer.half(b);
         } else {
-          a = Integer.half(a.sub(b));
+          a = a.sub(b);
+          Integer.half(a);
         }
       }
       
@@ -570,8 +589,7 @@ module ktn {
           na: number = ad.length,
           nb: number = bd.length;
       if (nb < 2 && !bd[0]) {
-        // zero division
-        throw 'zero division';
+        throw new Error('zero division');
         //if (modulus || na < 2 && !ad[0]) { return NaN; }
         //if (a._s === b._s) { return Infinity; }
         //return -Infinity;
@@ -745,7 +763,7 @@ module ktn {
     public eq(b: Integer): bool {
       if (this === b) { return true; }
       
-      b = Integer.integer(b);
+      b = Integer.any(b);
       if (this._s !== b._s) { return false; }
       
       var ad: number[] = this._d,

@@ -138,7 +138,7 @@ function Fraction(n, d, f) {
      * @returns {number}
      */
     valueOf: function() {
-      return this._n.valueOf() / this._d.valueOf();
+      return 1.0 * this._n.valueOf() / this._d.valueOf();
     },
 
     /**

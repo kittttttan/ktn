@@ -609,7 +609,8 @@ function Long() {
      * @return {Long}
      */
     gcd: function(b) {
-      var c, a = this.clone();
+      var c;
+      var a = this.abs();
       while ((c = a.divmod(b, true)).isNonZero()) {
         a = b;
         b = c;
@@ -625,24 +626,28 @@ function Long() {
     gcdBin: function(b) {
       if (this.cmpAbs(b) < 0) { return b._gcd(this); }
 
-      var g = longNum(1), a = this.clone();
+      var g = longNum(1);
+      var a = this.abs();
+      b = b.abs();
       while (!(a._d[0] & 1) && !(b._d[0] & 1)) {
-        a = longHalf(a);
-        b = longHalf(b);
-        g = longDouble(g);
+        longHalf(a);
+        longHalf(b);
+        longDouble(g);
       }
       
       while (a.isNonZero()) {
         while (!(a._d[0] & 1)) {
-          a = longHalf(a);
+          longHalf(a);
         }
         while (!(b._d[0] & 1)) {
-          b = longHalf(b);
+          longHalf(b);
         }
         if (a.cmpAbs(b) < 0) {
-          b = longHalf(b.sub(a));
+          b = b.sub(a);
+          longHalf(b);
         } else {
-          a = longHalf(a.sub(b));
+          a = a.sub(b);
+          longHalf(a);
         }
       }
       

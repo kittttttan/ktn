@@ -5,14 +5,14 @@ console.log('  *** overview ***');
 console.log(Integer);
 
 console.log('\n  *** constant ***');
-console.log('ZERO = '+ Integer.ZERO.toString());
-console.log('ONE = '+ Integer.ONE.toString());
+console.log('zero = '+ Integer.zero().toString());
+console.log('one = '+ Integer.one().toString());
 
 console.log('\n  *** init ***');
-var a = Integer.integer(100000000000000000000000);
+var a = Integer.any(100000000000000000000000);
 console.log(a.toString());
 
-a = Integer.integer(100000020000000000000000);
+a = Integer.any(100000020000000000000000);
 console.log(a.toString());
 
 console.log('\n  *** basic operations ***');

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<title>Test raional.js</title>
+<link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-git.css">
+<script src="http://code.jquery.com/qunit/qunit-git.js"></script>
+<script src="../lib/integer.js"></script>
+<script src="../lib/rational.js"></script>
+<h1 id="qunit-header">Test Integer.js</h1>
+<h2 id="qunit-banner"></h2>
+<div id="qunit-testrunner-toolbar"></div>
+<h2 id="qunit-userAgent"></h2>
+<ol id="qunit-tests"></ol>
+<div id="qunit-fixture">test markup</div>
+<script>
+var Integer = ktn.Integer;
+var Rational = ktn.Rational;
+module('Rational');
+
+test('init', function() {
+  var r = Rational.zero();
+  equal(r.numer(), '0', 'numerator 0');
+  equal(r.denom(), '1', 'denominator 1');
+
+  r = Rational.num(4, -6);
+  equal(r.toString(), '(-2/3)', '(4/-6) -> (-2/3)');
+
+  r = Rational.str('4000000000/6000000000');
+  equal(r.toString(), '(2/3)', '(4000000000/6000000000) -> (2/3)');
+});
+
+</script>
