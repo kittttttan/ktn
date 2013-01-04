@@ -10,12 +10,6 @@ if (typeof window !== 'undefined') {
   print = function(a) { _S += a + '\n'; };
   _T = G.document.getElementById('log');
   Rational = G.ktn.Rational;
-} else if (typeof load !== 'undefined') {
-  // V8
-  print = G.print;
-  load('../lib/integer.js');
-  load('../lib/rational.js');
-  Rational = G.ktn.Rational;
 } else if (typeof require !== 'undefined') {
   // node
   print = console.log;

@@ -3,9 +3,9 @@
 cd /d %~d0%~p0
 
 for %%i in (lib/*.ts) do (
-  tsc lib/%%i
+  tsc lib/%%i -c
 )
 
 for %%i in (test/*.ts) do (
-  tsc test/%%i
+  tsc test/%%i -c
 )

@@ -11,14 +11,6 @@ if (typeof window !== 'undefined') {
   _T = G.document.getElementById('log');
   Rational = G.ktn.Rational;
   Decimal = G.ktn.Decimal;
-} else if (typeof load !== 'undefined') {
-  // V8
-  print = G.print;
-  load('../lib/integer.js');
-  load('../lib/rational.js');
-  load('../lib/decimal.js');
-  Rational = G.ktn.Rational;
-  Decimal = G.ktn.Decimal;
 } else if (typeof require !== 'undefined') {
   // node
   print = console.log;

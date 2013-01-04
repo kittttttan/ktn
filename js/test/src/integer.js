@@ -12,11 +12,6 @@ if (typeof window !== 'undefined') {
   print = function(a) { _S += a + '\n'; };
   _T = G.document.getElementById('log');
   Integer = G.ktn.Integer;
-} else if (typeof load !== 'undefined') {
-  // V8
-  print = G.print;
-  load('../lib/integer.js');
-  Integer = G.ktn.Integer;
 } else if (typeof require !== 'undefined') {
   // node
   print = console.log;

@@ -13,6 +13,7 @@ ipch/
 *.exe
 *.log
 
+js/doc/
 js/lib/*.js
 js/test/*.js
 ts/*/*.js

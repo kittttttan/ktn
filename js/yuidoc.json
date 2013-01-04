@@ -1,0 +1,12 @@
+{
+  "name": "ktn",
+  "description": "JavaScript Libraries for Mathematics.",
+  "version": "0.0.2",
+  "url": "http://kittttttan.web.fc2.com/",
+  "options": {
+    "paths": [
+      "./lib/src"
+    ],
+    "outdir": "./doc"
+  }
+}

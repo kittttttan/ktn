@@ -1,5 +1,5 @@
 /**
- * @file Decimal in JavaScript.
+ * @fileOverview Decimal in JavaScript.
  * @example
  *    var a = ktn.Decimal.num(7, -3);
  *    var b = ktn.Decimal.str('100.1');
@@ -9,13 +9,11 @@
  *    c.toString();  // === '0.7007'
  * @author kittttttan
  */
-
-var ktn = ktn || {};
-ktn.Decimal = (function(){
+(function(ktn){
   "use strict";
 
+  // require
   var Integer;
-  /** @requires ktn.Integer */
   if (typeof require !== 'undefined') {
     Integer = require('../lib/integer.js').Integer;
   } else {
@@ -27,24 +25,31 @@ ktn.Decimal = (function(){
 
   /**
    * Decimal
-   * @memberof ktn
-   * @constructor
-   * @property {ktn.Integer} _l
-   * @property {number} _e
+   * @class ktn.Decimal
    * @param {ktn.Integer} l
    * @param {number} e
    */
   function Decimal(l, e) {
+    /**
+     * @private
+     * @property {ktn.Integer} ktn.Decimal#_l
+     */
     this._l = l;
+
+    /**
+     * @private
+     * @property {number} ktn.Decimal#_e
+     */
     this._e = e;
   }
 
   // static method
   /**
    * Convert String to Decimal.
-   * @memberof ktn.Decimal
+   * @static
+   * @method ktn.Decimal.str
    * @param {string} n
-   * @returns {ktn.Decimal}
+   * @return {ktn.Decimal}
    */
   Decimal.str = function(str) {
     var index = str.indexOf('.');
@@ -62,10 +67,11 @@ ktn.Decimal = (function(){
 
   /**
    * Convert Number to Decimal.
-   * @memberof ktn.Decimal
+   * @static
+   * @method ktn.Decimal.num
    * @param {number} a
    * @param {number} b
-   * @returns {ktn.Decimal}
+   * @return {ktn.Decimal}
    */
   Decimal.num = function(a, b) {
     return new Decimal(Integer.num(a), b);
@@ -74,10 +80,11 @@ ktn.Decimal = (function(){
 
   /**
    * Convert anything to Decimal.
-   * @memberof ktn.Decimal
+   * @static
+   * @method ktn.Decimal.dec
    * @param {object} l
    * @param {object} e
-   * @returns {ktn.Decimal}
+   * @return {ktn.Decimal}
    */
   Decimal.dec = function(l, e) {
     if (!arguments.length) {
@@ -94,10 +101,11 @@ ktn.Decimal = (function(){
 
   /**
    * Convert Fraction to Decimal.
-   * @memberof ktn.Decimal
+   * @static
+   * @method ktn.Decimal.rat
    * @param {ktn.Rational} a
    * @param {number} b
-   * @returns {ktn.Decimal}
+   * @return {ktn.Decimal}
    */
   Decimal.rat = function(a, b) {
     return new Decimal(a._n, 0).div(new Decimal(a._d, 0), b);
@@ -105,33 +113,40 @@ ktn.Decimal = (function(){
 
   /**
    * 1
-   * @memberof ktn.Decimal
-   * @returns {ktn.Decimal} 1
+   * @static
+   * @method ktn.Decimal.one
+   * @return {ktn.Decimal} 1
    */
   Decimal.one = function(){ return decNum(1, 0); };
 
   /**
    * 0
-   * @memberof ktn.Decimal
-   * @returns {ktn.Decimal} 0
+   * @static
+   * @method ktn.Decimal.zero
+   * @return {ktn.Decimal} 0
    */
   Decimal.zero = function(){ return decNum(0, 0); };
 
   Decimal.prototype = {
+    /**
+     * @const
+     * @property ktn.Decimal#constructor
+     * @type ktn.Decimal
+     */
     constructor: Decimal,
 
     /**
      * Copy Decimal.
-     * @memberof ktn.Decimal#
-     * @returns {ktn.Decimal}
+     * @method ktn.Decimal#clone
+     * @return {ktn.Decimal}
      */
     clone: function() {
       return new Decimal(this._l, this._e);
     },
 
     /**
-     * @memberof ktn.Decimal#
-     * @returns {string}
+     * @method ktn.Decimal#toString
+     * @return {string}
      */
     toString: function() {
       if (this._e < 0) {
@@ -150,35 +165,39 @@ ktn.Decimal = (function(){
     },
 
     /**
-     * @memberof ktn.Decimal#
-     * @returns {string}
+     * @method ktn.Decimal#html
+     * @return {string}
      */
     html: function() {
       return this._l.toString() + '&times;10<sup>' + this._e + '</sup>';
     },
 
     /**
-     * @memberof ktn.Decimal#
-     * @returns {string}
+     * @method ktn.Decimal#tex
+     * @return {string}
      */
     tex: function() {
       return this._l.toString() + '\times 10^' + this._e;
     },
 
     /**
-     * @memberof ktn.Decimal#
-     * @returns {number}
+     * @method ktn.Decimal#valueOf
+     * @return {number}
      */
     valueOf: function() {
       return this._l.valueOf() * Math.pow(10, this._e);
     },
 
-    /** @returns {number} */
+    /**
+     * @private
+     * @method ktn.Decimal#_co_
+     * @return {number}
+     */
     _co_: function() { return 3; },
 
     /**
-     * @memberof ktn.Decimal#
-     * @returns {number}
+     * @method ktn.Decimal#dot
+     * @return {number}
      */
     dot: function() {
       var e = this._e < 0 ? -this._e : 0;
@@ -186,16 +205,16 @@ ktn.Decimal = (function(){
     },
 
     /**
-     * @memberof ktn.Decimal#
-     * @returns {ktn.Integer}
+     * @method ktn.Decimal#floor
+     * @return {ktn.Integer}
      */
     floor: function() {
       return Integer.str(this._l.toString().substring(0, this.dot()));
     },
 
     /**
-     * @memberof ktn.Decimal#
-     * @returns {ktn.Decimal}
+     * @method ktn.Decimal#setLen
+     * @return {ktn.Decimal}
      */
     setLen: function(n) {
       var a = this.clone(),
@@ -215,8 +234,8 @@ ktn.Decimal = (function(){
     },
 
     /**
-     * @memberof ktn.Decimal#
-     * @returns {ktn.Decimal}
+     * @method ktn.Decimal#trim
+     * @return {ktn.Decimal}
      */
     trim: function() {
       var a = this.clone(),
@@ -232,9 +251,9 @@ ktn.Decimal = (function(){
     },
 
     /**
-     * @memberof ktn.Decimal#
+     * @method ktn.Decimal#add
      * @param {ktn.Decimal} b
-     * @returns {ktn.Decimal}
+     * @return {ktn.Decimal}
      */
     add: function(b) {
       var diff = this._e - b._e;
@@ -248,9 +267,9 @@ ktn.Decimal = (function(){
     },
 
     /**
-     * @memberof ktn.Decimal#
+     * @method ktn.Decimal#sub
      * @param {ktn.Decimal} b
-     * @returns {ktn.Decimal}
+     * @return {ktn.Decimal}
      */
     sub: function(b) {
       var diff = this._e - b._e;
@@ -264,9 +283,9 @@ ktn.Decimal = (function(){
     },
 
     /**
-     * @memberof ktn.Decimal#
+     * @method ktn.Decimal#mul
      * @param {ktn.Decimal} b
-     * @returns {ktn.Decimal}
+     * @return {ktn.Decimal}
      */
     mul: function(b) {
       var diff = this._e + b._e;
@@ -274,10 +293,10 @@ ktn.Decimal = (function(){
     },
 
     /**
-     * @memberof ktn.Decimal#
+     * @method ktn.Decimal#div
      * @param {ktn.Decimal} b
      * @param {number} c
-     * @returns {ktn.Decimal}
+     * @return {ktn.Decimal}
      */
     div: function(b, c) {
       c = c || 20;
@@ -293,34 +312,42 @@ ktn.Decimal = (function(){
     },
 
     /**
+     * @private
+     * @method ktn.Decimal#_add_
      * @param {object} a
-     * @returns {ktn.Decimal}
+     * @return {ktn.Decimal}
      */
     _add_: function(a) { return this.add(decimal(a)); },
 
     /**
+     * @private
+     * @method ktn.Decimal#_sub_
      * @param {object} a
-     * @returns {ktn.Decimal}
+     * @return {ktn.Decimal}
      */
     _sub_: function(a) { return this.sub(decimal(a)); },
 
     /**
+     * @private
+     * @method ktn.Decimal#_mul_
      * @param {object} a
-     * @returns {ktn.Decimal}
+     * @return {ktn.Decimal}
      */
     _mul_: function(a) { return this.mul(decimal(a)); },
 
     /**
+     * @private
+     * @method ktn.Decimal#_div_
      * @param {object} a
-     * @returns {ktn.Decimal}
+     * @return {ktn.Decimal}
      */
     _div_: function(a, b) { return this.div(decimal(a), b); }
   };
 
-  return Decimal;
-}());
-
-// exports for node
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-  module.exports.Decimal = ktn.Decimal;
-}
+  // export
+  if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports.Decimal = Decimal;
+  } else {
+    ktn.Decimal = Decimal;
+  }
+}(typeof ktn !== 'undefined' ? ktn : {}));

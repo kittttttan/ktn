@@ -1,5 +1,5 @@
 /**
- * @file Rational in JavaScript.
+ * @fileOverview Rational in JavaScript.
  * @example
  *    var a = ktn.Rational.num(2, 3);
  *    var b = ktn.Rational.str('-3/12');
@@ -9,26 +9,25 @@
  *    c.toString();  // === '(5/12)'
  * @author kittttttan
  */
-
-var ktn = ktn || {};
-ktn.Rational = (function(){
+(function(ktn){
   "use strict";
-  
+
+  // require
   var Integer;
-  /** @requires ktn.Integer */
   if (typeof require !== 'undefined') {
     Integer = require('../lib/integer.js').Integer;
   } else {
     Integer = ktn.Integer;
   }
   if (typeof Integer === 'undefined') {
-    throw new Error('Rational requires Integer');
+    throw new Error('Decimal requires Integer');
   }
 
   /**
+   * @private
    * @param {ktn.Integer} a
    * @param {ktn.Integer} b
-   * @returns {ktn.Integer[]}
+   * @return {ktn.Integer[]}
    */
   function cancel(a, b) {
     var g = a.gcd(b);
@@ -43,17 +42,25 @@ ktn.Rational = (function(){
 
   /**
    * Rational
-   * @memberof ktn
-   * @constructor
-   * @property {ktn.Integer} _n Numerator
-   * @property {ktn.Integer} _d Denominator
+   * @class ktn.Rational
    * @param {ktn.Integer} n
    * @param {ktn.Integer} d
    * @param {boolean} f If f is true then skip cancel().
    */
   function Rational(n, d, f) {
     if (f) {
+      /**
+       * Numerator
+       * @private
+       * @property {ktn.Integer} ktn.Rational#_n
+       */
       this._n = n;
+      
+      /**
+       * Denominator
+       * @private
+       * @property {ktn.Integer} ktn.Rational#_d
+       */
       this._d = d;
     } else {
       var t = cancel(n, d);
@@ -65,8 +72,9 @@ ktn.Rational = (function(){
   // static method
   /**
    * 1/1
-   * @memberof ktn.Rational
-   * @returns {ktn.Rational} 1/1
+   * @static
+   * @method ktn.Rational.one
+   * @return {ktn.Rational} 1/1
    */
   Rational.one = function() {
     return new Rational(Integer.num(1), Integer.num(1), true);
@@ -74,8 +82,9 @@ ktn.Rational = (function(){
 
   /**
    * 0/1
-   * @memberof ktn.Rational
-   * @returns {ktn.Rational} 0/1
+   * @static
+   * @method ktn.Rational.zero
+   * @return {ktn.Rational} 0/1
    */
   Rational.zero = function() {
     return new Rational(new Integer(), Integer.num(1), true);
@@ -83,11 +92,12 @@ ktn.Rational = (function(){
 
   /**
    * Convert Number to Rational.
-   * @memberof ktn.Rational
+   * @static
+   * @method ktn.Rational.num
    * @param {number} a Numerator
    * @param {number} b Denominator
    * @param {boolean} c
-   * @returns {ktn.Rational}
+   * @return {ktn.Rational}
    */
   Rational.num = function(a, b, c) {
     if (!b) {
@@ -99,9 +109,10 @@ ktn.Rational = (function(){
 
   /**
    * Convert String to Rational.
-   * @memberof ktn.Rational
+   * @static
+   * @method ktn.Rational.str
    * @param {string} a ex.'-1/2'
-   * @returns {ktn.Rational}
+   * @return {ktn.Rational}
    */
   Rational.str = function(a) {
     a = a.split('/');
@@ -111,11 +122,12 @@ ktn.Rational = (function(){
 
   /**
    * Convert anything to Rational.
-   * @memberof ktn.Rational
+   * @static
+   * @method ktn.Rational.any
    * @param a
    * @param b
    * @throws {Error} ZeroDivisionError
-   * @returns {ktn.Rational}
+   * @return {ktn.Rational}
    */
   Rational.any = function(a, b) {
     if (!arguments.length) {
@@ -137,27 +149,32 @@ ktn.Rational = (function(){
   var rat = Rational.any;
 
   Rational.prototype = {
+    /**
+     * @const
+     * @property ktn.Rational#constructor
+     * @type ktn.Rational
+     */
     constructor: Rational,
 
     /**
-     * @memberof ktn.Rational#
-     * @returns {ktn.Rational}
+     * @method ktn.Rational#clone
+     * @return {ktn.Rational}
      */
     clone: function() {
       return new Rational(this._n, this._d, true);
     },
 
     /**
-     * @memberof ktn.Rational#
-     * @returns {number}
+     * @method ktn.Rational#valueOf
+     * @return {number}
      */
     valueOf: function() {
       return 1.0 * this._n.valueOf() / this._d.valueOf();
     },
 
     /**
-     * @memberof ktn.Rational#
-     * @returns {string}
+     * @method ktn.Rational#toString
+     * @return {string}
      */
     toString: function() {
       //if (this._d == 1) {return this._n.toString();}
@@ -165,14 +182,14 @@ ktn.Rational = (function(){
     },
     
     /**
-     * @memberof ktn.Rational#
-     * @returns {string}
+     * @method ktn.Rational#html
+     * @return {string}
      */
     html: function() { return this.toString(); },
 
     /**
-     * @memberof ktn.Rational#
-     * @returns {string}
+     * @method ktn.Rational#tex
+     * @return {string}
      */
     tex: function() {
       //if (this._d == 1) {return this._n.toString();}
@@ -180,25 +197,25 @@ ktn.Rational = (function(){
     },
 
     /**
-     * @memberof ktn.Rational#
-     * @returns {ktn.Rational} |this|
+     * @method ktn.Rational#abs
+     * @return {ktn.Rational} |this|
      */
     abs: function() {
       return new Rational(this._n.abs(), this._d, true);
     },
 
     /**
-     * @memberof ktn.Rational#
-     * @returns {ktn.Rational} -this
+     * @method ktn.Rational#neg
+     * @return {ktn.Rational} -this
      */
     neg: function() {
       return new Rational(this._n.neg(), this._d, true);
     },
 
     /**
-     * @memberof ktn.Rational#
+     * @method ktn.Rational#eq
      * @param {ktn.Rational} b
-     * @returns {boolean} this == b
+     * @return {boolean} this == b
      */
     eq: function(b) {
       b = rat(b);
@@ -207,9 +224,9 @@ ktn.Rational = (function(){
     },
 
     /**
-     * @memberof ktn.Rational#
+     * @method ktn.Rational#equal
      * @param {ktn.Rational} b
-     * @returns {boolean} this === b
+     * @return {boolean} this === b
      */
     equal: function(b) {
       if (!(b instanceof Rational)) { return false; }
@@ -218,12 +235,12 @@ ktn.Rational = (function(){
     },
 
     /**
-     * @memberof ktn.Rational#
+     * @method ktn.Rational#cmp
      * @param {ktn.Rational} b
-     * @returns {number} <br>
-     *    1 (this > b)<br>
-     *    0 (this = b)<br>
-     *   -1 (this < b)
+     * @return {number}
+     *      1 (this > b)
+     *      0 (this = b)
+     *     -1 (this < b)
      */
     cmp: function(b) {
       return this._n.mul(b._d).cmp(this._d.mul(b._n));
@@ -231,8 +248,8 @@ ktn.Rational = (function(){
 
     /**
      * Multiplicative inverse (or reciprocal)
-     * @memberof ktn.Rational#
-     * @returns {ktn.Rational}
+     * @method ktn.Rational#inv
+     * @return {ktn.Rational}
      */
     inv: function() {
       if (!this._n.isNonZero()) {
@@ -243,13 +260,17 @@ ktn.Rational = (function(){
       return new Rational(this._d, this._n, true);
     },
 
-    /** @returns {number} */
+    /**
+     * @private
+     * @method ktn.Rational#_co_
+     * @return {number}
+     */
     _co_: function() { return 2; },
 
     /**
-     * @memberof ktn.Rational#
+     * @method ktn.Rational#add
      * @param {ktn.Rational} b
-     * @returns {ktn.Rational} this + b
+     * @return {ktn.Rational} this + b
      */
     add: function(b) {
       return new Rational(this._n.mul(b._d).add(this._d.mul(b._n)),
@@ -257,9 +278,9 @@ ktn.Rational = (function(){
     },
 
     /**
-     * @memberof ktn.Rational#
+     * @method ktn.Rational#sub
      * @param {ktn.Rational} b
-     * @returns {ktn.Rational} this - b
+     * @return {ktn.Rational} this - b
      */
     sub: function(b) {
       return new Rational(this._n.mul(b._d).sub(this._d.mul(b._n)),
@@ -267,61 +288,69 @@ ktn.Rational = (function(){
     },
 
     /**
-     * @memberof ktn.Rational#
+     * @method ktn.Rational#mul
      * @param {ktn.Rational} b
-     * @returns {ktn.Rational} this * b
+     * @return {ktn.Rational} this * b
      */
     mul: function(b) {
       return new Rational(this._n.mul(b._n), this._d.mul(b._d));
     },
 
     /**
-     * @memberof ktn.Rational#
+     * @method ktn.Rational#div
      * @param {ktn.Rational} b
-     * @returns {ktn.Rational} this / b
+     * @return {ktn.Rational} this / b
      */
     div: function(b) {
       return new Rational(this._n.mul(b._d), this._d.mul(b._n));
     },
 
     /**
-     * @memberof ktn.Rational#
+     * @method ktn.Rational#pow
      * @param {number} b
-     * @returns {ktn.Rational} this^b
+     * @return {ktn.Rational} this^b
      */
     pow: function(b) {
       return new Rational(this._n.pow(b), this._d.pow(b), true);
     },
 
     /**
+     * @private
+     * @method ktn.Rational#_add_
      * @param {object} a
-     * @returns {ktn.Rational}
+     * @return {ktn.Rational}
      */
     _add_: function(a) { return this.add(rat(a)); },
 
     /**
+     * @private
+     * @method ktn.Rational#_sub_
      * @param {object} a
-     * @returns {ktn.Rational}
+     * @return {ktn.Rational}
      */
     _sub_: function(a) { return this.sub(rat(a)); },
 
     /**
+     * @private
+     * @method ktn.Rational#_mul_
      * @param {object} a
-     * @returns {ktn.Rational}
+     * @return {ktn.Rational}
      */
     _mul_: function(a) { return this.mul(rat(a)); },
 
     /**
+     * @private
+     * @method ktn.Rational#_div_
      * @param {object} a
-     * @returns {ktn.Rational}
+     * @return {ktn.Rational}
      */
     _div_: function(a) { return this.div(rat(a)); }
   };
 
-  return Rational;
-}());
-
-// exports for node
-if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-  module.exports.Rational = ktn.Rational;
-}
+  // export
+  if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
+    module.exports.Rational = Rational;
+  } else {
+    ktn.Rational = Rational;
+  }
+}(typeof ktn !== 'undefined' ? ktn : {}));

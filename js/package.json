@@ -15,13 +15,13 @@
   "repositories": [
     {
       "type": "git",
-      "url": "git://github.com/kittttttan/ktn.git" 
+      "url": "git://github.com/kittttttan/ktn.git"
     } 
   ],
   "maintainers": [
     {
       "name": "kittttttan",
-      "web": "http://kittttttan.web.fc2.com" 
+      "web": "http://kittttttan.web.fc2.com/"
     }
   ]
 }
