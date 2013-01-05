@@ -11,12 +11,12 @@ if (typeof window !== 'undefined') {
   // browser
   print = function(a) { _S += a + '\n'; };
   _T = G.document.getElementById('log');
-  Integer = G.ktn.Integer;
 } else if (typeof require !== 'undefined') {
   // node
   print = console.log;
-  Integer = require('../lib/integer.js').Integer;
 }
+
+Integer = require('../lib/integer.js').Integer;
 
 /**
  * Basic operations
@@ -52,7 +52,7 @@ function fact(a) {
 /**
  * Calculates fibonacchi number simply
  * @param {number} a
- * @returns {ktn.Integer} <var>a</var>th fibonacchi number
+ * @returns {Integer} <var>a</var>th fibonacchi number
  */
 function fib(a) {
   var b = Integer.num(0);
@@ -98,19 +98,19 @@ function sqvsmul(a) {
 }
 
 /**
- * test for IntegerGcdBin
+ * test for Integer#gcdBin
  * @param {number} a
  */
 function gcd(a) {
   for (var i = 0, b, c; i < a; ++i) {
     b = Integer.random(i + 20);
     c = Integer.random(i + 20);
-    print(b.gcd(c).equal(b._gcd(c)));
+    print(b.gcd(c).equal(b.gcdBin(c)));
   }
 }
 
 /**
- * Compares performance IntegerGcd vs IntegerGcdBin
+ * Compares performance Integer#gcd vs Integer#gcdBin
  * @param {number} a
  */
 function gcdvsbin(a) {
@@ -125,7 +125,7 @@ function gcdvsbin(a) {
   }
   var t1 = Date.now();
   for (i = 0; i < a; ++i) {
-    m[i]._gcd(n[i]);
+    m[i].gcdBin(n[i]);
   }
   var t2 = Date.now();
   print('gcd: '+ (t1 - t0) +'ms\nbin: '+ (t2 - t1) +'ms\n      '
@@ -135,7 +135,7 @@ function gcdvsbin(a) {
 /**
  * Computes pi
  * @param {number}
- * @returns {ktn.Integer}
+ * @returns {Integer}
  */
 function pi(a) {
   if (!a) { a = 1; }

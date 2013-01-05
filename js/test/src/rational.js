@@ -9,12 +9,12 @@ if (typeof window !== 'undefined') {
   // browser
   print = function(a) { _S += a + '\n'; };
   _T = G.document.getElementById('log');
-  Rational = G.ktn.Rational;
 } else if (typeof require !== 'undefined') {
   // node
   print = console.log;
-  Rational = require('../lib/rational.js').Rational;
 }
+
+Rational = require('../lib/rational.js').Rational;
 
 function basic() {
   var a = Rational.num(1024, 78);

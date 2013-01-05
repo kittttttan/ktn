@@ -9,14 +9,13 @@ if (typeof window !== 'undefined') {
   // browser
   print = function(a) { _S += a + '\n'; };
   _T = G.document.getElementById('log');
-  Rational = G.ktn.Rational;
-  Decimal = G.ktn.Decimal;
 } else if (typeof require !== 'undefined') {
   // node
   print = console.log;
-  Rational = require('../lib/rational.js').Rational;
-  Decimal = require('../lib/decimal.js').Decimal;
 }
+
+Rational = require('../lib/rational.js').Rational;
+Decimal = require('../lib/decimal.js').Decimal;
 
 function basic() {
   var a = Decimal.dec(1, 2);
@@ -38,7 +37,7 @@ function exp(a) {
   var i = 2;
   var e = Rational.num(2);
   var b = Rational.num(1);
-  for (; i < a; i++) {
+  for (; i < a; ++i) {
        b = b.mul(Rational.num(1, i, true));
        e = e.add(b);
   }

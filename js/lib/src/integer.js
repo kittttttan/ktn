@@ -1,8 +1,9 @@
 /**
  * @fileOverview Big Integer in JavaScript.
  * @example
- *   var a = ktn.Integer.str('12345678909876543210');
- *   var b = ktn.Integer.num(7777777);
+ *   var Integer = require('/path/to/integer.js').Integer;
+ *   var a = Integer.str('12345678909876543210');
+ *   var b = Integer.num(7777777);
  *   var c = a.mul(b);
  *   c.toString(); // === '96021937474622850618244170'
  * @author kittttttan
@@ -25,25 +26,30 @@
  *   GNU General Public License for more details.
  * </pre>
  */
-(function(ktn) {
+(function() {
   "use strict";
   
+  // require
+  if (typeof exports === 'undefined') {
+    throw new Error('no exports');
+  }
+
   /**
    * Integer
-   * @class ktn.Integer
+   * @class Integer
    */
   function Integer() {
     /**
      * Digits [d0, d1, ..., dn]
      * @private
-     * @property {number[]} ktn.Integer#_d
+     * @property {number[]} Integer#_d
      */
     this._d = [0];
     
     /**
      * Sign +, -. `false` means -.
      * @private
-     * @property {boolean} ktn.Integer#_s
+     * @property {boolean} Integer#_s
      */
     this._s = true;
   }
@@ -73,25 +79,25 @@
   /**
    * 1
    * @static
-   * @method ktn.Integer.one
-   * @return {ktn.Integer} 1
+   * @method Integer.one
+   * @return {Integer} 1
    */
   Integer.one = function() { return longNum(1); };
 
   /**
    * 0
    * @static
-   * @method ktn.Integer.zero
-   * @return {ktn.Integer} 0
+   * @method Integer.zero
+   * @return {Integer} 0
    */
   Integer.zero = function() { return new Integer(); };
   
   /**
    * Converts integer to Integer.
    * @static
-   * @method ktn.Integer.num
+   * @method Integer.num
    * @param {number} n
-   * @return {ktn.Integer}
+   * @return {Integer}
    */
   Integer.num = function(n) {
     var a = new Integer();
@@ -116,10 +122,10 @@
   /**
    * Converts string to Integer.
    * @static
-   * @method ktn.Integer.str
+   * @method Integer.str
    * @param {string} str For example '-9' or 'FF' etc.
    * @param {number} [base=10] 2, 8, 10 or 16
-   * @return {ktn.Integer}
+   * @return {Integer}
    */
   Integer.str = function(str, base) {
     if (!base) { base = 10; }
@@ -170,9 +176,9 @@
   /**
    * Converts anything to Integer.
    * @static
-   * @method ktn.Integer.any
+   * @method Integer.any
    * @param {Object} a
-   * @return {ktn.Integer}
+   * @return {Integer}
    */
   Integer.any = function(a) {
     if (typeof a === 'object') {
@@ -213,9 +219,9 @@
   /**
    * Random.
    * @static
-   * @method ktn.Integer.random
+   * @method Integer.random
    * @param {number} a Length
-   * @return {ktn.Integer}
+   * @return {Integer}
    */
   Integer.random = function(a) {
     var r = longAlloc(a, true),
@@ -242,9 +248,9 @@
   /**
    * Assign zero to initialize.
    * @private
-   * @param {ktn.Integer} a
+   * @param {Integer} a
    * @param {number} b Length
-   * @return {ktn.Integer}
+   * @return {Integer}
    */
   function longFillZero(a, b) {
     var d = a._d;
@@ -255,8 +261,8 @@
   /**
    * Delete following zeros. [2, 0, 1, 0, 0] -> [2, 0, 1]
    * @private
-   * @param {ktn.Integer} a
-   * @return {ktn.Integer}
+   * @param {Integer} a
+   * @return {Integer}
    */
   function norm(a) {
     var d = a._d,
@@ -271,8 +277,8 @@
   /**
    * Right shift by 1.
    * @private
-   * @param {ktn.Integer} a
-   * @return {ktn.Integer} a >> 1
+   * @param {Integer} a
+   * @return {Integer} a >> 1
    */
   function longHalf(a) {
     var d = a._d,
@@ -287,8 +293,8 @@
   /**
    * Left shift by 1.
    * @private
-   * @param {ktn.Integer} a
-   * @return {ktn.Integer} a << 1
+   * @param {Integer} a
+   * @return {Integer} a << 1
    */
   function longDouble(a) {
     var d = a._d,
@@ -306,7 +312,7 @@
   /**
    * Get length of bit
    * @private
-   * @param {ktn.Integer} a
+   * @param {Integer} a
    * @return {number}
    */
   function longBitLength(a) {
@@ -317,9 +323,9 @@
   /**
    * Multiply with Karatsuba Method.
    * @private
-   * @param {ktn.Integer} x
-   * @param {ktn.Integer} y
-   * @return {ktn.Integer} x * y
+   * @param {Integer} x
+   * @param {Integer} y
+   * @return {Integer} x * y
    */
   function longK(x, y) {
     var N = longBitLength(x),
@@ -347,14 +353,14 @@
   Integer.prototype = {
     /**
      * @const
-     * @property ktn.Integer#constructor
-     * @type ktn.Integer
+     * @property Integer#constructor
+     * @type Integer
      */
     constructor: Integer,
 
     /**
      * Convert Integer to String.
-     * @method ktn.Integer#toString
+     * @method Integer#toString
      * @param {number} [b=10] Base 2, 8, 10 or 16
      * @return {string}
      */
@@ -414,7 +420,7 @@
 
     /**
      * Convert Integer to number.
-     * @method ktn.Integer#valueOf
+     * @method Integer#valueOf
      * @return {number}
      */
     valueOf: function() {
@@ -427,21 +433,21 @@
     },
 
     /**
-     * @method ktn.Integer#getDigits
+     * @method Integer#getDigits
      * @return {number[]}
      */
     getDigits: function() { return this._d; },
     
     /**
-     * @method ktn.Integer#getSign
+     * @method Integer#getSign
      * @return {boolean}
      */
     getSign: function() { return this._s; },
 
     /**
      * Copy Integer.
-     * @method ktn.Integer#clone
-     * @return {ktn.Integer}
+     * @method Integer#clone
+     * @return {Integer}
      */
     clone: function() {
       var b = new Integer();
@@ -452,9 +458,9 @@
 
     /**
      * Add zeros and shift decimal.
-     * @method ktn.Integer#addzero
+     * @method Integer#addzero
      * @param {number} b Number of zeros.
-     * @return {ktn.Integer} this * 10<sup>n</sup>
+     * @return {Integer} this * 10<sup>n</sup>
      */
     addzero: function(b) {
       var zeros = '',
@@ -467,9 +473,9 @@
 
     /**
      * <<
-     * @method ktn.Integer#leftShift
+     * @method Integer#leftShift
      * @param {number} b
-     * @return {ktn.Integer}
+     * @return {Integer}
      */
     leftShift: function(b) {
       var a = this.clone(),
@@ -495,9 +501,9 @@
 
     /**
      * >>
-     * @method ktn.Integer#rightShift
+     * @method Integer#rightShift
      * @param {number} b
-     * @return {ktn.Integer}
+     * @return {Integer}
      */
     rightShift: function(b) {
       var a = this.clone(),
@@ -520,27 +526,27 @@
     },
 
     /**
-     * @method ktn.Integer#isOdd
+     * @method Integer#isOdd
      * @return {boolean}
      */
     isOdd: function() { return !!(this._d[0] & 1); },
     
     /**
-     * @method ktn.Integer#isEven
+     * @method Integer#isEven
      * @return {boolean}
      */
     isEven: function() { return !(this._d[0] & 1); },
     
     /**
-     * @method ktn.Integer#isNonZero
+     * @method Integer#isNonZero
      * @return {boolean}
      */
     isNonZero: function() { return (this._d.length > 1 || this._d[0]); },
 
     /**
      * Fast squaring.
-     * @method ktn.Integer#square
-     * @return {ktn.Integer} this * this
+     * @method Integer#square
+     * @return {Integer} this * this
      */
     square: function() {
       var a = this.clone(),
@@ -576,8 +582,8 @@
 
     /**
      * Square root.
-     * @method ktn.Integer#sqrt
-     * @return {ktn.Integer} <code>&radic;</code>this
+     * @method Integer#sqrt
+     * @return {Integer} <code>&radic;</code>this
      */
     sqrt: function() {
       var b = this.clone(),
@@ -596,9 +602,9 @@
 
     /**
      * Pow.
-     * @method ktn.Integer#pow
+     * @method Integer#pow
      * @param {number} b
-     * @return {ktn.Integer|number} this<sup>b</sup>
+     * @return {Integer|number} this<sup>b</sup>
      */
     pow: function(b) {
       if (!b) { return longNum(1); }
@@ -614,9 +620,9 @@
 
     /**
      * Greatest Common Divisor.
-     * @method ktn.Integer#gcd
-     * @param {ktn.Integer} b
-     * @return {ktn.Integer}
+     * @method Integer#gcd
+     * @param {Integer} b
+     * @return {Integer}
      */
     gcd: function(b) {
       var c;
@@ -630,9 +636,9 @@
 
     /**
      * Greatest Common Divisor.
-     * @method ktn.Integer#gcdBin
-     * @param {ktn.Integer} b
-     * @return {ktn.Integer}
+     * @method Integer#gcdBin
+     * @param {Integer} b
+     * @return {Integer}
      */
     gcdBin: function(b) {
       if (this.cmpAbs(b) < 0) { return b._gcd(this); }
@@ -667,10 +673,10 @@
 
     /**
      * Add absolute values of Integer.
-     * @method ktn.Integer#addAbs
-     * @param {ktn.Integer} b
+     * @method Integer#addAbs
+     * @param {Integer} b
      * @param {boolean} sign
-     * @return {ktn.Integer}
+     * @return {Integer}
      *        |this| + |b| (sign == true)  
      *      -(|this| + |b|) (else)
      */
@@ -705,10 +711,10 @@
 
     /**
      * Subtract absolute values of Integer.
-     * @method ktn.Integer#subAbs
-     * @param {ktn.Integer} b
+     * @method Integer#subAbs
+     * @param {Integer} b
      * @param {boolean} sign
-     * @return {ktn.Integer}
+     * @return {Integer}
      *      ||this| - |b|| (sign == true)
      *     -||this| - |b|| (else)
      */
@@ -746,9 +752,9 @@
 
     /**
      * Addition.
-     * @method ktn.Integer#add
-     * @param {ktn.Integer} b
-     * @return {ktn.Integer} this + b
+     * @method Integer#add
+     * @param {Integer} b
+     * @return {Integer} this + b
      */
     add: function(b) {
       if (this._s !== b._s) {
@@ -762,9 +768,9 @@
 
     /**
      * Subtraction.
-     * @method ktn.Integer#sub
-     * @param {ktn.Integer} b
-     * @return {ktn.Integer} this - b
+     * @method Integer#sub
+     * @param {Integer} b
+     * @return {Integer} this - b
      */
     sub: function(b) {
       if (this._s === b._s) {
@@ -778,9 +784,9 @@
 
     /**
      * Multiplication.
-     * @method ktn.Integer#mul
-     * @param {ktn.Integer} b
-     * @return {ktn.Integer} this * b
+     * @method Integer#mul
+     * @param {Integer} b
+     * @return {Integer} this * b
      */
     mul: function(b) {
       // if (this.equal(b)) { return this.square(); }
@@ -809,10 +815,11 @@
 
     /**
      * Division or Mod.
-     * @method ktn.Integer#divmod
-     * @param {ktn.Integer} b
+     * @method Integer#divmod
+     * @param {Integer} b
      * @param {boolean} modulus If true then mod, else div.
-     * @return {ktn.Integer}
+     * @throws {Error} zero division
+     * @return {Integer}
      *     this % b (modulus == true)  
      *     this / b (else)
      */
@@ -824,7 +831,7 @@
           nb = bd.length;
       if (nb < 2 && !bd[0]) {
         // zero division
-        throw 'zero division';
+        throw new Error('zero division');
         //if (modulus || na < 2 && !ad[0]) { return NaN; }
         //if (a._s === b._s) { return Infinity; }
         //return -Infinity;
@@ -948,9 +955,9 @@
 
     /**
      * Division.
-     * @method ktn.Integer#div
-     * @param {ktn.Integer} b
-     * @return {ktn.Integer} this / b
+     * @method Integer#div
+     * @param {Integer} b
+     * @return {Integer} this / b
      */
     div: function(b) {
       return this.divmod(b, false);
@@ -958,9 +965,9 @@
 
     /**
      * Modulo.
-     * @method ktn.Integer#mod
-     * @param {ktn.Integer} b
-     * @return {ktn.Integer} this % b
+     * @method Integer#mod
+     * @param {Integer} b
+     * @return {Integer} this % b
      */
     mod: function(b) {
       return this.divmod(b, true);
@@ -968,48 +975,48 @@
 
     /**
      * @private
-     * @method ktn.Integer#_add_
+     * @method Integer#_add_
      * @param {object} a
-     * @return {ktn.Integer}
+     * @return {Integer}
      */
     _add_: function(a) { return this.add(any(a)); },
 
     /**
      * @private
-     * @method ktn.Integer#_sub_
+     * @method Integer#_sub_
      * @param {object} a
-     * @return {ktn.Integer}
+     * @return {Integer}
      */
     _sub_: function(a) { return this.sub(any(a)); },
 
     /**
      * @private
-     * @method ktn.Integer#_mul_
+     * @method Integer#_mul_
      * @param {object} a
-     * @return {ktn.Integer}
+     * @return {Integer}
      */
     _mul_: function(a) { return this.mul(any(a)); },
 
     /**
      * @private
-     * @method ktn.Integer#_div_
+     * @method Integer#_div_
      * @param {object} a
-     * @return {ktn.Integer}
+     * @return {Integer}
      */
     _div_: function(a) { return this.divmod(any(a), false); },
 
     /**
      * @private
-     * @method ktn.Integer#_mod_
+     * @method Integer#_mod_
      * @param {object} a
-     * @return {ktn.Integer}
+     * @return {Integer}
      */
     _mod_: function(a) { return this.divmod(any(a), true); },
 
     /**
      * Compare between two absolute values of Integer objects.
-     * @method ktn.Integer#cmpAbs
-     * @param {ktn.Integer} b
+     * @method Integer#cmpAbs
+     * @param {Integer} b
      * @return {number}
      *      -1 (|this| < |b|)
      *       0 (|this| = |b|)
@@ -1029,8 +1036,8 @@
 
     /**
      * Compare between two Integer.
-     * @method ktn.Integer#cmp
-     * @param {ktn.Integer} b
+     * @method Integer#cmp
+     * @param {Integer} b
      * @return {number}
      *     -1 (this < b)
      *      0 (this = b)
@@ -1054,8 +1061,8 @@
 
     /**
      * ==
-     * @method ktn.Integer#eq
-     * @param {ktn.Integer} b
+     * @method Integer#eq
+     * @param {Integer} b
      * @return {boolean}
      */
     eq: function(b) {
@@ -1074,8 +1081,8 @@
 
     /**
      * ===
-     * @method ktn.Integer#equal
-     * @param {ktn.Integer} b
+     * @method Integer#equal
+     * @param {Integer} b
      * @return {boolean}
      */
     equal: function(b) {
@@ -1094,15 +1101,15 @@
 
     /**
      * @private
-     * @method ktn.Integer#_co_
+     * @method Integer#_co_
      * @return {number}
      */
     _co_: function() { return 1; },
 
     /**
      * Absolute Integer.
-     * @method ktn.Integer#abs
-     * @return {ktn.Integer} |this|
+     * @method Integer#abs
+     * @return {Integer} |this|
      */
     abs: function(){
       var z = this.clone();
@@ -1112,8 +1119,8 @@
 
     /**
      * Negate Integer.
-     * @method ktn.Integer#neg
-     * @return {ktn.Integer} -this
+     * @method Integer#neg
+     * @return {Integer} -this
      */
     neg: function() {
       var z = this.clone();
@@ -1122,11 +1129,5 @@
     }
   };
 
-
-  // export
-  if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-    module.exports.Integer = Integer;
-  } else {
-    ktn.Integer = Integer;
-  }
-}(typeof ktn !== 'undefined' ? ktn : {}));
+  exports.Integer = Integer;
+}());

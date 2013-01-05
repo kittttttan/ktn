@@ -1,33 +1,32 @@
 /**
  * @fileOverview Rational in JavaScript.
  * @example
- *    var a = ktn.Rational.num(2, 3);
- *    var b = ktn.Rational.str('-3/12');
+ *    var Rational = require('/path/to/decimal.js').Rational;
+ *    var a = Rational.num(2, 3);
+ *    var b = Rational.str('-3/12');
  *    var c = a.add(b);
  *    a.toString();  // === '(2/3)'
  *    b.toString();  // === '(-1/4)'
  *    c.toString();  // === '(5/12)'
  * @author kittttttan
  */
-(function(ktn){
+(function(){
   "use strict";
 
   // require
-  var Integer;
-  if (typeof require !== 'undefined') {
-    Integer = require('../lib/integer.js').Integer;
-  } else {
-    Integer = ktn.Integer;
+  if (typeof exports === 'undefined') {
+    throw new Error('no exports');
   }
+  var Integer = require('../lib/integer.js').Integer;
   if (typeof Integer === 'undefined') {
-    throw new Error('Decimal requires Integer');
+    throw new Error('Rational requires Integer');
   }
 
   /**
    * @private
-   * @param {ktn.Integer} a
-   * @param {ktn.Integer} b
-   * @return {ktn.Integer[]}
+   * @param {Integer} a
+   * @param {Integer} b
+   * @return {Integer[]}
    */
   function cancel(a, b) {
     var g = a.gcd(b);
@@ -42,9 +41,9 @@
 
   /**
    * Rational
-   * @class ktn.Rational
-   * @param {ktn.Integer} n
-   * @param {ktn.Integer} d
+   * @class Rational
+   * @param {Integer} n
+   * @param {Integer} d
    * @param {boolean} f If f is true then skip cancel().
    */
   function Rational(n, d, f) {
@@ -52,14 +51,14 @@
       /**
        * Numerator
        * @private
-       * @property {ktn.Integer} ktn.Rational#_n
+       * @property {Integer} Rational#_n
        */
       this._n = n;
       
       /**
        * Denominator
        * @private
-       * @property {ktn.Integer} ktn.Rational#_d
+       * @property {Integer} Rational#_d
        */
       this._d = d;
     } else {
@@ -73,8 +72,8 @@
   /**
    * 1/1
    * @static
-   * @method ktn.Rational.one
-   * @return {ktn.Rational} 1/1
+   * @method Rational.one
+   * @return {Rational} 1/1
    */
   Rational.one = function() {
     return new Rational(Integer.num(1), Integer.num(1), true);
@@ -83,8 +82,8 @@
   /**
    * 0/1
    * @static
-   * @method ktn.Rational.zero
-   * @return {ktn.Rational} 0/1
+   * @method Rational.zero
+   * @return {Rational} 0/1
    */
   Rational.zero = function() {
     return new Rational(new Integer(), Integer.num(1), true);
@@ -93,11 +92,11 @@
   /**
    * Convert Number to Rational.
    * @static
-   * @method ktn.Rational.num
+   * @method Rational.num
    * @param {number} a Numerator
    * @param {number} b Denominator
    * @param {boolean} c
-   * @return {ktn.Rational}
+   * @return {Rational}
    */
   Rational.num = function(a, b, c) {
     if (!b) {
@@ -110,9 +109,9 @@
   /**
    * Convert String to Rational.
    * @static
-   * @method ktn.Rational.str
+   * @method Rational.str
    * @param {string} a ex.'-1/2'
-   * @return {ktn.Rational}
+   * @return {Rational}
    */
   Rational.str = function(a) {
     a = a.split('/');
@@ -123,11 +122,11 @@
   /**
    * Convert anything to Rational.
    * @static
-   * @method ktn.Rational.any
+   * @method Rational.any
    * @param a
    * @param b
    * @throws {Error} ZeroDivisionError
-   * @return {ktn.Rational}
+   * @return {Rational}
    */
   Rational.any = function(a, b) {
     if (!arguments.length) {
@@ -139,9 +138,10 @@
       return new Rational(Integer.any(a), Integer.num(1), true);
     }
     if (!b) {
-      if (!a) { return NaN; }
-      if (a < 0) { return -Infinity; }
-      return Infinity;
+      throw new Error('zero division');
+      //if (!a) { return NaN; }
+      //if (a < 0) { return -Infinity; }
+      //return Infinity;
     }
     if (!a) { return new Rational(new Integer(), Integer.num(1), true); }
     return new Rational(Integer.any(a), Integer.any(b));
@@ -151,21 +151,21 @@
   Rational.prototype = {
     /**
      * @const
-     * @property ktn.Rational#constructor
-     * @type ktn.Rational
+     * @property Rational#constructor
+     * @type Rational
      */
     constructor: Rational,
 
     /**
-     * @method ktn.Rational#clone
-     * @return {ktn.Rational}
+     * @method Rational#clone
+     * @return {Rational}
      */
     clone: function() {
       return new Rational(this._n, this._d, true);
     },
 
     /**
-     * @method ktn.Rational#valueOf
+     * @method Rational#valueOf
      * @return {number}
      */
     valueOf: function() {
@@ -173,7 +173,7 @@
     },
 
     /**
-     * @method ktn.Rational#toString
+     * @method Rational#toString
      * @return {string}
      */
     toString: function() {
@@ -182,13 +182,13 @@
     },
     
     /**
-     * @method ktn.Rational#html
+     * @method Rational#html
      * @return {string}
      */
     html: function() { return this.toString(); },
 
     /**
-     * @method ktn.Rational#tex
+     * @method Rational#tex
      * @return {string}
      */
     tex: function() {
@@ -197,24 +197,24 @@
     },
 
     /**
-     * @method ktn.Rational#abs
-     * @return {ktn.Rational} |this|
+     * @method Rational#abs
+     * @return {Rational} |this|
      */
     abs: function() {
       return new Rational(this._n.abs(), this._d, true);
     },
 
     /**
-     * @method ktn.Rational#neg
-     * @return {ktn.Rational} -this
+     * @method Rational#neg
+     * @return {Rational} -this
      */
     neg: function() {
       return new Rational(this._n.neg(), this._d, true);
     },
 
     /**
-     * @method ktn.Rational#eq
-     * @param {ktn.Rational} b
+     * @method Rational#eq
+     * @param {Rational} b
      * @return {boolean} this == b
      */
     eq: function(b) {
@@ -224,8 +224,8 @@
     },
 
     /**
-     * @method ktn.Rational#equal
-     * @param {ktn.Rational} b
+     * @method Rational#equal
+     * @param {Rational} b
      * @return {boolean} this === b
      */
     equal: function(b) {
@@ -235,8 +235,8 @@
     },
 
     /**
-     * @method ktn.Rational#cmp
-     * @param {ktn.Rational} b
+     * @method Rational#cmp
+     * @param {Rational} b
      * @return {number}
      *      1 (this > b)
      *      0 (this = b)
@@ -248,8 +248,8 @@
 
     /**
      * Multiplicative inverse (or reciprocal)
-     * @method ktn.Rational#inv
-     * @return {ktn.Rational}
+     * @method Rational#inv
+     * @return {Rational}
      */
     inv: function() {
       if (!this._n.isNonZero()) {
@@ -262,15 +262,15 @@
 
     /**
      * @private
-     * @method ktn.Rational#_co_
+     * @method Rational#_co_
      * @return {number}
      */
     _co_: function() { return 2; },
 
     /**
-     * @method ktn.Rational#add
-     * @param {ktn.Rational} b
-     * @return {ktn.Rational} this + b
+     * @method Rational#add
+     * @param {Rational} b
+     * @return {Rational} this + b
      */
     add: function(b) {
       return new Rational(this._n.mul(b._d).add(this._d.mul(b._n)),
@@ -278,9 +278,9 @@
     },
 
     /**
-     * @method ktn.Rational#sub
-     * @param {ktn.Rational} b
-     * @return {ktn.Rational} this - b
+     * @method Rational#sub
+     * @param {Rational} b
+     * @return {Rational} this - b
      */
     sub: function(b) {
       return new Rational(this._n.mul(b._d).sub(this._d.mul(b._n)),
@@ -288,27 +288,27 @@
     },
 
     /**
-     * @method ktn.Rational#mul
-     * @param {ktn.Rational} b
-     * @return {ktn.Rational} this * b
+     * @method Rational#mul
+     * @param {Rational} b
+     * @return {Rational} this * b
      */
     mul: function(b) {
       return new Rational(this._n.mul(b._n), this._d.mul(b._d));
     },
 
     /**
-     * @method ktn.Rational#div
-     * @param {ktn.Rational} b
-     * @return {ktn.Rational} this / b
+     * @method Rational#div
+     * @param {Rational} b
+     * @return {Rational} this / b
      */
     div: function(b) {
       return new Rational(this._n.mul(b._d), this._d.mul(b._n));
     },
 
     /**
-     * @method ktn.Rational#pow
+     * @method Rational#pow
      * @param {number} b
-     * @return {ktn.Rational} this^b
+     * @return {Rational} this^b
      */
     pow: function(b) {
       return new Rational(this._n.pow(b), this._d.pow(b), true);
@@ -316,41 +316,36 @@
 
     /**
      * @private
-     * @method ktn.Rational#_add_
+     * @method Rational#_add_
      * @param {object} a
-     * @return {ktn.Rational}
+     * @return {Rational}
      */
     _add_: function(a) { return this.add(rat(a)); },
 
     /**
      * @private
-     * @method ktn.Rational#_sub_
+     * @method Rational#_sub_
      * @param {object} a
-     * @return {ktn.Rational}
+     * @return {Rational}
      */
     _sub_: function(a) { return this.sub(rat(a)); },
 
     /**
      * @private
-     * @method ktn.Rational#_mul_
+     * @method Rational#_mul_
      * @param {object} a
-     * @return {ktn.Rational}
+     * @return {Rational}
      */
     _mul_: function(a) { return this.mul(rat(a)); },
 
     /**
      * @private
-     * @method ktn.Rational#_div_
+     * @method Rational#_div_
      * @param {object} a
-     * @return {ktn.Rational}
+     * @return {Rational}
      */
     _div_: function(a) { return this.div(rat(a)); }
   };
 
-  // export
-  if (typeof module !== 'undefined' && typeof module.exports !== 'undefined') {
-    module.exports.Rational = Rational;
-  } else {
-    ktn.Rational = Rational;
-  }
-}(typeof ktn !== 'undefined' ? ktn : {}));
+  exports.Rational = Rational;
+}());

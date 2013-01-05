@@ -4,7 +4,6 @@
 <link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-git.css">
 <script src="http://code.jquery.com/qunit/qunit-git.js"></script>
 <script src="../lib/ktn.js"></script>
-<script src="../lib/integer.js"></script>
 <h1 id="qunit-header">Test long.js</h1>
 <h2 id="qunit-banner"></h2>
 <div id="qunit-testrunner-toolbar"></div>
@@ -12,7 +11,7 @@
 <ol id="qunit-tests"></ol>
 <div id="qunit-fixture">test markup</div>
 <script>
-var Integer = ktn.Integer;
+var Integer = require('../lib/integer.js').Integer;
 
 module("Integer");
 
