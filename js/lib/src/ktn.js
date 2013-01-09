@@ -14,7 +14,8 @@
   }
 
   /**
-   * 
+   * @global
+   * @method require
    * @param {string} module
    * @param {function} [callback]
    * @return {object} exports

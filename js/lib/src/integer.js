@@ -7,24 +7,6 @@
  *   var c = a.mul(b);
  *   c.toString(); // === '96021937474622850618244170'
  * @author kittttttan
- * @license
- * Based on:
- * <pre>
- *   BigInt.js - Arbitrary size integer math package for JavaScript
- *   Copyright (C) 2000 Masanao Izumo <iz@onicos.co.jp>
- *   Version: 1.0.1
- *   Licence: GPL
- *
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- * </pre>
  */
 (function() {
   "use strict";
