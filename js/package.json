@@ -18,6 +18,12 @@
       "url": "git://github.com/kittttttan/ktn.git"
     } 
   ],
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/kittttttan/ktn/blob/master/LICENSE.md"
+    }
+  ],
   "maintainers": [
     {
       "name": "kittttttan",
