@@ -2,11 +2,6 @@
 #ifndef KTN_MATH_FRACTION_H_
 #define KTN_MATH_FRACTION_H_
 
-/**
- * @file  math/fraction.h
- * @brief Fraction
- */
-
 #include "ulong.h"
 #include <string>
 #include <iostream>

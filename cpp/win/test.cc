@@ -1,5 +1,5 @@
 ﻿/**
- * @file  cpp/test.cc
+ * @file  cpp/win/test.cc
  * @brief test for String
  */
 #include "dbg.h"

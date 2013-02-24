@@ -6,11 +6,11 @@ namespace ktn {
 
 namespace LogLevel {
     static enum Level {
-        NONE = 0,
-        ERR,    // define ERROR in wingdi.h
-        WARN,
-        INFO,
-        ALL,
+        NONE = 0,   //< no log
+        ERR,        //< define ERROR in wingdi.h
+        WARN,       //< Warning
+        INFO,       //< Infomation
+        ALL,        //< All
     };
 
     static const char* LevelName[] = {

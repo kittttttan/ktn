@@ -1,6 +1,8 @@
 #include "uri.h"
 #include <cstring>
 
+namespace ktn {
+
 Uri::Uri(const char* uri, Type type)
 {
     parse(uri, type);
@@ -127,3 +129,5 @@ std::string Uri::ext() const
     }
     return path.substr(pos);
 }
+
+} // namespace ktn

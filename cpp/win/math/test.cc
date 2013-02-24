@@ -1,9 +1,3 @@
-/**
- * @file  math/test.cc
- * @brief test for ktn::math
- * @date  2012
- */
-
 #include "test.h"
 #include "complex.h"
 #include "vector.h"

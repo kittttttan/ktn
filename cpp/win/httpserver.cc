@@ -7,6 +7,8 @@
 
 #pragma comment(lib, "ws2_32.lib")
 
+namespace ktn {
+
 const size_t kDataSize = 1024;
 
 HttpServer::HttpServer(char* ip, int port) :
@@ -196,3 +198,5 @@ void HttpServer::serve()
         printf("close\n\n");
     }
 }
+
+} // namespace ktn

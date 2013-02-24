@@ -1,7 +1,3 @@
-/**
- * @file  math/fraction.cc
- * @brief Fraction
- */
 #include "fraction.h"
 
 #include <cstdio>

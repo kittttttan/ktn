@@ -1,6 +1,8 @@
 #pragma once
 #include <string>
 
+namespace ktn {
+
 class Uri {
 public:
     enum Type {
@@ -38,3 +40,5 @@ private:
     std::string search_;
     std::string hash_;
 };
+
+} // namespace ktn

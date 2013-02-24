@@ -2,16 +2,12 @@
 #ifndef KTN_STRINGW_H_
 #define KTN_STRINGW_H_
 
-/**
- * @file  stringw.h
- * @brief StringW
- */
 #include <iostream>
 
 namespace ktn {
 
 /**
- * @brief String
+ * @brief Extended std::wstring
  */
 class StringW
 {

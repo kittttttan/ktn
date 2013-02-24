@@ -2,16 +2,12 @@
 #ifndef KTN_STRING_H_
 #define KTN_STRING_H_
 
-/**
- * @file  string.h
- * @brief String
- */
 #include <iostream>
 
 namespace ktn {
 
 /**
- * @brief String
+ * @brief Extended std::string
  */
 class String
 {

@@ -116,7 +116,6 @@
     <ClInclude Include="date.h" />
     <ClInclude Include="date_format.h" />
     <ClInclude Include="dbg.h" />
-    <ClInclude Include="doc.h" />
     <ClInclude Include="httprequest.h" />
     <ClInclude Include="httpresponse.h" />
     <ClInclude Include="httpserver.h" />
@@ -141,6 +140,9 @@
     <ClCompile Include="stringw.cc" />
     <ClCompile Include="test.cc" />
     <ClCompile Include="uri.cc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="doc.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

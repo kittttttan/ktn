@@ -2,11 +2,6 @@
 #ifndef KTN_MATH_LONG_H_
 #define KTN_MATH_LONG_H_
 
-/**
- * @file  math/long.h
- * @brief Long
- */
-
 #include "ulong.h"
 #include <string>
 #include <iostream>

@@ -2,6 +2,8 @@
 #include <winsock2.h>
 #include <string>
 
+namespace ktn {
+
 class HttpServer {
 public:
     explicit HttpServer(char* ip=nullptr, int port=80);
@@ -19,3 +21,5 @@ private:
 
     int serveFile(SOCKET socket, const char* path);
 };
+
+} // namespace ktn

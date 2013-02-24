@@ -1,5 +1,7 @@
 #include "httprequest.h"
 
+namespace ktn {
+
 HttpRequest::HttpRequest(const char* src)
 {
 
@@ -74,3 +76,5 @@ void HttpRequest::parse(const char* src)
     }
     //printf("row: %d\n", row);
 }
+
+} // namespace ktn

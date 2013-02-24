@@ -1,10 +1,6 @@
 #pragma once
 #ifndef KTN_MATH_VECTOR_H_
 #define KTN_MATH_VECTOR_H_
-/**
- * @file  math/vector.h
- * @brief Vector
- */
 
 namespace ktn { namespace math {
 

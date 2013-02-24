@@ -1,10 +1,6 @@
 #pragma once
 #ifndef KTN_MATH_COMPLEX_H_
 #define KTN_MATH_COMPLEX_H_
-/**
- * @file  math/complex.h
- * @brief Complex
- */
 
 namespace ktn { namespace math {
 

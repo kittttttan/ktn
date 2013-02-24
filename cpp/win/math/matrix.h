@@ -1,16 +1,13 @@
 #pragma once
 #ifndef KTN_MATH_MATRIX_H_
 #define KTN_MATH_MATRIX_H_
-/**
- * @file  math/matrix.h
- * @brief Matrix
- */
+
 #include "math.h"
 
 namespace ktn { namespace math {
 
 /**
- * @brief Matrix
+ * @brief
  * MxN Matrix
  */
 template<class T, int M, int N=M>

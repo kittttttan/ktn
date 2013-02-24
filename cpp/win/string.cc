@@ -1,8 +1,3 @@
-/**
- * @file  string.cc
- * @brief String
- */
-
 #include "string.h"
 #include "util.h"
 #include "dbg.h"

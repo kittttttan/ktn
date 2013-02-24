@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <cassert>
 
+namespace ktn {
 namespace HttpResponse {
 
 const char* getCodeDesc(int code)
@@ -82,4 +83,5 @@ int send(SOCKET sokcet, int code, const char* contentType, const char* body, siz
     return n;
 }
 
-}
+} // namespace HttpResponse
+} // namespace ktn

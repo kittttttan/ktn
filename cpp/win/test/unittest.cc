@@ -9,6 +9,7 @@ using namespace ktn::math;
 
 TEST(ULong, Basic) {
     ULong a(7777777), b(10000);
+    ULong c("7777777777", 10), d("1000000000", 10);
     char str[64];
 
     a.cstr(str);
@@ -19,20 +20,74 @@ TEST(ULong, Basic) {
 
     EXPECT_TRUE(a > b);
 
-    (a+b).cstr(str);
+    (a + b).cstr(str);
     EXPECT_STREQ("7787777", str);
 
-    (a-b).cstr(str);
+    (a - b).cstr(str);
     EXPECT_STREQ("7767777", str);
 
-    (a*b).cstr(str);
+    (a * b).cstr(str);
     EXPECT_STREQ("77777770000", str);
 
-    (a/b).cstr(str);
+    (a / b).cstr(str);
     EXPECT_STREQ("777", str);
 
-    (a%b).cstr(str);
+    (a % b).cstr(str);
     EXPECT_STREQ("7777", str);
+
+    (c + d).cstr(str);
+    EXPECT_STREQ("8777777777", str);
+
+    (c - d).cstr(str);
+    EXPECT_STREQ("6777777777", str);
+
+    (c * d).cstr(str);
+    EXPECT_STREQ("7777777777000000000", str);
+
+    (c / d).cstr(str);
+    EXPECT_STREQ("7", str);
+
+    (c % d).cstr(str);
+    EXPECT_STREQ("777777777", str);
+}
+
+TEST(ULong, Shift) {
+    ULong one(1);
+    ULong two(2);
+    ULong ls7;
+    ULong ls17;
+    ULong ls27;
+    char str[64];
+
+    ls7 = (one << 7);
+    ls7.cstr(str);
+    EXPECT_STREQ("128", str);
+
+    ls17 = (one << 17);
+    ls17.cstr(str);
+    EXPECT_STREQ("131072", str);
+
+    ls27 = (one << 27);
+    ls27.cstr(str);
+    EXPECT_STREQ("134217728", str);
+
+    two.pow(7).cstr(str);
+    EXPECT_STREQ("128", str);
+
+    two.pow(17).cstr(str);
+    EXPECT_STREQ("131072", str);
+
+    two.pow(27).cstr(str);
+    EXPECT_STREQ("134217728", str);
+
+    (ls7 >> 7).cstr(str);
+    EXPECT_STREQ("1", str);
+
+    (ls17 >> 17).cstr(str);
+    EXPECT_STREQ("1", str);
+
+    (ls27 >> 27).cstr(str);
+    EXPECT_STREQ("1", str);
 }
 
 TEST(Uri, Absolute) {

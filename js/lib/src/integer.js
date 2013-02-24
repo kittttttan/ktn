@@ -495,12 +495,13 @@
       if (l <= d) { return new Integer(); }
 
       var bb = b % SHIFT,
+          mask = (1 << bb) - 1,
           cl = l - d,
           c = longAlloc(cl, a._s),
           cd = c._d,
           i = 0;
       for (; i < cl - 1; ++i) {
-        cd[i] = ((ad[i + d + 1] & MASK) << (SHIFT - bb)) + (ad[i + d] >> bb);
+        cd[i] = ((ad[i + d + 1] & mask) << (SHIFT - bb)) + (ad[i + d] >> bb);
       }
       cd[i] = ad[i + d] >> bb;
       return norm(c);

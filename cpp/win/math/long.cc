@@ -1,7 +1,3 @@
-/**
- * @file  math/long.cc
- * @brief Long
- */
 #include "long.h"
 #include "../dbg.h"
 

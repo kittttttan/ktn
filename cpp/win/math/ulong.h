@@ -2,11 +2,6 @@
 #ifndef KTN_MATH_ULONG_H_
 #define KTN_MATH_ULONG_H_
 
-/**
-* @file  math/ulong.h
-* @brief ULong
-*/
-
 #include <string>
 #include <iostream>
 
@@ -22,12 +17,18 @@ typedef long ddigit;
 #endif
 
 /**
-* @brief Unsigned BigInteger.
-*/
+ * @brief Unsigned BigInteger.
+ */
 class ULong
 {
     friend std::ostream& operator<<(std::ostream& os, const ULong& l);
     friend std::istream& operator>>(std::istream& is, ULong& l);
+
+public:
+    static const ULong ZERO;
+    static const ULong ONE;
+
+    static ULong random(int n);
 
 public:
     explicit ULong() : l_(0), d_(nullptr) {}
@@ -35,11 +36,6 @@ public:
     ULong(const ULong& l);
     explicit ULong(const char *s, int base);
     ~ULong() { delete [] d_; }
-
-    static const ULong ZERO;
-    static const ULong ONE;
-
-    static ULong random(int n);
 
     std::string str(int base=10) const;
     void cstr(char *s, int base=10) const;
@@ -106,6 +102,13 @@ public:
     inline bool operator>(ddigit b) const;
     inline bool operator<=(ddigit b) const;
     inline bool operator>=(ddigit b) const;
+
+private:
+    static const ddigit SHIFT_BIT;
+    static const ddigit BASE;
+    static const ddigit MASK;
+    static const char OUTPUT_FORMAT[];
+    static const char OUTPUT_FORMAT_B[];
 
 private:
     void alloc(int length, bool zero);

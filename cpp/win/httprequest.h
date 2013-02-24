@@ -2,6 +2,8 @@
 #include <string>
 #include <map>
 
+namespace ktn {
+
 class HttpRequest
 {
 public:
@@ -22,3 +24,5 @@ private:
     std::string body_;
     std::map<std::string, std::string> headers_;
 };
+
+} // namespace ktn

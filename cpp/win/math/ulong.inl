@@ -3,11 +3,40 @@
 #define KTN_MATH_ULONG_INL_
 
 /**
-* @file  math/ulong.inl
-* @brief ULong
-*/
+ * @file  math/ulong.inl
+ * @brief inline functions for ULong
+ */
 
 namespace ktn { namespace math {
+
+/**
+ * @param[out] s
+ */
+inline void reverseChar(char* s)
+{
+    if (*s == '\0') { return; }
+    char *s0 = s;
+    while (*s != '\0') { ++s; }
+    --s;
+    while (*s == '0' && s > s0) { --s; };
+    *(s + 1) = '\0';
+    for (char t; s0 < s; --s, ++s0) {
+        t = *s;
+        *s = *s0;
+        *s0 = t;
+    }
+}
+
+inline ddigit ULong::bitLength() const
+{
+    ddigit l = l_ * SHIFT_BIT;
+    int j = SHIFT_BIT;
+    while (j-- && ((d_[l_ - 1] >> j) & 1) == 0) {
+        --l;
+    }
+
+    return l;
+}
 
 /**
  * Fits length.
@@ -15,6 +44,19 @@ namespace ktn { namespace math {
 inline void ULong::norm()
 {
     while (l_ > 0 && d_[l_ - 1] == 0) { --l_; }
+}
+
+/**
+ * @param[in] l
+ * @return
+ */
+inline int getStringLength(int l)
+{
+#ifdef USE_64BIT
+    return l * 241 / 25 + 2;
+#else
+    return l * 241 / 50 + 2;
+#endif
 }
 
 inline bool ULong::operator!() const
