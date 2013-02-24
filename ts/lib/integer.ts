@@ -332,9 +332,9 @@ module ktn {
       var a: Integer = this.clone(),
           ad: number[] = a._d,
           l: number = ad.length,
-          d: number = b >> 4,
+          d: number = (b / Integer.SHIFT) | 0,
           cl: number = l + d + 1,
-          bb: number = b & 0xf,
+          bb: number = b % Integer.SHIFT,
           c: Integer = Integer.alloc(cl, a._s),
           cd: number[] = c._d,
           i: number = 0,
@@ -354,17 +354,16 @@ module ktn {
       var a: Integer = this.clone(),
           ad: number[] = a._d,
           l: number = ad.length,
-          d: number = b >> 4,
-          bb: number = b & 0xf,
-          mask: number = (1 << bb) - 1;
+          d: number = (b / Integer.SHIFT) | 0;
       if (l <= d) { return new Integer(); }
 
-      var cl: number = l - d,
+      var bb: number = b % Integer.SHIFT,
+          cl: number = l - d,
           c: Integer = Integer.alloc(cl, a._s),
           cd: number[] = c._d,
           i: number = 0;
       for (; i < cl - 1; ++i) {
-        cd[i] = ((ad[i + d + 1] & mask) << (Integer.SHIFT - bb)) + (ad[i + d] >> bb);
+        cd[i] = ((ad[i + d + 1] & Integer.MASK) << (Integer.SHIFT - bb)) + (ad[i + d] >> bb);
       }
       cd[i] = ad[i + d] >> bb;
       return Integer.norm(c);

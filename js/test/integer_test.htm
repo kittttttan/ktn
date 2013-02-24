@@ -1,9 +1,13 @@
 <!DOCTYPE html>
+<html>
+<head>
 <meta charset="UTF-8">
 <title>Test integer.js</title>
-<link rel="stylesheet" href="http://code.jquery.com/qunit/qunit-git.css">
-<script src="http://code.jquery.com/qunit/qunit-git.js"></script>
+<link rel="stylesheet" href="//code.jquery.com/qunit/qunit-git.css">
+<script src="//code.jquery.com/qunit/qunit-git.js"></script>
 <script src="../lib/ktn.js"></script>
+</head>
+<body>
 <h1 id="qunit-header">Test long.js</h1>
 <h2 id="qunit-banner"></h2>
 <div id="qunit-testrunner-toolbar"></div>
@@ -44,9 +48,37 @@ test("basic", function() {
   equal(a.mod(b).toString(), "4567890", "1234567890 % 10000000 = 4567890");
 });
 
+test("shift", function() {
+  var one = Integer.one();
+  var two = Integer.num(2);
+  var ls7 = one.leftShift(7);
+  var ls17 = one.leftShift(17);
+  var ls27 = one.leftShift(27);
+  var ls37 = one.leftShift(37);
+  var ls47 = one.leftShift(47);
+
+  equal(ls7.toString(), "128", "1 << 7 = 128");
+  equal(ls17.toString(), "131072", "1 << 17 = 131072");
+  equal(ls27.toString(), "134217728", "1 << 27 = 134217728");
+  equal(ls37.toString(), "137438953472", "1 << 37 = 137438953472");
+  equal(ls47.toString(), "140737488355328", "1 << 37 = 140737488355328");
+
+  equal(two.pow(7).toString(), "128", "2 ^ 7 = 128");
+  equal(two.pow(17).toString(), "131072", "2 ^ 17 = 131072");
+  equal(two.pow(27).toString(), "134217728", "2 ^ 27 = 134217728");
+  equal(two.pow(37).toString(), "137438953472", "2 ^ 37 = 137438953472");
+  equal(two.pow(47).toString(), "140737488355328", "2 ^ 47 = 140737488355328");
+
+  equal(ls7.rightShift(7).toString(), "1", "128 >> 7 = 1");
+  equal(ls17.rightShift(17).toString(), "1", "131072 >> 17 = 1");
+  equal(ls27.rightShift(27).toString(), "1", "134217728 >> 27 = 1");
+  equal(ls37.rightShift(37).toString(), "1", "137438953472 >> 37 = 1");
+  equal(ls47.rightShift(47).toString(), "1", "140737488355328 >> 47 = 1");
+});
+
 function fib(a) {
-  var b = Integer.num(0);
-  for (var i = 0, c = Integer.num(1), d; i < a; ++i) {
+  var b = Integer.zero();
+  for (var i = 0, c = Integer.one(), d; i < a; ++i) {
     d = b.clone();
     b = b.add(c);
     c = d;
@@ -64,7 +96,7 @@ test("fib", function(){
 });
 
 function fact(a) {
-  var f = Integer.num(1);
+  var f = Integer.one();
   for (var i = 2; i < a + 1; ++i) {
     f = f.mul(Integer.num(i));
   }
@@ -77,5 +109,8 @@ test("fact", function () {
   equal(fact(2).toString(), "2", "2! = 2");
   equal(fact(3).toString(), "6", "3! = 6");
   equal(fact(10).toString(), "3628800", "10! = 3628800");
+  equal(fact(17).toString(), "355687428096000", "17! = 355687428096000");
 });
 </script>
+</body>
+</html>

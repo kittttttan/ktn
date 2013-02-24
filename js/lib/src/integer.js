@@ -463,9 +463,9 @@
       var a = this.clone(),
           ad = a._d,
           l = ad.length,
-          d = b >> 4,
+          d = (b / SHIFT) | 0,
           cl = l + d + 1,
-          bb = b & 0xf,
+          bb = b % SHIFT,
           c = longAlloc(cl, a._s),
           cd = c._d,
           i = 0,
@@ -491,17 +491,16 @@
       var a = this.clone(),
           ad = a._d,
           l = ad.length,
-          d = b >> 4,
-          bb = b & 0xf,
-          mask = (1 << bb) - 1;
+          d = (b / SHIFT) | 0;
       if (l <= d) { return new Integer(); }
 
-      var cl = l - d,
+      var bb = b % SHIFT,
+          cl = l - d,
           c = longAlloc(cl, a._s),
           cd = c._d,
           i = 0;
       for (; i < cl - 1; ++i) {
-        cd[i] = ((ad[i + d + 1] & mask) << (SHIFT - bb)) + (ad[i + d] >> bb);
+        cd[i] = ((ad[i + d + 1] & MASK) << (SHIFT - bb)) + (ad[i + d] >> bb);
       }
       cd[i] = ad[i + d] >> bb;
       return norm(c);

@@ -32,6 +32,7 @@ function basic() {
       '\na / b = ',a.div(b), '\na % b = ',a.mod(b),
       '\na ^ 2 = ',a.pow(2), '\na^0.5 = ',a.pow(0.5), ' ~ ',a.sqrt(),
       '\na >> 2 = ',a.rightShift(2),'\na << 2 = ',a.leftShift(2),
+      '\na >> 17 = ',a.rightShift(17),'\na << 17 = ',a.leftShift(17),
       '\ngcd(a, b) = ',a.gcd(b), ' = ',a.gcdBin(b)
       ].join('');
 }
