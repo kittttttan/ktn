@@ -6,41 +6,45 @@
 #include <string.h>
 #include <assert.h>
 
-#ifdef USE_64BIT
-#define SHIFT_BIT  30
-#define SHIFT_DEC  9
-#define BASE_DEC  ((digit)1000000000)
-#define getStringLength(l) (l * 241 / 25 + 2)
-#else
-#define SHIFT_BIT  15
-#define SHIFT_DEC  4
-#define BASE_DEC  ((digit)10000)
-#define getStringLength(l) (l * 241 / 50 + 2)
-#endif
-#define BASE    ((digit)1 << SHIFT_BIT)
-#define MASK    ((digit)(BASE - 1))
-
-#define longNorm(self) {                            \
-  int l = abs(self->l_);                            \
-  while (l > 0 && self->d_[l - 1] == 0) { --l; }    \
-  if (l == 0) {                                     \
-    self->l_ = 0;                                   \
-  } else {                                          \
-    self->l_ = self->l_ < 0 ? -l : l;               \
-  }                                                 \
-}
-
-#define LONG_MALLOC_ERROR_CHECK(plong) {                \
-  if (!plong->d_) {                                     \
-    printf("malloc error [%d]%s\n",__LINE__,__FILE__);  \
-    plong->a_ = plong->l_ = 0;                          \
-    return;                                             \
-  }                                                     \
-}
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#ifdef USE_64BIT
+#define getStringLength(l) ((l) * 241 / 25 + 2)
+#else
+#define getStringLength(l) ((l) * 241 / 50 + 2)
+#endif
+
+enum {
+#ifdef USE_64BIT
+  SHIFT_BIT = 30,
+  SHIFT_DEC = 9,
+#else
+  SHIFT_BIT = 15,
+  SHIFT_DEC = 4,
+#endif
+  BASE = 1 << SHIFT_BIT,
+  MASK = BASE - 1,
+};
+
+#define longNorm(self) {                            \
+  int l = abs((self)->l_);                          \
+  while (l > 0 && (self)->d_[l - 1] == 0) { --l; }  \
+  if (l == 0) {                                     \
+    (self)->l_ = 0;                                 \
+  } else {                                          \
+    (self)->l_ = (self)->l_ < 0 ? -l : l;           \
+  }                                                 \
+}
+
+#define LONG_MALLOC_ERROR_CHECK(plong) {                        \
+  if (!(plong)->d_) {                                           \
+    fprintf(stderr,"malloc error [%d]%s\n",__LINE__,__FILE__);  \
+    (plong)->a_ = (plong)->l_ = 0;                              \
+    return;                                                     \
+  }                                                             \
+}
 
 void longInit(Long* self) {
   self->a_ = 0;
@@ -50,8 +54,10 @@ void longInit(Long* self) {
 
 void longAlloc(Long* self, int length) {
   int absLength = abs(length);
+
   self->l_ = length;
   if (self->a_ > absLength) { return; }
+
   if (self->d_ != NULL) { free(self->d_); }
   self->d_ = (digit*)malloc(sizeof(digit) * absLength);
   LONG_MALLOC_ERROR_CHECK(self);
@@ -66,6 +72,7 @@ void longFillZero(Long* self, int length) {
 void longNum(Long* self, ddigit n) {
   int d = 0;
   ddigit t = abs(n);
+
   while (t) {
     ++d;
     t >>= SHIFT_BIT;
@@ -75,12 +82,14 @@ void longNum(Long* self, ddigit n) {
   self->d_ = (digit*)malloc(sizeof(digit) * d);
   LONG_MALLOC_ERROR_CHECK(self);
   self->a_ = d;
+
   d = 0;
   t = abs(n);
   while (t) {
     self->d_[d++] = t & MASK;
     t >>= SHIFT_BIT;
   }
+
   longNorm(self);
 }
 
@@ -94,7 +103,9 @@ void longFree(Long* self) {
 
 void longClone(Long* dest, const Long* src) {
   int destLength;
+
   if (dest == src) { return; }
+
   dest->l_ = src->l_;
   destLength = abs(src->l_);
   if (dest->a_ < destLength) {
@@ -120,11 +131,11 @@ void longNeg(Long* dest, const Long* src) {
  * @param[out] s
  */
 void longStr(const Long* self, char *s) {
-  const digit radix = 10, hradix = BASE_DEC;
+  const digit radix = 10;
   const int length = abs(self->l_);
   int i, j, k, index;
-  ddigit n;
-  const char digits[] = "0123456789";
+  ddigit n, hradix;
+  const char digits[] = "0123456789abcdef";
   Long t;
   digit *td;
 
@@ -149,12 +160,13 @@ void longStr(const Long* self, char *s) {
   }
 
   j = getStringLength(i);
+  hradix = 10000;
 
   longInit(&t);
   longClone(&t, self);
   td = t.d_;
   index = 0;
-  
+
   while (i && j) {
     k = i;
     n = 0;
@@ -187,6 +199,7 @@ void longStr(const Long* self, char *s) {
 void longWrite(const Long* self) {
   char *c;
   int length, abs_l;
+
   if (longIsZero(self)) {
     putchar('0');
     return;
@@ -195,7 +208,7 @@ void longWrite(const Long* self) {
   abs_l = abs(self->l_);
   length = (abs_l > 1) ? getStringLength(abs_l) + 1 : 20;
   c = (char*)malloc(sizeof(char) * length);
-  if (!c) { printf("Failed malloc char*"); return; }
+  if (!c) { fprintf(stderr, "Failed malloc char*\n"); return; }
   longStr(self, c);
   printf("%s", c);
   free(c);
@@ -354,7 +367,6 @@ void longMul(Long* dest, const Long* lhs, const Long* rhs) {
   longNorm(dest);
 }
 
-
 /**
  * @param b
  * @param mod
@@ -367,7 +379,7 @@ void longDivmod(Long* dest, const Long* lhs, const Long* rhs, bool mod) {
   ddigit dd, ee, t, num, q;
 
   if (longIsZero(rhs)) {
-    printf("Zero Division @%d\n", __LINE__);
+    fprintf(stderr, "Zero Division @%d\n", __LINE__);
     return;
   }
   if (longIsOne(rhs)) {
@@ -517,11 +529,11 @@ void longDivmod(Long* dest, const Long* lhs, const Long* rhs, bool mod) {
 
 void longLeftShift(Long* dest, const Long* self, ddigit n) {
   int i;
+  ddigit t, carry = 0;
+  digit *dd, *sd;
   const int length = abs(self->l_);
   const int d = (int)n / SHIFT_BIT;
   const ddigit b = n % SHIFT_BIT;
-  ddigit t, carry = 0;
-  digit *dd, *sd;
 
   longAlloc(dest, longIsNeg(self) ? -(length + d + 1) : length + d + 1);
   memset(dest->d_, 0, sizeof(digit) * d);
@@ -634,6 +646,7 @@ void longPow(Long* dest, const Long* self, ddigit n) {
   longInit(&t);
   longClone(&a, self);
   longNum(dest, 1);
+
   for (; n > 0; n >>= 1) {
     if (n & 1) {
       longMul(&t, dest, &a);
@@ -643,6 +656,7 @@ void longPow(Long* dest, const Long* self, ddigit n) {
     longSquare(&t, &a);
     longClone(&a, &t);
   }
+
   longFree(&a);
   longFree(&t);
 }
@@ -652,6 +666,7 @@ int longCmpAbs(const Long* lhs, const Long* rhs) {
   digit *ld, *rd;
 
   if (lhs == rhs) { return 0; }
+
   al = abs(lhs->l_);
   if (al < abs(rhs->l_)) { return -1; }
   if (al > abs(rhs->l_)) { return 1; }
@@ -671,6 +686,7 @@ int longCmp(const Long* lhs, const Long* rhs) {
   const int sign = lhs->l_ ^ rhs->l_;
 
   if (lhs == rhs) { return 0; }
+
   al = lhs->l_;
   if (al < rhs->l_) { return -1; }
   if (al > rhs->l_) { return 1; }

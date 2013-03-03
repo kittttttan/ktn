@@ -79,19 +79,9 @@ Matrix<T, M, N>::Matrix() {
 
 template<class T, int M, int N>
 Matrix<T, M, N>::Matrix(const T& t) {
-    try {
-        data_ = new T*[N];
-    } catch (std::bad_alloc) {
-        data_ = nullptr;
-        return;
-    }
+    data_ = new T*[N];
     for (int y = 0; y < N; ++y) {
-        try {
-            data_[y] = new T[M];
-        } catch (std::bad_alloc) {
-            data_[y] = nullptr;
-            return;
-        }
+        data_[y] = new T[M];
         for (int x = 0; x < M; ++x) {
             if (x == y) {
                 data_[y][x] = t;
@@ -105,19 +95,9 @@ Matrix<T, M, N>::Matrix(const T& t) {
 template<class T, int M, int N>
 Matrix<T, M, N>::Matrix(const Matrix<T, M, N>& b) {
     if (this == &b) { return; }
-    try {
-        data_ = new T*[N];
-    } catch (std::bad_alloc) {
-        data_ = nullptr;
-        return;
-    }
+    data_ = new T*[N];
     for (int y = 0; y < N; ++y) {
-        try {
-            data_[y] = new T[M];
-        } catch (std::bad_alloc) {
-            data_[y] = nullptr;
-            return;
-        }
+        data_[y] = new T[M];
         for (int x = 0; x < M; ++x) {
             data_[y][x] = b.data_[y][x];
         }

@@ -20,15 +20,16 @@ Fraction::Fraction(ddigit a) :
     }
 }
 
+/**
+ * @throw std::logic_error
+ */
 Fraction::Fraction(const ULong& a, const ULong& b, bool s) :
     s_(s)
 {
     n_ = a;
     d_ = b;
     if (!d_) {
-        fprintf(stderr, "ZeroDivision: Fraction");
-        d_ = ULong(1);
-        return;
+        throw std::logic_error("ZeroDivision");
     }
     cancel();
 }
@@ -54,6 +55,9 @@ inline void Fraction::cancel()
     d_ /= g;
 }
 
+/**
+ * @throw std::logic_error
+ */
 Fraction::Fraction(ddigit a, ddigit b)
 {
     if (a < 0) {
@@ -64,8 +68,7 @@ Fraction::Fraction(ddigit a, ddigit b)
         n_ = ULong(a);
     }
     if (b == 0) {
-        fprintf(stderr, "ZeroDivision: Fraction");
-        d_ = ULong(1);
+        throw std::logic_error("ZeroDivision");
     } else if (b < 0) {
         s_ = !s_;
         d_ = ULong(-b);

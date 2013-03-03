@@ -3,7 +3,9 @@
 
 #include "../bool.h"
 
-//#define USE_64BIT
+/*
+#define USE_64BIT
+*/
 #ifdef USE_64BIT
 typedef long digit;
 typedef long long ddigit;
@@ -17,9 +19,9 @@ extern "C" {
 #endif
 
 typedef struct _Long {
-  int a_;    /**< allocate size */
-  int l_;    /**< length */
-  digit* d_;  /**< digits */
+  int a_;       /**< allocate size */
+  int l_;       /**< length */
+  digit* d_;    /**< digits */
 } Long;
 
 void longInit(Long* self);
@@ -58,13 +60,13 @@ void longSquare(Long* dest, const Long* self);
 void longSqrt(Long* dest, const Long* self);
 void longPow(Long* dest, const Long* self, ddigit n);
 
-#define longIsZero(self)    (self->l_ == 0)
-#define longIsOne(self)      (self->l_ == 1 && self->d_[0] == 1)
-#define longIsNeg(self)      (self->l_ < 0)
-#define longDiv(dest, lhs, rhs)  longDivmod(dest, lhs, rhs, false)
-#define longMod(dest, lhs, rhs)  longDivmod(dest, lhs, rhs, true)
+#define longIsZero(self)        ((self)->l_ == 0)
+#define longIsOne(self)         ((self)->l_ == 1 && (self)->d_[0] == 1)
+#define longIsNeg(self)         ((self)->l_ < 0)
+#define longDiv(dest, lhs, rhs) longDivmod(dest, lhs, rhs, false)
+#define longMod(dest, lhs, rhs) longDivmod(dest, lhs, rhs, true)
 
 #ifdef __cplusplus
 }
 #endif
-#endif // CKTN_MATH_LONG_H_
+#endif /* CKTN_MATH_LONG_H_ */

@@ -1,6 +1,4 @@
 #pragma once
-#ifndef KTN_MATH_ULONG_H_
-#define KTN_MATH_ULONG_H_
 
 #include <string>
 #include <iostream>
@@ -107,19 +105,18 @@ private:
     static const ddigit SHIFT_BIT;
     static const ddigit BASE;
     static const ddigit MASK;
-    static const char OUTPUT_FORMAT[];
-    static const char OUTPUT_FORMAT_B[];
+    static const char FORMAT_DIGIT[];
+    static const char FORMAT_DDIGIT[];
+    static const char FORMAT_B[];
 
 private:
     void alloc(int length, bool zero);
     inline void norm();
 
-    int l_;      /**< length */
+    int l_;     /**< length */
     digit* d_;  /**< digit blocks */
 };
 
 }} // namespace ktn math
 
 #include "ulong.inl"
-
-#endif // KTN_MATH_ULONG_H_

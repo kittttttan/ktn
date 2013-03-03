@@ -1,7 +1,7 @@
 ﻿#include "string.h"
 #include "logger.h"
 
-int main() {
+int main(int argc, char** argv) {
   char filename[64];
 
   loggerSetFilename("test.log");

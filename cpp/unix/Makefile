@@ -1,5 +1,5 @@
 CXX = g++
-CFLAGS = -g -Wall -O2 -Dnullptr=NULL
+CFLAGS = -g -W -Wall -O2 -Dnullptr=NULL
 TARGET = test
 OBJS = test.o string.o stringw.o date.o
 

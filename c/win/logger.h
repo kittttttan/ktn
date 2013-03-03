@@ -14,7 +14,7 @@ extern "C" {
 #ifdef _DEBUG
 #define TRACE(...)	_tprintf(__VA_ARGS__);
 #else
-#define TRACE(...)
+#define TRACE(...)  ((void)0)
 #endif
 
 typedef enum _LogLevel {
@@ -59,4 +59,4 @@ void loggerClose();
 }
 #endif
 
-#endif // CKTN_LOGGER_H_
+#endif /* CKTN_LOGGER_H_ */

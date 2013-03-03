@@ -1,6 +1,4 @@
 #pragma once
-#ifndef KTN_MATH_FRACTION_H_
-#define KTN_MATH_FRACTION_H_
 
 #include "ulong.h"
 #include <string>
@@ -94,4 +92,3 @@ private:
     ULong d_;  /**< denominator */
 };
 }} // namespace ktn math
-#endif // KTN_MATH_FRACTION_H_

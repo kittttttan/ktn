@@ -9,20 +9,22 @@
 namespace ktn { namespace math {
 
 #ifdef USE_64BIT
-//const char ULong::OUTPUT_FORMAT[] = "%I64d";
-const char ULong::OUTPUT_FORMAT[] = "%lld";
+const char ULong::FORMAT_DIGIT[] = "%ld";
+//const char ULong::FORMAT_DDIGIT[] = "%I64d";
+const char ULong::FORMAT_DDIGIT[] = "%lld";
 const ddigit ULong::SHIFT_BIT = 30;
 #else
-const char ULong::OUTPUT_FORMAT[] = "%d";
+const char ULong::FORMAT_DIGIT[] = "%d";
+const char ULong::FORMAT_DDIGIT[] = "%ld";
 const ddigit ULong::SHIFT_BIT = 15;
 #endif
 
-const char ULong::OUTPUT_FORMAT_B[] = "%04x";
+const char ULong::FORMAT_B[] = "%04x";
 
 const ddigit ULong::BASE = 1 << SHIFT_BIT;
 const ddigit ULong::MASK = BASE - 1;
 
-const ULong ULong::ZERO(0);  /**< constant zero */
+const ULong ULong::ZERO(0); /**< constant zero */
 const ULong ULong::ONE(1);  /**< constant one */
 
 /**
@@ -146,7 +148,7 @@ ULong& ULong::operator=(const ULong& b)
 void ULong::debug() const
 {
     for (int i = 0; i < l_; ++i) {
-        printf(OUTPUT_FORMAT, d_[i]);
+        printf(FORMAT_DIGIT, d_[i]);
         printf(" ");
     }
     puts("");
@@ -193,7 +195,7 @@ void ULong::cstr(char *s, int radix) const
         return;
     }
 
-    const char digits[] = "0123456789";
+    const char digits[] = "0123456789abcdef";
     int i = l_;
     int j;
     if (i < 2) {
@@ -264,9 +266,9 @@ void ULong::out(int base, bool br) const
         while (j--) {
             t = (d_[i] >> j) & 1;
             if (f) {
-                printf(OUTPUT_FORMAT, t);
+                printf(FORMAT_DDIGIT, t);
             } else if (t) {
-                printf(OUTPUT_FORMAT, t);
+                printf(FORMAT_DDIGIT, t);
                 f = true;
             }
         }
@@ -274,7 +276,7 @@ void ULong::out(int base, bool br) const
             while (i--) {
                 j = SHIFT_BIT;
                 while (j--) {
-                    printf(OUTPUT_FORMAT, (d_[i] >> j) & 1);
+                    printf(FORMAT_DIGIT, (d_[i] >> j) & 1);
                 }
             }
         }
@@ -288,7 +290,7 @@ void ULong::out(int base, bool br) const
         printf("%x", d_[i]);
         if (i) {
             while (i--) {
-                printf(OUTPUT_FORMAT_B, d_[i]);
+                printf(FORMAT_B, d_[i]);
             }
         }
         if (br) { puts(""); }

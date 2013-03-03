@@ -9,12 +9,14 @@
 namespace ktn { namespace math {
 
 template <class Integer>
-inline Integer abs(const Integer& A) {
+inline Integer abs(const Integer& A)
+{
    return A < 0 ? -A : A;
 }
 
 template <class Integer>
-inline Integer gcd(Integer A, Integer B) {
+inline Integer gcd(Integer A, Integer B)
+{
    do {
       const Integer tmp(B);
       B = A % B;
@@ -25,7 +27,8 @@ inline Integer gcd(Integer A, Integer B) {
 }
 
 template <class Integer>
-inline Integer gcdBin(const Integer& A, const Integer& B) {
+inline Integer gcdBin(const Integer& A, const Integer& B)
+{
     if (A < B) { return gcdBin(B, A); }
     Integer x(A), y(B), g(1);
     while ((x & 1) == 0 && (y & 1) == 0) {
@@ -53,7 +56,8 @@ inline Integer gcdBin(const Integer& A, const Integer& B) {
 }
 
 template <class Integer>
-inline Integer lcm(const Integer& A, const Integer& B) {
+inline Integer lcm(const Integer& A, const Integer& B)
+{
     Integer ret(A);
     ret /= gcd(A, B);
     ret *= B;

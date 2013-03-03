@@ -1,6 +1,4 @@
 #pragma once
-#ifndef LOGGERW_H_
-#define LOGGERW_H_
 
 #include "logformatw.h"
 #include "dbg.h"
@@ -63,5 +61,3 @@ private:
 DefaultLogFormatW LoggerW::defaultLogFormat;
 
 } // namespace ktn
-
-#endif // LOGGERW_H_

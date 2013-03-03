@@ -5,7 +5,6 @@
 #include "dbg.h"
 #include "loggingw.h"
 #include "stringw.h"
-#include "array.h"
 #include "date.h"
 
 #include <cstdio>
@@ -47,22 +46,6 @@ void stringTest() {
     d.out();
 }
 
-void arrayTest() {
-    int a[] = {1,2,3,4,5,6,7};
-    Array<int> arr(a, 7);
-    std::wcout << arr << std::endl;
-    std::wcout << arr[1] << std::endl;
-
-    Array<int> arr2(3);
-    std::wcout << arr2 << std::endl;
-
-    Array<int> c = arr + arr2;
-    std::wcout << c << std::endl;
-
-    c.reverse();
-    std::wcout << c << std::endl;
-}
-
 void dateTest() {
     Date d;
     std::wcout << d << std::endl;
@@ -91,7 +74,6 @@ void dateTest() {
 
 int main(int argc, const char** argv) {
     stringTest();
-    arrayTest();
     dateTest();
 
     return 0;

@@ -54,12 +54,7 @@ const Vector<T, N> Vector<T, N>::ZERO;
 
 template<class T, int N>
 Vector<T, N>::Vector() {
-    try {
-        data_ = new T[N];
-    } catch (std::bad_alloc) {
-        data_ = nullptr;
-        return;
-    }
+    data_ = new T[N];
     for (int i = 0; i < N; ++i) {
         data_[i] = T();
     }
@@ -67,12 +62,7 @@ Vector<T, N>::Vector() {
 
 template<class T, int N>
 Vector<T, N>::Vector(const Vector<T, N>& b) {
-    try {
-        data_ = new T[N];
-    } catch (std::bad_alloc) {
-        data_ = nullptr;
-        return;
-    }
+    data_ = new T[N];
     for (int i = 0; i < N; ++i) {
         data_[i] = b.data_[i];
     }

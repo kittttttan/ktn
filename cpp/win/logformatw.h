@@ -1,6 +1,4 @@
 #pragma once
-#ifndef LOGFORMATW_H_
-#define LOGFORMATW_H_
 
 #include "stringw.h"
 #include "loglevel.h"
@@ -34,5 +32,3 @@ public:
 };
 
 } // namespace ktn
-
-#endif // LOGFORMATW_H_

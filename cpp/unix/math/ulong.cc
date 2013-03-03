@@ -1,71 +1,63 @@
-/**
- * @file  math/ulong.cc
- * @brief ULong
- */
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-
 #include "ulong.h"
 #include "../dbg.h"
 
-#define OUTPUT_FORMAT_B    "%04x"
-
-#ifdef USE_64BIT
-#define OUTPUT_FORMAT    "%lld"
-#define SHIFT_BIT  30
-#define SHIFT_DEC  9
-#define BASE_DEC  (1000000000)
-#define getStringLength(l) (l * 241 / 25 + 2)
-#else
-#define OUTPUT_FORMAT    "%d"
-#define SHIFT_BIT  15
-#define SHIFT_DEC  4
-#define BASE_DEC  (10000)
-#define getStringLength(l) (l * 241 / 50 + 2)
-#endif
-#define BASE    (1 << SHIFT_BIT)
-#define MASK    (BASE - 1)
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <sstream>
 
 namespace ktn { namespace math {
+
+#ifdef USE_64BIT
+const char ULong::FORMAT_DIGIT[] = "%ld";
+const char ULong::FORMAT_DDIGIT[] = "%lld";
+const ddigit ULong::SHIFT_BIT = 30;
+#else
+const char ULong::FORMAT_DIGIT[] = "%d";
+const char ULong::FORMAT_DDIGIT[] = "%ld";
+const ddigit ULong::SHIFT_BIT = 15;
+#endif
+
+const char ULong::FORMAT_B[] = "%04x";
+
+const ddigit ULong::BASE = 1 << SHIFT_BIT;
+const ddigit ULong::MASK = BASE - 1;
 
 const ULong ULong::ZERO(0);  /**< constant zero */
 const ULong ULong::ONE(1);  /**< constant one */
 
-ULong::ULong(const ULong& l) {
+/**
+ * Copy
+ * @param[in] l
+ */
+ULong::ULong(const ULong& l)
+{
     if (this == &l) { return; }
     l_ = l.l_;
-    try {
-        d_ = new digit[l_];
-    } catch (std::bad_alloc) {
-        d_ = nullptr;
-        l_ = 0;
-        return;
-    }
+    d_ = new digit[l_];
     for (int i = 0; i < l_; ++i) {
         d_[i] = l.d_[i];
     }
 }
 
-ULong::ULong(ddigit u) : l_(2) {
-    try {
-        d_ = new digit[2];
-    } catch (std::bad_alloc) {
-        d_ = nullptr;
-        l_ = 0;
-        fprintf(stderr, "Failed new ddigit[2]");
-        return;
-    }
+/**
+ * @param[in] u
+ */
+ULong::ULong(ddigit u)
+    : l_(2)
+{
+    d_ = new digit[2];
     d_[0] = u & MASK;
     d_[1] = (u >> SHIFT_BIT) & MASK;
     norm();
 }
 
 /**
-* @param s     source string
-* @param radix 
-*/
-ULong::ULong(const char *s, int radix) {
+ * @param[in] s
+ * @param[in] radix
+ */
+ULong::ULong(const char *s, int radix)
+{
     int index = 0;
     if (s[index] == '+') { ++index; }
     while (s[index] == '0') { ++index; }
@@ -85,14 +77,7 @@ ULong::ULong(const char *s, int radix) {
     len = (len >> 4) + 1;
 
     l_ = len;
-    try {
-        d_ = new digit[len];
-    } catch (std::bad_alloc) {
-        d_ = nullptr;
-        l_ = 0;
-        fprintf(stderr, "Failed new ddigit[%d]", len);
-        return;
-    }
+    d_ = new digit[len];
     for (int i = 0; i < len; ++i) {
         d_[i] = 0;
     }
@@ -118,23 +103,18 @@ ULong::ULong(const char *s, int radix) {
 }
 
 /**
-* Allocation.
-* @param length 
-* @param zero   fill zero flag
-*/
-void ULong::alloc(int length, bool zero) {
+ * Allocation.
+ * @param[in] length 
+ * @param[in] zero   fill zero flag
+ */
+void ULong::alloc(int length, bool zero)
+{
     _ASSERTE(length > 0);
 
     if (l_ != length) {
         l_ = length;
         delete [] d_;
-        try {
-            d_ = new digit[l_];
-        } catch (std::bad_alloc) {
-            d_ = nullptr;
-            l_ = 0;
-            return;
-        }
+        d_ = new digit[l_];
     }
     if (!zero) { return; }
     for (int i = 0; i < length; ++i) {
@@ -142,18 +122,16 @@ void ULong::alloc(int length, bool zero) {
     }
 }
 
-ULong& ULong::operator=(const ULong& b) {
+/**
+ * @param[in] b
+ * @return
+ */
+ULong& ULong::operator=(const ULong& b)
+{
     if (this == &b) { return *this; }
     if (l_ < b.l_) {
         delete [] d_;
-        try {
-            d_ = new digit[b.l_];
-        } catch (std::bad_alloc) {
-            d_ = nullptr;
-            l_ = 0;
-            fprintf(stderr, "Failed new ddigit[%d]", b.l_);
-            return *this;
-        }
+        d_ = new digit[b.l_];
     }
     l_ = b.l_;
     for (int i = 0; i < l_; ++i) {
@@ -163,28 +141,24 @@ ULong& ULong::operator=(const ULong& b) {
     return *this;
 }
 
-void ULong::debug() const {
+/**
+ * output for debug
+ */
+void ULong::debug() const
+{
     for (int i = 0; i < l_; ++i) {
-        printf(OUTPUT_FORMAT " ", d_[i]);
+        printf(FORMAT_DIGIT, d_[i]);
+        printf(" ");
     }
     puts("");
 }
 
-inline void reverseChar(char* s) {
-    if (*s == '\0') { return; }
-    char *s0 = s;
-    while (*s != '\0') { ++s; }
-    --s;
-    while (*s == '0' && s > s0) { --s; };
-    *(s + 1) = '\0';
-    for (char t; s0 < s; --s, ++s0) {
-        t = *s;
-        *s = *s0;
-        *s0 = t;
-    }
-}
-
-std::string ULong::str(int radix) const {
+/**
+ * @param[in] radix
+ * @return
+ */
+std::string ULong::str(int radix) const
+{
     if (!(*this)) {
         std::string s("0");
         return s;
@@ -199,13 +173,7 @@ std::string ULong::str(int radix) const {
     }
 
     char* c = nullptr;
-    try {
-        c = new char[length];
-    } catch (std::bad_alloc) {
-        fprintf(stderr, "Failed new char[%d]", length);
-        std::string s;
-        return s;
-    }
+    c = new char[length];
 
     cstr(c, radix);
     std::string s(c);
@@ -225,7 +193,7 @@ void ULong::cstr(char *s, int radix) const {
         return;
     }
 
-    const char digits[] = "0123456789";
+    const char digits[] = "0123456789abcdef";
     int i = l_, j;
     if (i < 2) {
         digit d = d_[0];
@@ -279,22 +247,25 @@ void ULong::cstr(char *s, int radix) const {
 * @param base 2, 10, 16
 * @param br   line break
 */
-void ULong::out(int base, bool br) const {
+void ULong::out(int base, bool br) const
+{
     if (!(*this)) {
         putchar('0');
         if (br) { puts(""); }
         return;
     }
+
     if (base == 2) {
-        int i = l_ - 1, j = SHIFT_BIT;
+        int i = l_ - 1;
+        int j = SHIFT_BIT;
         bool f = false;
         ddigit t;
         while (j--) {
             t = (d_[i] >> j) & 1;
             if (f) {
-                printf(OUTPUT_FORMAT, t);
+                printf(FORMAT_DDIGIT, t);
             } else if (t) {
-                printf(OUTPUT_FORMAT, t);
+                printf(FORMAT_DDIGIT, t);
                 f = true;
             }
         }
@@ -302,7 +273,7 @@ void ULong::out(int base, bool br) const {
             while (i--) {
                 j = SHIFT_BIT;
                 while (j--) {
-                    printf(OUTPUT_FORMAT, (d_[i] >> j) & 1);
+                    printf(FORMAT_DIGIT, (d_[i] >> j) & 1);
                 }
             }
         }
@@ -310,41 +281,56 @@ void ULong::out(int base, bool br) const {
 
         return;
     }
+
     if (base == 16) {
         int i = l_ - 1;
         printf("%x", d_[i]);
         if (i) {
             while (i--) {
-                printf(OUTPUT_FORMAT_B, d_[i]);
+                printf(FORMAT_B, d_[i]);
             }
         }
         if (br) { puts(""); }
 
         return;
     }
-    char *c = nullptr;
-    try {
-        c = (l_ > 1) ? new char[getStringLength(l_) + 1] : new char[20];
-    } catch (std::bad_alloc) {
-        fprintf(stderr, "Failed new char[]");
-        return;
-    }
+
+    char *c = new char[(l_ > 1) ? getStringLength(l_) + 1 : 20];
     cstr(c, 10);
     printf("%s", c);
     if (br) { puts(""); }
     delete [] c;
 }
 
-std::ostream& operator<<(std::ostream& os, const ULong& l) {
+/**
+ * @param[in,out] os
+ * @param[in]     l
+ */
+std::ostream& operator<<(std::ostream& os, const ULong& l)
+{
     return os << l.str(10);
 }
-/*
-std::istream& operator<<(std::istream& is, ULong& l) {
-return is;
+
+/**
+ * @param[in,out] is
+ * @param[out]    l
+ */
+std::istream& operator>>(std::istream& is, ULong& l)
+{
+    std::string str;
+    is >> str;
+    l = ULong(str.c_str(), is.hex ? 16 : 10);
+    return is;
 }
-*/
-int ULong::cmp(const ULong& b) const {
+
+/**
+ * @param[in] b
+ * @return greater 1, equal 0, less -1
+ */
+int ULong::cmp(const ULong& b) const
+{
     if (this == &b) { return 0; }
+
     int al = l_;
     if (al < b.l_) { return -1; }
     if (al > b.l_) { return 1; }
@@ -354,9 +340,11 @@ int ULong::cmp(const ULong& b) const {
         d_[al] < b.d_[al] ? -1 : 0;
 }
 
-ULong ULong::operator+(const ULong& b) const {
+ULong ULong::operator+(const ULong& b) const
+{
     if (b == ZERO) { return *this; }
     if (l_ < b.l_) { return b + *this; }
+
     ULong z;
     z.alloc(l_ + 1, false);
     int i = 0;
@@ -379,7 +367,8 @@ ULong ULong::operator+(const ULong& b) const {
     return z;
 }
 
-ULong ULong::operator-(const ULong& b) const {
+ULong ULong::operator-(const ULong& b) const
+{
     if (b == ZERO) { return *this; }
     ULong z;
     z.alloc(l_, false);
@@ -407,7 +396,8 @@ ULong ULong::operator-(const ULong& b) const {
     return z;
 }
 
-ULong ULong::operator<<(ddigit n) const {
+ULong ULong::operator<<(ddigit n) const
+{
     const int d = static_cast<int>(n / SHIFT_BIT);
     ULong c;
     c.alloc(l_ + d + 1, false);
@@ -425,7 +415,8 @@ ULong ULong::operator<<(ddigit n) const {
     return c;
 }
 
-ULong ULong::operator>>(ddigit n) const {
+ULong ULong::operator>>(ddigit n) const
+{
     const int d = static_cast<int>(n / SHIFT_BIT);
     if (l_ <= d) { return ZERO; }
     ULong c;
@@ -440,7 +431,11 @@ ULong ULong::operator>>(ddigit n) const {
     return c;
 }
 
-ULong ULong::square() const {
+/**
+ * @return square
+ */
+ULong ULong::square() const
+{
     ULong s;
     s.alloc(l_ << 1, true);
 
@@ -469,9 +464,10 @@ ULong ULong::square() const {
 }
 
 /**
-* square root.
-*/
-ULong ULong::sqrt() const {
+ * @return square root
+ */
+ULong ULong::sqrt() const
+{
     ULong b(*this), c(1);
     while (b > c) {
         b >>= 1;
@@ -485,7 +481,12 @@ ULong ULong::sqrt() const {
     return b;
 }
 
-ULong ULong::pow(ddigit n) const {
+/**
+ * @param[in] n
+ * @return this ^ n
+ */
+ULong ULong::pow(ddigit n) const
+{
     ULong p(1), a(*this);
     for (; n > 0; n >>= 1, a = a.square()) {
         if (n & 1) { p *= a; }
@@ -493,22 +494,16 @@ ULong ULong::pow(ddigit n) const {
     return p;
 }
 
-inline ddigit ULong::bitLength() const {
-    ddigit l = l_ * SHIFT_BIT;
-    int j = SHIFT_BIT;
-    while (j-- && ((d_[l_ - 1] >> j) & 1) == 0) {
-        --l;
-    }
-
-    return l;
-}
-
 /**
-* multiple with karatsuba method.
-*/
-ULong ULong::karatsuba(const ULong& u) const {
+ * multiple with karatsuba method.
+ * @param[in] u
+ * @return this * u
+ */
+ULong ULong::karatsuba(const ULong& u) const
+{
     if (u == ZERO) { return ZERO; }
     if (u == ONE) { return *this; }
+
     ddigit N = bitLength();
     const ddigit l = u.bitLength();
     if (N < l) { N = l; }
@@ -527,9 +522,11 @@ ULong ULong::karatsuba(const ULong& u) const {
     return ac + ((abcd - ac - bd) << N) + (bd << (N << 1));
 }
 
-ULong ULong::operator*(const ULong& b) const {
+ULong ULong::operator*(const ULong& b) const
+{
     if (b == ZERO) { return ZERO; }
     if (b == ONE) { return *this; }
+
     ULong z;
     z.alloc(l_ + b.l_, true);
 
@@ -550,7 +547,11 @@ ULong ULong::operator*(const ULong& b) const {
     return z;
 }
 
-ULong ULong::random(int n) {
+/**
+ * @param[in] n
+ */
+ULong ULong::random(int n)
+{
     ULong r;
     r.alloc(n, false);
     for (int i = 0; i < n; ++i) {
@@ -561,9 +562,12 @@ ULong ULong::random(int n) {
 }
 
 /**
-* greatest common divisor.
-*/
-ULong ULong::gcd(const ULong& b) const {
+ * greatest common divisor.
+ * @param[in] b
+ * @return
+ */
+ULong ULong::gcd(const ULong& b) const
+{
     ULong x(*this), y(b);
     for (;;) {
         const ULong z(x % y);
@@ -576,9 +580,12 @@ ULong ULong::gcd(const ULong& b) const {
 }
 
 /**
-* greatest common divisor with binary method.
-*/
-ULong ULong::gcdBin(const ULong& b) const {
+ * greatest common divisor with binary method.
+ * @param[in] b
+ * @return
+ */
+ULong ULong::gcdBin(const ULong& b) const
+{
     if (*this < b) { return b.gcdBin(*this); }
     ULong x(*this), y(b), g(1);
     while ((x.d_[0] & 1) == 0 && (y.d_[0] & 1) == 0) {
@@ -606,11 +613,12 @@ ULong ULong::gcdBin(const ULong& b) const {
 }
 
 /**
-* @param b
-* @param mod
-* @return modulus if mod is true, else division
-*/
-ULong ULong::divmod(const ULong& b, bool mod) const {
+ * @param[in] b
+ * @param[in] mod
+ * @return modulus if mod is true, else division
+ */
+ULong ULong::divmod(const ULong& b, bool mod) const
+{
     if (b == ZERO) {
         fprintf(stderr, "ZeroDivision: ULong::divmod");
         return ZERO;

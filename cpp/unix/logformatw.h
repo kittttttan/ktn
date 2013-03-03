@@ -7,6 +7,10 @@
 #include "stringw.h"
 #include "loglevel.h"
 
+#ifdef __MINGW32__
+#define swprintf(dest, size, format, ...) swprintf(dest, format, __VA_ARGS__)
+#endif
+
 namespace ktn {
 
 class ILogFormatW {

@@ -1,6 +1,4 @@
 #pragma once
-#ifndef KTN_STRING_H_
-#define KTN_STRING_H_
 
 #include <iostream>
 
@@ -53,4 +51,3 @@ private:
 };
 
 } // namespace ktn
-#endif // KTN_STRING_H_

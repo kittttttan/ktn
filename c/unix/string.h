@@ -11,4 +11,4 @@ void reverseString(char* s);
 }
 #endif
 
-#endif // CKTN_STRING_H_
+#endif /* CKTN_STRING_H_ */

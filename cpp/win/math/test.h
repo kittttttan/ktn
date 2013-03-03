@@ -1,6 +1,4 @@
 #pragma once
-#ifndef KTN_MATH_TEST_H_
-#define KTN_MATH_TEST_H_
 
 #include "long.h"
 #include "fraction.h"
@@ -39,5 +37,3 @@ void kTest();
 void compBasic();
 void vectorBasic();
 void matrixBasic();
-
-#endif // KTN_MATH_TEST_H_

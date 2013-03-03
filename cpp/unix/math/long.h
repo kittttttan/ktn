@@ -1,14 +1,9 @@
 #ifndef KTN_MATH_LONG_H_
 #define KTN_MATH_LONG_H_
 
-/**
- * @file  math/long.h
- * @brief Long
- */
-
+#include "ulong.h"
 #include <string>
 #include <iostream>
-#include "ulong.h"
 
 namespace ktn { namespace math {
 
@@ -16,9 +11,8 @@ namespace ktn { namespace math {
  * @brief Signed BigInteger.
  */
 class Long {
-
     friend std::ostream& operator<<(std::ostream& os, const Long& l);
-    //friend std::istream& operator>>(std::istream &is, Long& l);
+    friend std::istream& operator>>(std::istream &is, Long& l);
 
 public:
     Long() : u_(), s_(true) {}

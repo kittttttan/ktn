@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-int main() {
+int main(int argc, char** argv) {
   Long u;
   int n;
 

@@ -1,6 +1,4 @@
 #pragma once
-#ifndef KTN_MATH_MATH_H_
-#define KTN_MATH_MATH_H_
 
 /**
  * @file  math/math.h
@@ -66,4 +64,3 @@ inline Integer lcm(const Integer& A, const Integer& B)
 }
 
 }} // namespace ktn math
-#endif // KTN_MATH_MATH_H_

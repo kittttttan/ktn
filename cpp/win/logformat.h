@@ -1,6 +1,4 @@
 #pragma once
-#ifndef LOGFORMAT_H_
-#define LOGFORMAT_H_
 
 #include "loglevel.h"
 #include <ctime>
@@ -37,5 +35,3 @@ public:
 };
 
 } // namespace ktn
-
-#endif // LOGFORMAT_H_

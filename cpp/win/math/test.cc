@@ -16,10 +16,16 @@ void ulongBasic()
 
     puts("** Test for ULong **");
     printf("a = "); a.out();
-    // FIXME: 
-    cout << "  = " << hex << a << endl
-         << "  = " << a << endl;
+    
+    // TODO: ?
+    cout.setf(ios::hex, ios::basefield);
+    cout << "  = " << a << endl;
+    cout.unsetf(ios::hex);
+    cout.setf(ios::dec, ios::basefield);
+    cout << "  = " << a << endl;
+
     printf("b = "); b.out();
+
     printf("!a = %s\n", !a ? "true" : "false");
     printf("a < b is %s\n", (a < b) ? "true" : "false");
     printf("a + b = "); (a + b).out();

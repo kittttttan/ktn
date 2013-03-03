@@ -17,4 +17,4 @@ void pi(Long* dest, ddigit a);
 }
 #endif
 
-#endif // CKTN_TEST_H_
+#endif /* CKTN_TEST_H_ */

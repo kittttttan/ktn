@@ -1,6 +1,4 @@
 #pragma once
-#ifndef DBG_H_
-#define DBG_H_
 
 #ifndef __func__
 #ifdef __FUNCTION__
@@ -37,5 +35,3 @@
 #define TRACE(...)
 #define TRACEW(...)
 #endif
-
-#endif // DBG_H_

@@ -1,6 +1,4 @@
 #pragma once
-#ifndef KTN_MATH_MATRIX_H_
-#define KTN_MATH_MATRIX_H_
 
 #include "math.h"
 
@@ -384,4 +382,3 @@ bool Matrix<T, M, N>::operator!=(const Matrix<T, M, N>& b) const
 //  return abs(data_[0][0] * data_[1][1] - data_[1][0] * data_[0][1]);
 //}
 }} // namespace ktn math
-#endif // KTN_MATH_MATRIX_H_

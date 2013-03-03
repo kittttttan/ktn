@@ -7,14 +7,14 @@
 #endif
 
 #ifdef _DEBUG
-#define _ASSERTE(expr) if(!(expr))                              \
-    {                                                           \
-        fprintf(stderr, "%s: %s %s[%d]",                        \
-            __func__, #expr, __FILE__, __LINE__);               \
-        std::exit(EXIT_FAILURE);                                \
+#define _ASSERTE(expr) if(!(expr))                 \
+    {                                              \
+        fprintf(stderr, "%s: %s %s[%d]",           \
+            __func__, #expr, __FILE__, __LINE__);  \
+        std::exit(EXIT_FAILURE);                   \
     }
 #else
-#define _ASSERTE(expr)
+#define _ASSERTE(expr)  ((void)0)
 #endif
 
 #ifdef _DEBUG
@@ -26,7 +26,7 @@
         printf("\n");                                     \
     }
 #else
-#define TRACE(...)
+#define TRACE(...)  ((void)0)
 #endif
 
 #endif // DBG_H_

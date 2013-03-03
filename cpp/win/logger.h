@@ -1,6 +1,4 @@
 #pragma once
-#ifndef LOGGER_H_
-#define LOGGER_H_
 
 #include "logformat.h"
 #include <fstream>
@@ -69,5 +67,3 @@ private:
 };
 
 } // namespace ktn
-
-#endif // LOGGER_H_

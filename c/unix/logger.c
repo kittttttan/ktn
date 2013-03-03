@@ -2,21 +2,24 @@
 
 #include <locale.h>
 
-#define LOCALE_CHAR     (32)
-
-#ifndef MAX_PATH
-#define MAX_PATH        (260)
-#endif
-
 #ifndef min
-#define min(a,b)        (((a)<(b))?(a):(b))
+#define min(a,b)  (((a)<(b))?(a):(b))
 #endif
 
-#define LOG_COLOR_NONE  (0)
-#define LOG_COLOR_RED     (1)
-#define LOG_COLOR_GREEN   (2)
-#define LOG_COLOR_YELLOW  (3)
-#define LOG_COLOR_CYAN    (6)
+enum {
+  LOCALE_CHAR = 32,
+#ifndef MAX_PATH
+  MAX_PATH = 260,
+#endif
+};
+
+enum {
+  LOG_COLOR_NONE,
+  LOG_COLOR_RED,
+  LOG_COLOR_GREEN,
+  LOG_COLOR_YELLOW,
+  LOG_COLOR_CYAN = 6,
+};
 
 static char locale_[LOCALE_CHAR] = "";
 static LogLevel loglevel_ = LOG_ALL;

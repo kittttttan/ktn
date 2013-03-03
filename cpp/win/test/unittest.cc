@@ -5,6 +5,7 @@
 #pragma comment(lib, "gtestd.lib")
 #pragma comment(lib, "gtest_maind.lib")
 
+using namespace ktn;
 using namespace ktn::math;
 
 TEST(ULong, Basic) {

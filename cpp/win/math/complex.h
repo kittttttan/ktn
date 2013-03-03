@@ -1,6 +1,4 @@
 #pragma once
-#ifndef KTN_MATH_COMPLEX_H_
-#define KTN_MATH_COMPLEX_H_
 
 namespace ktn { namespace math {
 
@@ -219,4 +217,3 @@ bool Complex<T>::operator!=(const Complex<T>& b) const
 }
 
 }} // namespace ktn math
-#endif // KTN_MATH_COMPLEX_H_

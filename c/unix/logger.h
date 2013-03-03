@@ -6,14 +6,13 @@ extern "C" {
 #endif
 
 #include <string.h>
-
 #include <stdio.h>
 #include <stdarg.h>
 
 #ifdef _DEBUG
 #define TRACE(...)	printf(__VA_ARGS__);
 #else
-#define TRACE(...)
+#define TRACE(...)  ((void)0)
 #endif
 
 typedef enum _LogLevel {
@@ -44,18 +43,18 @@ void loggerLog0(LogLevel level, const char* fmt);
 void loggerLog(LogLevel level, const char* fmt, ...);
 void loggerClose();
 
-#define LOGGER_INFO0(fmt)	loggerLog0(LOG_INFO, fmt);
-#define LOGGER_WARN0(fmt)	loggerLog0(LOG_WARN, fmt);
+#define LOGGER_INFO0(fmt)	  loggerLog0(LOG_INFO, fmt);
+#define LOGGER_WARN0(fmt)	  loggerLog0(LOG_WARN, fmt);
 #define LOGGER_ERROR0(fmt)	loggerLog0(LOG_ERROR, fmt);
 #define LOGGER_ALL0(fmt)		loggerLog0(LOG_ALL, fmt);
 
-#define LOGGER_INFO(fmt, ...)	loggerLog(LOG_INFO, fmt, __VA_ARGS__);
-#define LOGGER_WARN(fmt, ...)	loggerLog(LOG_WARN, fmt, __VA_ARGS__);
+#define LOGGER_INFO(fmt, ...)	  loggerLog(LOG_INFO, fmt, __VA_ARGS__);
+#define LOGGER_WARN(fmt, ...)	  loggerLog(LOG_WARN, fmt, __VA_ARGS__);
 #define LOGGER_ERROR(fmt, ...)	loggerLog(LOG_ERROR, fmt, __VA_ARGS__);
-#define LOGGER_ALL(fmt, ...)	loggerLog(LOG_ALL, fmt, __VA_ARGS__);
+#define LOGGER_ALL(fmt, ...)	  loggerLog(LOG_ALL, fmt, __VA_ARGS__);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif // CKTN_LOGGER_H_
+#endif /* CKTN_LOGGER_H_ */

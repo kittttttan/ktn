@@ -1,6 +1,4 @@
 #pragma once
-#ifndef KTN_MATH_LONG_H_
-#define KTN_MATH_LONG_H_
 
 #include "ulong.h"
 #include <string>
@@ -92,4 +90,3 @@ private:
     bool s_;  /**< sign */
 };
 }} // namespace ktn math
-#endif // KTN_MATH_LONG_H_

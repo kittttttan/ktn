@@ -1,6 +1,4 @@
 #pragma once
-#ifndef KTN_MATH_VECTOR_H_
-#define KTN_MATH_VECTOR_H_
 
 namespace ktn { namespace math {
 
@@ -228,4 +226,3 @@ bool Vector<T, N>::operator!=(const Vector<T, N>& v) const
 }
 
 }} // namespace ktn math
-#endif

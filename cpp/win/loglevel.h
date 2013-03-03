@@ -1,6 +1,4 @@
 #pragma once
-#ifndef LOGLEVEL_H_
-#define LOGLEVEL_H_
 
 namespace ktn {
 
@@ -32,5 +30,3 @@ namespace LogLevel {
 } // namespace LogLevel
 
 } // namespace ktn
-
-#endif // LOGLEVEL_H_
