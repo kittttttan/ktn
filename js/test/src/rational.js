@@ -3,18 +3,7 @@
  */
 (function(G) {
 "use strict";
-var print, _T, _S = '',
-    Rational;
-if (typeof window !== 'undefined') {
-  // browser
-  print = function(a) { _S += a + '\n'; };
-  _T = G.document.getElementById('log');
-} else if (typeof require !== 'undefined') {
-  // node
-  print = console.log;
-}
-
-Rational = require('../lib/rational.js').Rational;
+var Rational = require('../lib/rational.js').Rational;
 
 function basic() {
   var a = Rational.num(1024, 78);
@@ -44,13 +33,12 @@ function exp(a) {
 // Test
 var d = Date.now();
 
-print(basic());
+console.log(basic());
 
 var e = exp(20);
-print('e ~= ' + e.toString());
-print('  ~= ' + e.valueOf());
+console.log('e ~= ' + e.toString());
+console.log('  ~= ' + e.valueOf());
 
-print('\nTime: '+ (Date.now() - d) + 'ms');
+console.log('\nTime: '+ (Date.now() - d) + 'ms');
 
-if (_T) { _T.value = _S; }
 }(this));

@@ -83,20 +83,25 @@
    */
   Integer.num = function(n) {
     var a = new Integer();
+    
     if (n < 0) {
       n = -n;
       a._s = false;
     }
+    
     n &= 0x7fffffff;
     a._d[0] = n & MASK;
+    
     n >>>= SHIFT;
     if (n) {
       a._d[1] = n & MASK;
     }
+    
     n >>>= SHIFT;
     if (n) {
       a._d[2] = n & MASK;
     }
+    
     return a;
   };
   var longNum = Integer.num;
@@ -112,16 +117,20 @@
   Integer.str = function(str, base) {
     if (!base) { base = 10; }
 
-    var index = 0, sign = true, len;
+    var index = 0;
+    var sign = true;
     if (str.charAt(index) === '+') {
       ++index;
     } else if (str.charAt(index) === '-') {
       sign = false;
       ++index;
     }
+    
     // Ignore following zeros. '00102' is regarded as '102'.
     while (str.charAt(index) === '0') { ++index; }
     if (!str.charAt(index)) { return new Integer(); }
+    
+    var len;
     if (base === 8) {
       len = 3 * (str.length + 1 - index);
     } else {
@@ -133,24 +142,27 @@
     var z = longAlloc(len, sign);
     longFillZero(z, len);
 
-    for (var c, n, zd = z._d, bl = 1;;) {
+    var zd = z._d, bl = 1;
+    var c, n, i;
+    for (;;) {
       c = str.charAt(index);
       ++index;
       if (!c) { break; }
+      
       n = parseInt(c, base);
-      for (var i = 0;;) {
+      for (i = 0;;) {
         for (; i < bl; ++i) {
           n += zd[i] * base;
           zd[i] = n & MASK;
           n >>>= SHIFT;
         }
-        if (n) {
-          ++bl;
-        } else {
-          break;
-        }
+        
+        if (!n) { break; }
+
+        ++bl;
       }
     }
+    
     return norm(z);
   };
   var longStr = Integer.str;
@@ -167,15 +179,17 @@
       if (a instanceof Integer) { return a.clone(); }
       return new Integer();
     }
+    
     if (typeof a === 'string') {
       return longStr(a);
     }
+    
     if (typeof a === 'number') {
       if (-0x7fffffff <= a && a <= 0x7fffffff) {
         return longNum(a);
       }
+      
       a += '';
-
       var i = a.indexOf('e', 0);
       if (i < 0) {
         // 'e' is not found
@@ -192,8 +206,10 @@
         a2 -= np;
       }
       for (; a2 > 0; --a2) { a1 += '0'; }
+      
       return longStr(a1);
     }
+    
     return new Integer();
   };
   var any = Integer.any;
@@ -211,8 +227,71 @@
     for (var i = 0; i < a; ++i) {
       rd[i] = Math.random() * BASE | 0;
     }
+    
     return norm(r);
   };
+  
+  /**
+   * @private
+   * @param {number} n
+   * @return {Integer}
+   */
+  function fact_odd(n) {
+    var m = Integer.one();
+    var mi, mj;
+    var i = 0;
+    var j;
+    var l;
+    var limit = 1 << (SHIFT << 1);
+    
+    for (;; ++i) {
+      l = (n / (1 << i)) | 0;
+      
+      if (l < 3) break;
+      
+      mi = mj = 1;
+      for (j = 3; j <= l; j += 2) {
+        mi *= j;
+        if (mi > limit) {
+          m = m.mul(Integer.num(mj));
+          mi = mj = j;
+        } else {
+          mj = mi;
+        }
+      }
+      
+      if (mj > 1) { m = m.mul(Integer.num(mj)); }
+    }
+    
+    return m;
+  }
+  
+  /**
+   * @private
+   * @param {number} n
+   * @return {Integer}
+   */
+  function fact_even(n) {
+    var s = 0;
+    
+    while (n) {
+      n >>= 1;
+      s += n;
+    }
+    
+    return Integer.one().leftShift(s);
+  }
+  
+  /**
+   * @static
+   * @method Integer.factorial
+   * @param {number} n
+   * @return {Integer}
+   */
+  Integer.factorial = function(n) {
+    if (n < 1) { return Integer.one(); }
+    return fact_odd(n).mul(fact_even(n));
+  }
 
   /**
    * Set length.
@@ -224,6 +303,7 @@
     var a = new Integer();
     a._s = sign ? true : false;
     a._d.length = length;
+    
     return a;
   }
 
@@ -237,6 +317,7 @@
   function longFillZero(a, b) {
     var d = a._d;
     while (b--) { d[b] = 0; }
+    
     return a;
   }
 
@@ -251,8 +332,10 @@
         l = d.length;
     do { --l; } while (l && !d[l]);
     d.length = l + 1;
+    
     // -0 -> +0
     if (!l && !d[l]) { a._s = true; }
+    
     return a;
   }
 
@@ -269,6 +352,7 @@
       d[i] = (((d[i + 1] & 1) << SHIFT) + d[i]) >>> 1;
     }
     d[l] >>>= 1;
+    
     return norm(a);
   }
 
@@ -288,6 +372,7 @@
       c = t >>> SHIFT;
     }
     if (c) { d[l] = c; }
+    
     return norm(a);
   }
 
@@ -326,6 +411,7 @@
         ac = longK(a, c),
         bd = longK(b, d),
         abcd = longK(a.add(b), c.add(d));
+
     // xy
     // = (a + 2^N b) (c + 2^N d)
     // = ac + 2^N ((a + b) (c + d) - ac - bd) + 2^(N + 1) bd
@@ -387,6 +473,7 @@
           n %= hbase;
         }
         if (!d[i - 1]) { --i; }
+        
         k = 4;
         while (k--) {
           s = digits.charAt(n % b) + s;
@@ -395,8 +482,10 @@
           if (!i && !n) { break; }
         }
       }
+      
       s = s.replace(/^0+/, '');
       if (!this._s) { s = '-' + s; }
+      
       return s;
     },
 
@@ -411,6 +500,7 @@
           i = d.length;
       while (i--) { f = d[i] + BASE * f; }
       if (!this._s) { f = -f; }
+      
       return f;
     },
 
@@ -435,6 +525,7 @@
       var b = new Integer();
       b._s = this._s;
       b._d = Array.prototype.concat.call(this._d);
+      
       return b;
     },
 
@@ -450,6 +541,7 @@
       for (; b > 0; b >>>= 1, z += z) {
         if (b & 1) { zeros += z; }
       }
+      
       return longStr(this.toString() + zeros);
     },
 
@@ -460,7 +552,7 @@
      * @return {Integer}
      */
     leftShift: function(b) {
-      var a = this.clone(),
+      var a = this,
           ad = a._d,
           l = ad.length,
           d = (b / SHIFT) | 0,
@@ -471,13 +563,15 @@
           i = 0,
           carry = 0;
       for (; i < d; ++i) { cd[i] = 0; }
-      i = 0;
-      for (var t = 0; i < l; ++i) {
+      
+      var t;
+      for (i = 0; i < l; ++i) {
         t = (ad[i] << bb) + carry;
         cd[i + d] = t & MASK;
         carry = t >> SHIFT;
       }
       cd[i + d] = carry;
+      
       return norm(c);
     },
 
@@ -488,7 +582,7 @@
      * @return {Integer}
      */
     rightShift: function(b) {
-      var a = this.clone(),
+      var a = this,
           ad = a._d,
           l = ad.length,
           d = (b / SHIFT) | 0;
@@ -504,6 +598,7 @@
         cd[i] = ((ad[i + d + 1] & mask) << (SHIFT - bb)) + (ad[i + d] >> bb);
       }
       cd[i] = ad[i + d] >> bb;
+      
       return norm(c);
     },
 
@@ -538,12 +633,14 @@
           w = s._d;
       longFillZero(s, w.length);
 
-      for (var i = 0, j = 1, uv = 0, u = 0, v = 0, c = 0; i < t; ++i) {
+      var i, j, c, uv, u, v;
+      for (var i = 0; i < t; ++i) {
         uv = w[i << 1] + x[i] * x[i];
         u = uv >>> SHIFT;
         v = uv & MASK;
         w[i << 1] = v;
         c = u;
+        
         for (j = i + 1; j < t; ++j) {
           // uv = w[i + j] + (x[j] * x[i] << 1) + c
           // can overflow.
@@ -556,6 +653,7 @@
           w[i + j] = v;
           c = u;
         }
+        
         w[i + t] = u;
       }
 
@@ -574,11 +672,13 @@
         longHalf(b);
         longDouble(c);
       }
+      
       do {
         b = c.clone();
         c = this.divmod(c, false).add(c);
         longHalf(c);
       } while (b.cmp(c) > 0);
+      
       return b;
     },
 
@@ -590,13 +690,18 @@
      */
     pow: function(b) {
       if (!b) { return longNum(1); }
+      
       if (b > 0 && b === (b | 0)) {
-        var p = longNum(1), a = this.clone();
+        var p = longNum(1);
+        var a = this.clone();
+        
         for (; b > 0; b >>= 1, a = a.square()) {
           if (b & 1) { p = p.mul(a); }
         }
+        
         return p;
       }
+      
       return Math.pow(this.valueOf(), b);
     },
 
@@ -609,10 +714,12 @@
     gcd: function(b) {
       var c;
       var a = this.abs();
+      
       while ((c = a.divmod(b, true)).isNonZero()) {
         a = b;
         b = c;
       }
+      
       return b;
     },
 
@@ -638,9 +745,11 @@
         while (!(a._d[0] & 1)) {
           longHalf(a);
         }
+        
         while (!(b._d[0] & 1)) {
           longHalf(b);
         }
+        
         if (a.cmpAbs(b) < 0) {
           b = b.sub(a);
           longHalf(b);
@@ -666,6 +775,7 @@
       if (this._d.length < b._d.length) {
         return b.addAbs(this, sign);
       }
+      
       var ad = this._d,
           bd = b._d,
           al = ad.length,
@@ -688,6 +798,7 @@
         zd[i] = ad[i];
       }
       zd[i] = num & MASK;
+      
       return norm(z);
     },
 
@@ -719,6 +830,7 @@
           c = 0;
         }
       }
+      
       for (; i < al; ++i) { 
         c = ad[i] - c;
         if (c < 0) {
@@ -729,6 +841,7 @@
           c = 0;
         }
       }
+      
       return norm(z);
     },
 
@@ -743,8 +856,10 @@
         if (this.cmpAbs(b) < 0) {
           return b.subAbs(this, b._s);
         }
+        
         return this.subAbs(b, this._s);
       }
+      
       return this.addAbs(b, this._s);
     },
 
@@ -759,8 +874,10 @@
         if (this.cmpAbs(b) < 0) {
             return b.subAbs(this, !b._s);
         }
+        
         return this.subAbs(b, this._s);
       }
+      
       return this.addAbs(b, this._s);
     },
 
@@ -783,6 +900,7 @@
       for (var i = 0, n, d, e, zd = z._d; i < al; ++i) {
         d = ad[i]; 
         if (!d) { continue; }
+        
         n = 0;
         for (j = 0; j < bl; ++j) {
           e = n + d * bd[j];
@@ -790,8 +908,10 @@
           if (e) { zd[i + j] = n & MASK; }
           n >>>= SHIFT;
         }
+        
         if (n) { zd[i + j] = n; }
       }
+      
       return norm(z);
     },
 
@@ -831,15 +951,19 @@
         z = a.clone();
         zd = z._d;
         i = na;
+        
         while (i--) {
           t = (t << SHIFT) | zd[i];
           zd[i] = (t / dd) & MASK;
           t %= dd;
         }
+        
         if (modulus) {
           if (!a._s) { return longNum(-t); }
+          
           return longNum(t);
         }
+        
         z._s = a._s === b._s;
         return norm(z);
       }
@@ -854,7 +978,8 @@
         j = na;
         while (j--) { zd[j] = ad[j]; }
       } else {
-        var bb = b.clone(), td = bb._d;
+        var bb = b.clone();
+        var td = bb._d;
 
         for (; j < nb; ++j) {
           num += bd[j] * dd;
@@ -909,6 +1034,7 @@
             --num;
           }
         }
+        
         zd[j] = q;
       } while (--j >= nb);
 
@@ -926,12 +1052,14 @@
         }
         zd.length = nb;
         div._s = a._s;
+        
         return norm(div);
       }
 
       j = (albl ? na + 2 : na + 1) - nb;
       for (i = 0; i < j; ++i) { zd[i] = zd[i + nb]; }
       zd.length = j;
+      
       return norm(div);
     },
 
@@ -1011,8 +1139,10 @@
           al = ad.length;
       if (al < bd.length) { return -1; }
       if (al > bd.length) { return 1; }
+      
       do { --al; } while (al && ad[al] === bd[al]);
       if (!al && ad[0] === bd[0]) { return 0; }
+      
       return ad[al] > bd[al] ? 1 : -1;
     },
 
@@ -1033,10 +1163,12 @@
       if (this._s !== b._s) { return this._s ? 1 : -1; }
       if (al < bd.length) { return this._s ? -1 : 1; }
       if (al > bd.length) { return this._s ? 1 : -1; }
+      
       do { --al; } while (al && ad[al] === bd[al]);
       if (!al && ad[0] === bd[0]) {
         return (this._s ? 1 : 0) - (b._s ? 1 : 0);
       }
+      
       if (ad[al] > bd[al]) { return this._s ? 1 : -1; }
       return this._s ? -1 : 1;
     },
@@ -1049,15 +1181,19 @@
      */
     eq: function(b) {
       if (this === b) { return true; }
+      
       b = any(b);
       if (this._s !== b._s) { return false; }
+      
       var ad = this._d,
           bd = b._d,
           l = ad.length;
       if (l !== bd.length) { return false; }
+      
       for (var i = 0; i < l; ++i) {
         if (ad[i] !== bd[i]) { return false; }
       }
+      
       return true;
     },
 
@@ -1071,13 +1207,16 @@
       if (this === b) { return true; }
       if (!(b instanceof Integer)) { return false; }
       if (this._s !== b._s) { return false; }
+      
       var ad = this._d,
           bd = b._d,
           l = ad.length;
       if (l !== bd.length) { return false; }
+      
       for (var i = 0; i < l; ++i) {
         if (ad[i] !== bd[i]) { return false; }
       }
+      
       return true;
     },
 

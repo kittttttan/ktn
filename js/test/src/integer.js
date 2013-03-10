@@ -4,19 +4,7 @@
 (function(G) {
 "use strict";
 
-// Init: define print & load module
-var print, _T, _S = '',
-    Integer;
-if (typeof window !== 'undefined') {
-  // browser
-  print = function(a) { _S += a + '\n'; };
-  _T = G.document.getElementById('log');
-} else if (typeof require !== 'undefined') {
-  // node
-  print = console.log;
-}
-
-Integer = require('../lib/integer.js').Integer;
+var Integer = require('../lib/integer.js').Integer;
 
 /**
  * Basic operations
@@ -35,19 +23,6 @@ function basic() {
       '\na >> 17 = ',a.rightShift(17),'\na << 17 = ',a.leftShift(17),
       '\ngcd(a, b) = ',a.gcd(b), ' = ',a.gcdBin(b)
       ].join('');
-}
-
-/**
- * Factorial
- * @param {number} a
- * @returns {Integer} a!
- */
-function fact(a) {
-  var f = Integer.num(1);
-  for (var i = 2; i < a + 1; ++i) {
-    f = f.mul(Integer.num(i));
-  }
-  return f;
 }
 
 /**
@@ -72,7 +47,7 @@ function fib(a) {
 function square(a) {
   for (var i = 1, t; i < a; ++i) {
     t = Integer.random(i);
-    print(t.mul(t).equal(t.square()));
+    console.log(t.mul(t).equal(t.square()));
   }
 }
 
@@ -94,7 +69,7 @@ function sqvsmul(a) {
     nums[i].square();
   }
   var t2 = Date.now();
-  print('mul: '+ (t1 - t0) +'ms\nsq:  '+ (t2 - t1) +'ms\n     '
+  console.log('mul: '+ (t1 - t0) +'ms\nsq:  '+ (t2 - t1) +'ms\n     '
       + (100*(t2 - t1)/(t1 - t0)).toFixed(2) +'%');
 }
 
@@ -106,7 +81,7 @@ function gcd(a) {
   for (var i = 0, b, c; i < a; ++i) {
     b = Integer.random(i + 20);
     c = Integer.random(i + 20);
-    print(b.gcd(c).equal(b.gcdBin(c)));
+    console.log(b.gcd(c).equal(b.gcdBin(c)));
   }
 }
 
@@ -129,7 +104,7 @@ function gcdvsbin(a) {
     m[i].gcdBin(n[i]);
   }
   var t2 = Date.now();
-  print('gcd: '+ (t1 - t0) +'ms\nbin: '+ (t2 - t1) +'ms\n      '
+  console.log('gcd: '+ (t1 - t0) +'ms\nbin: '+ (t2 - t1) +'ms\n      '
       + (100*(t2 - t1)/(t1 - t0)).toFixed(2) +'%');
 }
 
@@ -167,23 +142,20 @@ function pi(a) {
 
 // Test
 var d = Date.now();
+console.log('-- basic operations --');
+console.log(basic());
 
-print('-- basic operations --');
-print(basic());
+console.log('\n-- fibonacchi --');
+console.log('fib(77) = ');
+console.log(fib(77).toString());
 
-print('\n-- fibonacchi --');
-print('fib(77) = ');
-print(fib(77).toString());
+console.log('\n-- factorial --');
+console.log('77! = ');
+console.log(Integer.factorial(77).toString());
 
-print('\n-- factorial --');
-print('77! = ');
-print(fact(77).toString());
+console.log('\n-- pi --');
+console.log('pi(77) = ');
+console.log(pi(77).toString());
+console.log('\nTime: '+ (Date.now() - d) + 'ms');
 
-print('\n-- pi --');
-print('pi(77) = ');
-print(pi(77).toString());
-
-print('\nTime: '+ (Date.now() - d) + 'ms');
-
-if (_T) { _T.value = _S; }
 }(this));

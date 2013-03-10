@@ -3,19 +3,8 @@
  */
 (function(G) {
 "use strict";
-var print, _T, _S = '',
-    Rational, Decimal;
-if (typeof window !== 'undefined') {
-  // browser
-  print = function(a) { _S += a + '\n'; };
-  _T = G.document.getElementById('log');
-} else if (typeof require !== 'undefined') {
-  // node
-  print = console.log;
-}
-
-Rational = require('../lib/rational.js').Rational;
-Decimal = require('../lib/decimal.js').Decimal;
+var Rational = require('../lib/rational.js').Rational;
+var Decimal = require('../lib/decimal.js').Decimal;
 
 function basic() {
   var a = Decimal.dec(1, 2);
@@ -47,13 +36,12 @@ function exp(a) {
 // Test
 var d = Date.now();
 
-print(basic());
+console.log(basic());
 
 var e = exp(20);
-print('e ~= ' + e.toString());
-print('  ~= ' + Decimal.rat(e, 30).toString());
+console.log('e ~= ' + e.toString());
+console.log('  ~= ' + Decimal.rat(e, 30).toString());
 
-print('\nTime: '+ (Date.now() - d) + 'ms');
+console.log('\nTime: '+ (Date.now() - d) + 'ms');
 
-if (_T) { _T.value = _S; }
 }(this));

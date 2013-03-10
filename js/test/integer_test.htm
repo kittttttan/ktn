@@ -86,6 +86,15 @@ function fib(a) {
   return b;
 }
 
+test("factorial", function () {
+  equal(Integer.factorial(0).toString(), "1", "0! = 1");
+  equal(Integer.factorial(1).toString(), "1", "1! = 1");
+  equal(Integer.factorial(2).toString(), "2", "2! = 2");
+  equal(Integer.factorial(3).toString(), "6", "3! = 6");
+  equal(Integer.factorial(10).toString(), "3628800", "10! = 3628800");
+  equal(Integer.factorial(17).toString(), "355687428096000", "17! = 355687428096000");
+});
+
 test("fib", function(){
   equal(fib(0).toString(), "0", "fib(0) = 0");
   equal(fib(1).toString(), "1", "fib(1) = 1");
@@ -93,23 +102,6 @@ test("fib", function(){
   equal(fib(3).toString(), "2", "fib(3) = 2");
   equal(fib(4).toString(), "3", "fib(4) = 3");
   equal(fib(38).toString(), "39088169", "fib(10) = 39088169");
-});
-
-function fact(a) {
-  var f = Integer.one();
-  for (var i = 2; i < a + 1; ++i) {
-    f = f.mul(Integer.num(i));
-  }
-  return f;
-}
-
-test("fact", function () {
-  equal(fact(0).toString(), "1", "0! = 1");
-  equal(fact(1).toString(), "1", "1! = 1");
-  equal(fact(2).toString(), "2", "2! = 2");
-  equal(fact(3).toString(), "6", "3! = 6");
-  equal(fact(10).toString(), "3628800", "10! = 3628800");
-  equal(fact(17).toString(), "355687428096000", "17! = 355687428096000");
 });
 </script>
 </body>
