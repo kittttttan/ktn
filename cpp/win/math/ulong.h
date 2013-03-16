@@ -27,6 +27,9 @@ public:
     static const ULong ONE;
 
     static ULong random(int n);
+    static ULong factorial(int n);
+    static ULong fact_odd(int n);
+    static ULong fact_even(int n);
 
 public:
     explicit ULong() : l_(0), d_(nullptr) {}

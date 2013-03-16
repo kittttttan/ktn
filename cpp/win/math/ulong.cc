@@ -565,6 +565,69 @@ ULong ULong::random(int n)
     return r;
 }
 
+ULong ULong::fact_odd(int n)
+{
+    ULong m = ONE;
+    int mi, mj;
+    int i, j;
+    int l;
+    int limit = 1 << (SHIFT_BIT << 1);
+
+    for (i = 0; ; ++i) {
+        l = (n / (1 << i));
+        if (l < 3) break;
+
+        mi = mj = 1;
+        for (j = 3; j <= l; j += 2) {
+            mi *= j;
+            if (mi > limit) {
+                m *= mj;
+                mi = mj = j;
+            } else {
+                mj = mi;
+            }
+        }
+
+        if (mj > 1) { m *= mj; }
+    }
+
+    return m;
+}
+
+/**
+ * @param[in] n
+ * @return
+ */
+ULong ULong::fact_even(int n)
+{
+    int s = 0;
+
+    while (n) {
+        n >>= 1;
+        s += n;
+    }
+
+    return ONE << s;
+}
+
+/**
+ * @param[in] n
+ * @return n!
+ */
+ULong ULong::factorial(int n)
+{
+    /*
+    ULong u = ONE;
+    for (int i = 2; i <= n; ++i) {
+        u *= i;
+    }
+
+    return u;
+    */
+
+    return fact_odd(n) * fact_even(n);
+}
+
 /**
  * greatest common divisor.
  * @param[in] b

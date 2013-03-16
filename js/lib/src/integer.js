@@ -626,8 +626,9 @@
      * @return {Integer} this * this
      */
     square: function() {
-      var a = this.clone(),
-          x = a._d,
+      //var a = this.clone(),
+      //    x = a._d,
+      var x = this._d,
           t = x.length,
           s = longAlloc(t << 1, true),
           w = s._d;
@@ -667,7 +668,7 @@
      */
     sqrt: function() {
       var b = this.clone(),
-          c = longNum(1);
+          c = Integer.one();
       while (b.cmp(c) > 0) {
         longHalf(b);
         longDouble(c);
@@ -689,10 +690,10 @@
      * @return {Integer|number} this<sup>b</sup>
      */
     pow: function(b) {
-      if (!b) { return longNum(1); }
+      if (!b) { return Integer.one(); }
       
       if (b > 0 && b === (b | 0)) {
-        var p = longNum(1);
+        var p = Integer.one();
         var a = this.clone();
         
         for (; b > 0; b >>= 1, a = a.square()) {
@@ -732,7 +733,7 @@
     gcdBin: function(b) {
       if (this.cmpAbs(b) < 0) { return b._gcd(this); }
 
-      var g = longNum(1);
+      var g = Integer.one();
       var a = this.abs();
       b = b.abs();
       while (!(a._d[0] & 1) && !(b._d[0] & 1)) {

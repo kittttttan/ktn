@@ -1,19 +1,22 @@
 CC = gcc
-CFLAGS = -g -Wall -O2
+CFLAGS = -g -Wall -Wextra -O2
 TARGET = test
-OBJS = main.o long.o test.o ../string.o
+OBJDIR = obj/
+SOURCES = $(wildcard *.c)
+OBJS = $(addprefix $(OBJDIR), $(SOURCES:%.c=%.o)) ../obj/string.o
 
 all: $(TARGET)
-
-$(TARGET): $(OBJS)
-	$(CC) -o $@ $(OBJS)
 
 clean:
 	-$(RM) $(TARGET) $(OBJS)
 
-.c.o:
-	$(CC) $(CFLAGS) -c $<
+$(TARGET): $(OBJS)
+	$(CC) -o $@ $(OBJS)
 
-main.o:
-long.o: ../string.o
-test.o:
+$(OBJDIR)%.o: %.c
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+$(OBJS): | $(OBJDIR)
+
+$(OBJDIR):
+	mkdir -p $(OBJDIR)
