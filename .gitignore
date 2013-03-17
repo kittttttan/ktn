@@ -5,10 +5,10 @@
 Debug/
 Release/
 ipch/
-*.vcxproj.*
 *.sdf
 *.opensdf
 *.suo
+*.user
 *.o
 *.exe
 *.log
