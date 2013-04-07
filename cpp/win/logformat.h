@@ -30,7 +30,7 @@ public:
            << name << " "
            << LogLevel::LevelName[level] << " "
            << log;
-        return std::string(os.str());
+        return os.str();
     }
 };
 

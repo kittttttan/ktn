@@ -92,6 +92,9 @@
     <ClCompile Include="logger.cc">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="loggerw.cc">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="doc.txt" />

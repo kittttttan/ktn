@@ -15,13 +15,13 @@
 #define LOGGER_WARN(logstr)         ((void)0)
 #define LOGGER_INFO(logstr)         ((void)0)
 #else
-#define LOGGER_INIT  ktn::Logger*logger=nullptr
-#define LOGGER(name) { logger = ktn::Logger::getInstance(name); }
-#define LOGGER_LEVEL(level) { logger->logLevel(level); }
+#define LOGGER_INIT  ktn::Logger*_logger=nullptr
+#define LOGGER(name) { _logger = ktn::Logger::getInstance(name); }
+#define LOGGER_LEVEL(level) { _logger->logLevel(level); }
 #define LOGGER_LOG(level, logstr)                                           \
     do {                                                                    \
-        if (logger->logLevel() >= level) {                                  \
-            logger->log(logstr, level, __FILE__, __LINE__, __FUNCTION__);   \
+        if (_logger->logLevel() >= level) {                                 \
+            _logger->log(logstr, level, __FILE__, __LINE__, __FUNCTION__);  \
         }                                                                   \
     } while(0)
 #define LOGGER_ERROR(logstr)  LOGGER_LOG(ktn::LogLevel::ERR, logstr)

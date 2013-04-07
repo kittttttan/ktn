@@ -28,7 +28,7 @@ Logger::~Logger()
 {
     DWORD dwWait = ::WaitForSingleObject(hWriteEvent_, maxWaitTime);
     if (dwWait != WAIT_OBJECT_0) {
-        fprintf(stderr, "failed WaitForSingleObject");
+        fprintf(stderr, "failed WaitForSingleObject\n");
     }
 
     if (hWriteEvent_) {
@@ -56,14 +56,16 @@ void Logger::log(const char* log, LogLevel::Level level,
         const char* file, int line, const char* func)
 {
     std::string str = logFormat_->format(log, level, file, name_.c_str(), line, func);
+
     DWORD dwWait = ::WaitForSingleObject(hWriteEvent_, maxWaitTime);
     if (dwWait != WAIT_OBJECT_0) {
-        fprintf(stderr, "failed WaitForSingleObject");
+        fprintf(stderr, "failed WaitForSingleObject\n");
     }
+
     queue_.push(str);
     hThread_ = ::CreateThread(NULL, 0,
-                        (LPTHREAD_START_ROUTINE)process,
-                        0, 0, nullptr);
+                (LPTHREAD_START_ROUTINE)process,
+                0, 0, nullptr);
 }
 
 void Logger::write()

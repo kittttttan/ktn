@@ -2,7 +2,6 @@
 
 #include "logformatw.h"
 #include "dbg.h"
-#include <fstream>
 #include <codecvt>
 
 #define LOGGERW
@@ -42,22 +41,13 @@ public:
     LogLevel::Level logLevel() const { return logLevel_; }
     void logLevel(LogLevel::Level logLevel) { logLevel_ = logLevel; }
 
-    void log(const StringW& log, LogLevel::Level level,
-            const wchar_t* file, int line, const wchar_t* func) {
-        StringW str = logFormat_->format(log, level, file, line, func);
-        std::wcout << str << std::endl;
-
-        std::wofstream ofs(filename_, std::ios::app | std::ios::binary);
-        ofs.imbue(std::locale(std::locale(""), new std::codecvt_utf8_utf16<wchar_t>));
-        ofs << str << std::endl;
-    }
+    void log(const wchar_t* log, LogLevel::Level level,
+            const wchar_t* file, int line, const wchar_t* func);
 
 private:
     LogLevel::Level logLevel_;
     ILogFormatW* logFormat_;
     wchar_t* filename_;
 };
-
-DefaultLogFormatW LoggerW::defaultLogFormat;
 
 } // namespace ktn

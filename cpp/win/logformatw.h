@@ -1,15 +1,17 @@
 #pragma once
 
-#include "stringw.h"
 #include "loglevel.h"
 #include <ctime>
+#include <string>
+#include <sstream>
+#include <iomanip>
 
 namespace ktn {
 
 class ILogFormatW {
 public:
     virtual ~ILogFormatW() {}
-    virtual StringW format(const StringW& log, LogLevel::Level level,
+    virtual std::wstring format(const wchar_t* log, LogLevel::Level level,
             const wchar_t* file, int line, const wchar_t* func) = 0;
 };
 
@@ -20,14 +22,14 @@ public:
     DefaultLogFormatW() {}
     ~DefaultLogFormatW() {}
 
-    StringW format(const StringW& log, LogLevel::Level level,
+    std::wstring format(const wchar_t* log, LogLevel::Level level,
             const wchar_t* file, int line, const wchar_t* func) {
         std::wostringstream os;
         os << std::setw(7) << std::setfill(L'0') << clock() << L" "
            << file << L"[" << line << L"]"
            << func << L" " << LogLevel::LevelNameW[level] << L" "
            << log;
-        return StringW(os.str());
+        return os.str();
     }
 };
 

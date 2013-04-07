@@ -13,6 +13,7 @@
 #include <cstdlib>
 #include <clocale>
 #include <sstream>
+#include <thread>
 
 using namespace ktn;
 
@@ -26,7 +27,7 @@ void stringWTest()
 
     LoggerW loggerw;
     StringW titlew(L"UTF-8 サンプル");
-    LOGGERW_INFO(loggerw, titlew);
+    LOGGERW_INFO(loggerw, titlew.str().c_str());
 
     StringW a(L"水樹"), b(L"奈々");
     std::wcout << a[-1] << std::endl;
@@ -41,12 +42,16 @@ void stringWTest()
     std::wcout << StringW(c).slice(1, -2) << std::endl;
     std::wcout << StringW(c).substr(2, 2) << std::endl;
 
+    LOGGER_INFO("sample2");
+
     StringW d = b;
     b *= 3;
     std::wcout << b << std::endl;
 
     b *= -2;
     std::wcout << b << std::endl;
+
+    LOGGER_INFO("sample3");
 }
 
 void stringTest()
@@ -127,6 +132,16 @@ void perform(bool show = false)
     printf("%ldms\n", t2 - t1);
 }
 
+void tick()
+{
+    int cnt = 0;
+    while (cnt < 7) {
+        Sleep(1000);
+        ++cnt;
+        printf("tick: %d\n", cnt);
+    }
+}
+
 int main(int argc, const char** argv)
 {
     _CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF | _CRTDBG_ALLOC_MEM_DF);
@@ -136,6 +151,7 @@ int main(int argc, const char** argv)
     dateTest();
 
     //perform();
+
     system("pause");
 
     return 0;

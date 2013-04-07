@@ -2,8 +2,13 @@
 #include "../uri.h"
 
 #include <gtest/gtest.h>
+#ifdef _M_AMD64
+#pragma comment(lib, "gtest_x64d.lib")
+#pragma comment(lib, "gtest_main_x64d.lib")
+#else
 #pragma comment(lib, "gtestd.lib")
 #pragma comment(lib, "gtest_maind.lib")
+#endif
 
 using namespace ktn;
 using namespace ktn::math;
@@ -133,4 +138,9 @@ TEST(Uri, Relative) {
     EXPECT_STREQ("#main", uri.hash().c_str());
     EXPECT_STREQ("", uri.ext().c_str());
     EXPECT_STREQ("/abc.def/#main", uri.str().c_str());
+}
+
+int main(int argc, char **argv) {
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
 }
