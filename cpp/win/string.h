@@ -15,7 +15,6 @@ class String
 public:
     String();
     explicit String(const char* s);
-    explicit String(const std::string& s);
     String(const String& s);
     ~String();
 

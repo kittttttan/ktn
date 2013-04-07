@@ -2,7 +2,7 @@
 
 namespace ktn {
 
-HttpRequest::HttpRequest(const char* src)
+HttpRequest::HttpRequest()
 {
 
 }
@@ -23,7 +23,7 @@ void HttpRequest::parse(const char* src)
         c = src[cur];
         if (c == EOF) break;
         if (row == 0) {
-            // [GET|POST] /(path)? HTTP/1.[01]
+            // (GET|POST) /(path)? HTTP/1.[01]
             if (c == ' ') {
                 switch (blank) {
                 case 0:

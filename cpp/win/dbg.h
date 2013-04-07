@@ -12,8 +12,6 @@
 #define _CRTDBG_MAP_ALLOC
 #include <crtdbg.h>
 #define new new(_NORMAL_BLOCK, __FILE__, __LINE__)
-#else
-#define _ASSERTE(expr)
 #endif
 
 #ifdef _DEBUG
@@ -32,6 +30,6 @@
         wprintf(L"\n");                                             \
     }
 #else
-#define TRACE(...)
-#define TRACEW(...)
+#define TRACE(...)  ((void)0)
+#define TRACEW(...) ((void)0)
 #endif

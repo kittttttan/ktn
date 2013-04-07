@@ -2,6 +2,7 @@
 
 #include "logformatw.h"
 #include "dbg.h"
+#include <tchar.h>
 #include <codecvt>
 
 #define LOGGERW

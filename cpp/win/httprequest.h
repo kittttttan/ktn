@@ -7,7 +7,7 @@ namespace ktn {
 class HttpRequest
 {
 public:
-    explicit HttpRequest(const char* src);
+    HttpRequest();
     ~HttpRequest();
 
     void parse(const char* src);

@@ -20,12 +20,6 @@ String::String(const char* s) :
 
 }
 
-String::String(const std::string& s) :
-    str_(s)
-{
-
-}
-
 String::String(const String& s)
 {
     if (this == &s) { return; }
@@ -162,9 +156,7 @@ String& String::trim(const char* delim)
 
 String String::operator+(const String& s) const
 {
-    std::string n(str_);
-    n += s.str_;
-    return String(n);
+    return String((str_ + s.str_).c_str());
 }
 
 String& String::operator+=(const String& b)

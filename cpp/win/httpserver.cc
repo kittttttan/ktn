@@ -3,6 +3,8 @@
 #include "httpresponse.h"
 #include "uri.h"
 #include <cstdio>
+#include <iostream>
+#include <fstream>
 #include <exception>
 
 #pragma comment(lib, "ws2_32.lib")
@@ -12,9 +14,9 @@ namespace ktn {
 const size_t kDataSize = 1024;
 
 HttpServer::HttpServer(char* ip, int port) :
-    port_(port), ipAddr_(ip), socket_(INVALID_SOCKET), rootDir_("")
+    port_(port), ipAddr_(ip), socket_(INVALID_SOCKET), rootDir_(".")
 {
-    int err = WSAStartup(MAKEWORD(2, 2), &wsaData_);
+    int err = ::WSAStartup(MAKEWORD(2, 2), &wsaData_);
     if (err) {
         char strErr[64] = "failed WSAStartup: ";
         switch (err) {
@@ -28,18 +30,18 @@ HttpServer::HttpServer(char* ip, int port) :
         throw std::exception(strErr);
     }
 
-    socket_ = socket(AF_INET, SOCK_STREAM, 0);
+    socket_ = ::socket(AF_INET, SOCK_STREAM, 0);
     if (socket_ == INVALID_SOCKET) {
         char what[32];
-        sprintf_s(what, "socket failed: %d\n", WSAGetLastError());
+        sprintf_s(what, "socket failed: %d\n", ::WSAGetLastError());
         throw std::exception(what);
     }
 }
 
 HttpServer::~HttpServer()
 {
-    shutdown(socket_, SD_BOTH);
-    WSACleanup();
+    ::shutdown(socket_, SD_BOTH);
+    ::WSACleanup();
 }
 
 void HttpServer::wsaInfo()
@@ -54,6 +56,7 @@ const char* getFileType(const char* path)
 {
     const char* ext = strrchr(path, '.');
     if (!ext) return "text/plain";
+
     if (strcmp(ext, ".htm") == 0 || strcmp(ext, ".html") == 0) {
         return "text/html";
     }
@@ -72,45 +75,50 @@ const char* getFileType(const char* path)
     if (strcmp(ext, ".jpg") == 0) {
         return "image/jpeg";
     }
+
     return "text/plain";
 }
 
 int HttpServer::serveFile(SOCKET socket, const char* path)
 {
     printf("open %s\n", path);
-    FILE* fp;
-    errno_t err = fopen_s(&fp, path, "rb");
-    if (err) {
+
+    char* buf = nullptr;
+    size_t size = 0;
+    std::ifstream fs(path, std::ios::in | std::ios::binary);
+    if (!fs) {
         return HttpResponse::send(socket, 404, "text/html", HttpResponse::getCodeDesc(404), 0);
     }
-    if (fseek(fp, 0, SEEK_END)) {
-        fprintf(stderr, "failed seek\n");
-        return HttpResponse::send(socket, 500, "text/html", HttpResponse::getCodeDesc(500), 0);
-    }
-    long size = ftell(fp);
-    if (fseek(fp, 0, SEEK_SET)) {
-        fprintf(stderr, "failed seek\n");
-        return HttpResponse::send(socket, 500, "text/html", HttpResponse::getCodeDesc(500), 0);
-    }
-    char* data;
-    data = new char[size + 1];
-    if (fread(data, size, 1, fp) != 1) {
-        fclose(fp);
-        delete [] data;
-        fprintf(stderr, "failed read\n");
-        return HttpResponse::send(socket, 500, "text/html", HttpResponse::getCodeDesc(500), 0);
-    }
-    fclose(fp);
-    data[size] = '\0';
 
-    int n = HttpResponse::send(socket, 200, getFileType(path), data, size);
+    try {
+        fs.exceptions(std::ios::badbit);
 
-    delete [] data;
+        fs.seekg(0, std::fstream::end);
+        size = static_cast<size_t>(fs.tellg());
+
+        fs.clear();
+        fs.seekg(0, std::fstream::beg);
+
+        buf = new char[size];
+        memset(buf, 0, size);
+
+        fs.read(buf, size);
+        fs.close();
+    } catch (std::ios_base::failure& e) {
+        delete [] buf;
+        std::cerr << "file read error: " << e.what() << std::endl;
+        return HttpResponse::send(socket, 500, "text/html", HttpResponse::getCodeDesc(500), 0);
+    }
+    
+    int n = HttpResponse::send(socket, 200, getFileType(path), buf, size);
+
+    delete [] buf;
     return n;
 }
 
 void HttpServer::serve()
 {
+    errno_t err = 0;
     struct sockaddr_in addr;
     struct sockaddr_in client;
     SOCKET clientSocket = INVALID_SOCKET;
@@ -124,18 +132,18 @@ void HttpServer::serve()
 
     // TODO: setting
     int opt = 1;
-    setsockopt(socket_, SOL_SOCKET, SO_REUSEADDR, (const char *)&opt, sizeof(opt));
-    setsockopt(socket_, SOL_SOCKET, SO_KEEPALIVE, (const char *)&opt, sizeof(opt));
+    ::setsockopt(socket_, SOL_SOCKET, SO_REUSEADDR, (const char *)&opt, sizeof(opt));
+    ::setsockopt(socket_, SOL_SOCKET, SO_KEEPALIVE, (const char *)&opt, sizeof(opt));
 
-    if (bind(socket_, (struct sockaddr *)&addr, sizeof(addr))) {
+    if (::bind(socket_, (struct sockaddr *)&addr, sizeof(addr))) {
         char what[32];
-        sprintf_s(what, "failed bind: %d", WSAGetLastError());
+        sprintf_s(what, "failed bind: %d", ::WSAGetLastError());
         throw std::exception(what);
     }
 
-    if (listen(socket_, SOMAXCONN)) {
+    if (::listen(socket_, SOMAXCONN)) {
         char what[32];
-        sprintf_s(what, "failed listen: %d", WSAGetLastError());
+        sprintf_s(what, "failed listen: %d", ::WSAGetLastError());
         throw std::exception(what);
     }
 
@@ -145,22 +153,21 @@ void HttpServer::serve()
     int n = 1;
     int len = sizeof(client);
     while (1) {
-        clientSocket = accept(socket_, (struct sockaddr *)&client, &len);
+        clientSocket = ::accept(socket_, (sockaddr *)&client, &len);
         if (clientSocket == INVALID_SOCKET) {
             char what[32];
-            sprintf_s(what, "socket failed: %d\n", WSAGetLastError());
+            sprintf_s(what, "socket failed: %d\n", ::WSAGetLastError());
             throw std::exception(what);
         }
-        printf("accept %s:%d\n",
-            inet_ntoa(client.sin_addr), ntohs(client.sin_port));
+        //printf("accept %s:%u\n",
+        //    ::inet_ntoa(client.sin_addr), ::ntohs(client.sin_port));
 
         std::string strReq;
         while (1) {
-            n = recv(clientSocket, rbuf, sizeof(rbuf) - 1, 0);
+            n = ::recv(clientSocket, rbuf, sizeof(rbuf) - 1, 0);
             if (n < 0) {
-                char what[32];
-                sprintf_s(what, "failed recv: %d", WSAGetLastError());
-                throw std::exception(what);
+                err = 10;
+                goto SHUT_DOWN_SOCKET;
             }
             rbuf[n] = '\0';
             strReq += rbuf;
@@ -168,34 +175,53 @@ void HttpServer::serve()
                 break;
             }
         }
+        printf("%s\n", strReq.c_str());
 
-        HttpRequest req(strReq.c_str());
-        const std::string& path = req.path();
-        printf("%s %s\n", req.method().c_str(), req.path().c_str());
-        if (req.method() == "GET") {
-            Uri uri(path.c_str(), Uri::Relative);
+        {
+            HttpRequest req;
+            req.parse(strReq.c_str());
+            const std::string& path = req.path();
+            const std::string& method = req.method();
+            printf("%s %s\n", method.c_str(), path.c_str());
 
-            if (path[path.length() - 1] == '/') {
-                n = serveFile(clientSocket, (rootDir_ + uri.pathname() + "index.html").c_str());
+            if (method == "GET" || method == "POST") {
+                Uri uri(path.c_str(), Uri::Relative);
+
+                if (path[path.length() - 1] == '/') {
+                    n = serveFile(clientSocket, (rootDir_ + uri.pathname() + "index.html").c_str());
+                } else {
+                    n = serveFile(clientSocket, (rootDir_ + uri.pathname()).c_str());
+                }
+
+                if (n < 0) {
+                    err = 20;
+                    goto SHUT_DOWN_SOCKET;
+                }
             } else {
-                n = serveFile(clientSocket, (rootDir_ + uri.pathname()).c_str());
-            }
-
-            if (n < 0) {
-                char what[32];
-                sprintf_s(what, "failed send: %d", WSAGetLastError());
-                throw std::exception(what);
+                fprintf(stderr, "invalid method: %s\n", method.c_str());
             }
         }
 
-        if (shutdown(clientSocket, SD_SEND)) {
+SHUT_DOWN_SOCKET:
+        if (::shutdown(clientSocket, SD_SEND)) {
             char what[32];
-            sprintf_s(what, "failed shutdown: %d", WSAGetLastError());
+            sprintf_s(what, "failed shutdown: %d", ::WSAGetLastError());
             throw std::exception(what);
         }
 
-        closesocket(clientSocket);
-        printf("close\n\n");
+        ::closesocket(clientSocket);
+        //printf("close\n\n");
+
+        if (err) {
+            char what[32];
+            switch (err) {
+            case 10: sprintf_s(what, "failed recv: %d", ::WSAGetLastError()); break;
+            case 20: sprintf_s(what, "failed send: %d", ::WSAGetLastError()); break;
+            default: sprintf_s(what, "failed: %d", ::WSAGetLastError()); break;
+            }
+
+            throw std::exception(what);
+        }
     }
 }
 

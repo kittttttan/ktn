@@ -3,6 +3,7 @@
  * @brief test for String
  */
 #include "dbg.h"
+#include "httpserver.h"
 #include "logger.h"
 #include "loggerw.h"
 #include "string.h"
@@ -13,7 +14,6 @@
 #include <cstdlib>
 #include <clocale>
 #include <sstream>
-#include <thread>
 
 using namespace ktn;
 
@@ -107,12 +107,12 @@ void dateTest()
 
 void perform(bool show = false)
 {
-    const int cnt = 9999;
+    const size_t cnt = 9999;
     clock_t t1, t2, t0 = clock();
 
     {
         std::string st("test");
-        for (int i = 0; i < cnt; ++i) {
+        for (size_t i = 0; i < cnt; ++i) {
             st += "loop";
         }
         if (show) printf("%s\n", st.c_str());
@@ -121,7 +121,7 @@ void perform(bool show = false)
 
     {
         String str("test");
-        for (int i = 0; i < cnt; ++i) {
+        for (size_t i = 0; i < cnt; ++i) {
             str += "loop";
         }
         if (show) printf("%s\n", str.str().c_str());
@@ -132,13 +132,14 @@ void perform(bool show = false)
     printf("%ldms\n", t2 - t1);
 }
 
-void tick()
+void runServer(char* url, int port)
 {
-    int cnt = 0;
-    while (cnt < 7) {
-        Sleep(1000);
-        ++cnt;
-        printf("tick: %d\n", cnt);
+    try {
+        HttpServer server(url, port);
+        server.wsaInfo();
+        server.serve();
+    } catch(...) {
+        fprintf(stderr, "error\n");
     }
 }
 
@@ -146,11 +147,17 @@ int main(int argc, const char** argv)
 {
     _CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF | _CRTDBG_ALLOC_MEM_DF);
 
-    stringWTest();
-    stringTest();
-    dateTest();
+    if (argc > 1 && !strcmp(argv[1], "-s")) {
+        char* url = argc > 2 ? argv[2] : "192.168.12.3";
+        int port = argc > 3 ? atoi(argv[3]) : 80;
+        runServer(url, port);
+    } else {
+        stringWTest();
+        stringTest();
+        dateTest();
 
-    //perform();
+        perform();
+    }
 
     system("pause");
 

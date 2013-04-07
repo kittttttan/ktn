@@ -69,6 +69,7 @@ int send(SOCKET sokcet, int code, const char* contentType, const char* body, siz
         "\r\n",
         code, getCodeDesc(code), bodySize, contentType);
     assert(cnt < 128);
+
     size_t allSize = bodySize + cnt;
     char* res;
     res = new char[allSize + 1];
