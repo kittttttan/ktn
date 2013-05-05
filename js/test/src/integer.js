@@ -31,8 +31,8 @@ function basic() {
  * @returns {Integer} <var>a</var>th fibonacchi number
  */
 function fib(a) {
-  var b = Integer.num(0);
-  for (var i = 0, c = Integer.num(1), d; i < a; ++i) {
+  var b = Integer.zero();
+  for (var i = 0, c = Integer.one(), d; i < a; ++i) {
     d = b.clone();
     b = b.add(c);
     c = d;
@@ -148,10 +148,6 @@ console.log(basic());
 console.log('\n-- fibonacchi --');
 console.log('fib(77) = ');
 console.log(fib(77).toString());
-
-console.log('\n-- factorial --');
-console.log('77! = ');
-console.log(Integer.factorial(77).toString());
 
 console.log('\n-- pi --');
 console.log('pi(77) = ');

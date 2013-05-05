@@ -196,9 +196,10 @@
         return longStr(a);
       }
 
-      var a1 = a.substr(0, i),
-          a2 = parseInt(a.substr(i + 2, a.length - (i + 2)), 10),
-          fpt = a1.indexOf('.', 0);
+      var a1 = a.substr(0, i);
+      var a2 = parseInt(a.substr(i + 2, a.length - (i + 2)), 10);
+      var fpt = a1.indexOf('.', 0);
+
       if (fpt >= 0) {
         // '.' is found
         var np = a1.length - (fpt + 1);
@@ -222,8 +223,9 @@
    * @return {Integer}
    */
   Integer.random = function(a) {
-    var r = longAlloc(a, true),
-        rd = r._d;
+    var r = longAlloc(a, true);
+    var rd = r._d;
+
     for (var i = 0; i < a; ++i) {
       rd[i] = Math.random() * BASE | 0;
     }
@@ -328,8 +330,9 @@
    * @return {Integer}
    */
   function norm(a) {
-    var d = a._d,
-        l = d.length;
+    var d = a._d;
+    var l = d.length;
+
     do { --l; } while (l && !d[l]);
     d.length = l + 1;
     
@@ -346,8 +349,9 @@
    * @return {Integer} a >> 1
    */
   function longHalf(a) {
-    var d = a._d,
-        l = d.length - 1;
+    var d = a._d;
+    var l = d.length - 1;
+
     for (var i = 0; i < l; ++i) {
       d[i] = (((d[i + 1] & 1) << SHIFT) + d[i]) >>> 1;
     }
@@ -363,9 +367,10 @@
    * @return {Integer} a << 1
    */
   function longDouble(a) {
-    var d = a._d,
-        l = d.length,
-        c = 0;
+    var d = a._d;
+    var l = d.length;
+    var c = 0;
+
     for (var i = 0, t = 0; i < l; ++i) {
       t = (d[i] << 1) + c;
       d[i] = t & MASK;
@@ -395,8 +400,9 @@
    * @return {Integer} x * y
    */
   function longK(x, y) {
-    var N = longBitLength(x),
-        l = longBitLength(y);
+    var N = longBitLength(x);
+    var l = longBitLength(y);
+
     if (N < l) { N = l; }
     if (N < 2001) { return x.mul(y); }
 
@@ -458,12 +464,13 @@
         break;
       }
 
-      var t = this.clone(),
-          d = t._d,
-          k = 0,
-          n = 0,
-          digits = '0123456789abcdef',
-          s = '';
+      var t = this.clone();
+      var d = t._d;
+      var k = 0;
+      var n = 0;
+      var digits = '0123456789abcdef';
+      var s = '';
+
       while (i && j) {
         k = i;
         n = 0;
@@ -495,9 +502,10 @@
      * @return {number}
      */
     valueOf: function() {
-      var f = 0.0,
-          d = this._d,
-          i = d.length;
+      var f = 0.0;
+      var d = this._d;
+      var i = d.length;
+
       while (i--) { f = d[i] + BASE * f; }
       if (!this._s) { f = -f; }
       
@@ -536,8 +544,9 @@
      * @return {Integer} this * 10<sup>n</sup>
      */
     addzero: function(b) {
-      var zeros = '',
-          z = '0';
+      var zeros = '';
+      var z = '0';
+
       for (; b > 0; b >>>= 1, z += z) {
         if (b & 1) { zeros += z; }
       }
@@ -552,16 +561,17 @@
      * @return {Integer}
      */
     leftShift: function(b) {
-      var a = this,
-          ad = a._d,
-          l = ad.length,
-          d = (b / SHIFT) | 0,
-          cl = l + d + 1,
-          bb = b % SHIFT,
-          c = longAlloc(cl, a._s),
-          cd = c._d,
-          i = 0,
-          carry = 0;
+      var a = this;
+      var ad = a._d;
+      var l = ad.length;
+      var d = (b / SHIFT) | 0;
+      var cl = l + d + 1;
+      var bb = b % SHIFT;
+      var c = longAlloc(cl, a._s);
+      var cd = c._d;
+      var i = 0;
+      var carry = 0;
+
       for (; i < d; ++i) { cd[i] = 0; }
       
       var t;
@@ -582,18 +592,20 @@
      * @return {Integer}
      */
     rightShift: function(b) {
-      var a = this,
-          ad = a._d,
-          l = ad.length,
-          d = (b / SHIFT) | 0;
+      var a = this;
+      var ad = a._d;
+      var l = ad.length;
+      var d = (b / SHIFT) | 0;
+
       if (l <= d) { return new Integer(); }
 
-      var bb = b % SHIFT,
-          mask = (1 << bb) - 1,
-          cl = l - d,
-          c = longAlloc(cl, a._s),
-          cd = c._d,
-          i = 0;
+      var bb = b % SHIFT;
+      var mask = (1 << bb) - 1;
+      var cl = l - d;
+      var c = longAlloc(cl, a._s);
+      var cd = c._d;
+      var i = 0;
+
       for (; i < cl - 1; ++i) {
         cd[i] = ((ad[i + d + 1] & mask) << (SHIFT - bb)) + (ad[i + d] >> bb);
       }
@@ -628,10 +640,10 @@
     square: function() {
       //var a = this.clone(),
       //    x = a._d,
-      var x = this._d,
-          t = x.length,
-          s = longAlloc(t << 1, true),
-          w = s._d;
+      var x = this._d;
+      var t = x.length;
+      var s = longAlloc(t << 1, true);
+      var w = s._d;
       longFillZero(s, w.length);
 
       var i, j, c, uv, u, v;
@@ -667,8 +679,9 @@
      * @return {Integer} <code>&radic;</code>this
      */
     sqrt: function() {
-      var b = this.clone(),
-          c = Integer.one();
+      var b = this.clone();
+      var c = Integer.one();
+
       while (b.cmp(c) > 0) {
         longHalf(b);
         longDouble(c);
@@ -731,7 +744,7 @@
      * @return {Integer}
      */
     gcdBin: function(b) {
-      if (this.cmpAbs(b) < 0) { return b._gcd(this); }
+      if (this.cmpAbs(b) < 0) { return b.gcdBin(this); }
 
       var g = Integer.one();
       var a = this.abs();
@@ -777,14 +790,15 @@
         return b.addAbs(this, sign);
       }
       
-      var ad = this._d,
-          bd = b._d,
-          al = ad.length,
-          bl = bd.length,
-          z = longAlloc(bl + 1, sign),
-          zd = z._d,
-          i = 0,
-          num = 0;
+      var ad = this._d;
+      var bd = b._d;
+      var al = ad.length;
+      var bl = bd.length;
+      var z = longAlloc(al + 1, sign);
+      var zd = z._d;
+      var i = 0;
+      var num = 0;
+
       for (; i < bl; ++i) {
         num += ad[i] + bd[i];
         zd[i] = num & MASK;
@@ -813,14 +827,15 @@
      *     -||this| - |b|| (else)
      */
     subAbs: function(b, sign) {
-      var ad = this._d,
-          bd = b._d,
-          al = ad.length,
-          bl = bd.length,
-          z = longAlloc(al, sign),
-          zd = z._d,
-          i = 0,
-          c = 0;
+      var ad = this._d;
+      var bd = b._d;
+      var al = ad.length;
+      var bl = bd.length;
+      var z = longAlloc(al, sign);
+      var zd = z._d;
+      var i = 0;
+      var c = 0;
+
       for (; i < bl; ++i) {
         c = ad[i] - bd[i] - c;
         if (c < 0) {
@@ -890,13 +905,16 @@
      */
     mul: function(b) {
       // if (this.equal(b)) { return this.square(); }
-      var ad = this._d,
-          bd = b._d,
-          al = ad.length,
-          bl = bd.length;
+      
+      var ad = this._d;
+      var bd = b._d;
+      var al = ad.length;
+      var bl = bd.length;
       // if (al > 125 && bl > 125) { return longK(this, b); }
-      var j = al + bl,
-          z = longAlloc(j, this._s === b._s);
+      
+      var j = al + bl;
+      var z = longAlloc(j, this._s === b._s);
+
       longFillZero(z, j);
       for (var i = 0, n, d, e, zd = z._d; i < al; ++i) {
         d = ad[i]; 
@@ -927,11 +945,12 @@
      *     this / b (else)
      */
     divmod: function(b, modulus) {
-      var a = this.clone(),
-          ad = a._d,
-          bd = b._d,
-          na = ad.length,
-          nb = bd.length;
+      var a = this.clone();
+      var ad = a._d;
+      var bd = b._d;
+      var na = ad.length;
+      var nb = bd.length;
+
       if (nb < 2 && !bd[0]) {
         // zero division
         throw new Error('zero division');
@@ -946,7 +965,11 @@
         return new Integer();
       }
 
-      var dd = 0, z, zd, t = 0, i = 0;
+      var dd = 0;
+      var t = 0;
+      var i = 0;
+      var z;
+      var zd;
       if (nb === 1) {
         dd = bd[0];
         z = a.clone();
@@ -974,7 +997,8 @@
       longFillZero(z, zd.length);
       dd = BASE / (bd[nb - 1] + 1) & MASK;
 
-      var j = 0, num = 0;
+      var j = 0;
+      var num = 0;
       if (dd === 1) {
         j = na;
         while (j--) { zd[j] = ad[j]; }
@@ -1000,7 +1024,8 @@
         zd[j] = num & MASK;
       }
 
-      var q = 0, ee = 0;
+      var q = 0;
+      var ee = 0;
       j = albl ? na + 1 : na;
       do {
         if (zd[j] === bd[nb - 1]) {
@@ -1135,11 +1160,14 @@
      */
     cmpAbs: function(b) {
       if (this === b) { return 0; }
-      var ad = this._d,
-          bd = b._d,
-          al = ad.length;
-      if (al < bd.length) { return -1; }
-      if (al > bd.length) { return 1; }
+
+      var ad = this._d;
+      var bd = b._d;
+      var al = ad.length;
+      var bl = bd.length;
+
+      if (al < bl) { return -1; }
+      if (al > bl) { return 1; }
       
       do { --al; } while (al && ad[al] === bd[al]);
       if (!al && ad[0] === bd[0]) { return 0; }
@@ -1158,12 +1186,15 @@
      */
     cmp: function(b) {
       if (this === b) { return 0; }
-      var ad = this._d,
-          bd = b._d,
-          al = ad.length;
       if (this._s !== b._s) { return this._s ? 1 : -1; }
-      if (al < bd.length) { return this._s ? -1 : 1; }
-      if (al > bd.length) { return this._s ? 1 : -1; }
+
+      var ad = this._d;
+      var bd = b._d;
+      var al = ad.length;
+      var bl = bd.length;
+
+      if (al < bl) { return this._s ? -1 : 1; }
+      if (al > bl) { return this._s ? 1 : -1; }
       
       do { --al; } while (al && ad[al] === bd[al]);
       if (!al && ad[0] === bd[0]) {
