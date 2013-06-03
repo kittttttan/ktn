@@ -10,16 +10,12 @@
  *    c.toString();  // === '(5/12)'
  * @author kittttttan
  */
-(function(){
+(function(exports){
   "use strict";
 
   // require
-  if (typeof exports === 'undefined') {
-    throw new Error('no exports');
-  }
-  var Integer = require('../lib/integer.js').Integer;
-  if (typeof Integer === 'undefined') {
-    throw new Error('Rational requires Integer');
+  if (typeof require !== 'undefined') {
+    Integer = require('../lib/integer.js').Integer;
   }
 
   /**
@@ -348,4 +344,4 @@
   };
 
   exports.Rational = Rational;
-}());
+}(typeof exports !== 'undefined' ? exports : this));

@@ -3,8 +3,11 @@
  */
 (function(G) {
 "use strict";
-var Rational = require('../lib/rational.js').Rational;
-var Decimal = require('../lib/decimal.js').Decimal;
+
+if (typeof require !== 'undefined') {
+  Rational = require('../lib/rational.js').Rational;
+  Decimal = require('../lib/decimal.js').Decimal;
+}
 
 function basic() {
   var a = Decimal.dec(1, 2);

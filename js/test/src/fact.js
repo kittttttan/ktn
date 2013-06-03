@@ -4,7 +4,9 @@
 (function(G) {
 "use strict";
 
-var Integer = require('../lib/integer.js').Integer;
+if (typeof require !== 'undefined') {
+  Integer = require('../lib/integer.js').Integer;
+}
 
 /**
  * Factorial

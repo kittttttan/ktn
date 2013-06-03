@@ -234,21 +234,25 @@
    * @return {Integer}
    */
   function fact_odd(n) {
+    n = n|0;
+    
     var m = Integer.one();
-    var mi, mj;
+    var mi = 0;
+    var mj = 0;
     var i = 0;
-    var j;
-    var l;
+    var j = 0;
+    var l = 0;
     var limit = 1 << (SHIFT << 1);
     
-    for (;; ++i) {
+    for (;; i = i + 1|0) {
       l = (n / (1 << i)) | 0;
       
       if (l < 3) break;
       
-      mi = mj = 1;
-      for (j = 3; j <= l; j += 2) {
-        mi *= j;
+      mi = 1;
+      mj = 1;
+      for (j = 3; (j|0) <= (l|0); j = j + 2|0) {
+        mi = mi * j;
         if (mi > limit) {
           m = m.mul(Integer.num(mj));
           mi = mj = j;
@@ -257,7 +261,7 @@
         }
       }
       
-      if (mj > 1) { m = m.mul(Integer.num(mj)); }
+      if ((mj|0) > 1) { m = m.mul(Integer.num(mj)); }
     }
     
     return m;
@@ -269,11 +273,12 @@
    * @return {Integer}
    */
   function fact_even(n) {
-    var s = 0;
+    n = n|0;
     
+    var s = 0;
     while (n) {
-      n >>= 1;
-      s += n;
+      n = n >>> 1;
+      s = s + n;
     }
     
     return Integer.one().leftShift(s);
@@ -286,6 +291,7 @@
    * @return {Integer}
    */
   Integer.factorial = function(n) {
+    n = n|0;
     if (n < 1) { return Integer.one(); }
     return fact_odd(n).mul(fact_even(n));
   }
@@ -326,10 +332,10 @@
    */
   function norm(a) {
     var d = a._d;
-    var l = d.length;
+    var l = d.length|0;
 
-    do { --l; } while (l && !d[l]);
-    d.length = l + 1;
+    do { l=l-1|0; } while (l && !d[l]);
+    d.length = l + 1|0;
     
     // -0 -> +0
     if (!l && !d[l]) { a._s = true; }
@@ -558,7 +564,7 @@
     leftShift: function(b) {
       var a = this;
       var ad = a._d;
-      var l = ad.length;
+      var l = ad.length|0;
       var d = (b / SHIFT) | 0;
       var cl = l + d + 1;
       var bb = b % SHIFT;
@@ -567,10 +573,10 @@
       var i = 0;
       var carry = 0;
 
-      for (; i < d; ++i) { cd[i] = 0; }
+      for (; (i|0) < (d|0); i=i+1|0) { cd[i] = 0; }
       
-      var t;
-      for (i = 0; i < l; ++i) {
+      var t = 0;
+      for (i = 0; (i|0) < (l|0); i=i+1|0) {
         t = (ad[i] << bb) + carry;
         cd[i + d] = t & MASK;
         carry = t >> SHIFT;
@@ -903,27 +909,28 @@
       
       var ad = this._d;
       var bd = b._d;
-      var al = ad.length;
-      var bl = bd.length;
+      var al = ad.length|0;
+      var bl = bd.length|0;
       // if (al > 125 && bl > 125) { return longK(this, b); }
       
-      var j = al + bl;
+      var j = al + bl|0;
       var z = longAlloc(j, this._s === b._s);
 
       longFillZero(z, j);
-      for (var i = 0, n, d, e, zd = z._d; i < al; ++i) {
+      for (var i = 0, n = 0, d = 0, e = 0, zd = z._d;
+          (i|0) < (al|0); i = i + 1|0) {
         d = ad[i]; 
         if (!d) { continue; }
         
         n = 0;
-        for (j = 0; j < bl; ++j) {
+        for (j = 0; (j|0) < (bl|0); j=j+1|0) {
           e = n + d * bd[j];
           n = zd[i + j] + e;
           if (e) { zd[i + j] = n & MASK; }
           n >>>= SHIFT;
         }
         
-        if (n) { zd[i + j] = n; }
+        if (n) { zd[i + j] = n|0; }
       }
       
       return norm(z);

@@ -3,7 +3,10 @@
  */
 (function(G) {
 "use strict";
-var Rational = require('../lib/rational.js').Rational;
+
+if (typeof require !== 'undefined') {
+  Rational = require('../lib/rational.js').Rational;
+}
 
 function basic() {
   var a = Rational.num(1024, 78);

@@ -10,16 +10,12 @@
  *    c.toString();  // === '0.7007'
  * @author kittttttan
  */
-(function(){
+(function(exports){
   "use strict";
 
   // require
-  if (typeof exports === 'undefined') {
-    throw new Error('no exports');
-  }
-  var Integer = require('../lib/integer.js').Integer;
-  if (typeof Integer === 'undefined') {
-    throw new Error('Decimal requires Integer');
+  if (typeof require !== 'undefined') {
+    Integer = require('../lib/integer.js').Integer;
   }
 
   /**
@@ -344,4 +340,4 @@
   };
 
   exports.Decimal = Decimal;
-}());
+}(typeof exports !== 'undefined' ? exports : this));
