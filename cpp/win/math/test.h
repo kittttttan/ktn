@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "long.h"
 #include "fraction.h"

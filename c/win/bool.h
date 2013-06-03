@@ -1,4 +1,4 @@
-#ifndef CKTN_BOOL_H_
+﻿#ifndef CKTN_BOOL_H_
 #define CKTN_BOOL_H_
 
 #ifndef __cplusplus

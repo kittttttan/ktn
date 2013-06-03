@@ -8,14 +8,9 @@
  *   c.toString(); // === '96021937474622850618244170'
  * @author kittttttan
  */
-(function() {
+(function(exports) {
   "use strict";
   
-  // require
-  if (typeof exports === 'undefined') {
-    throw new Error('no exports');
-  }
-
   /**
    * Integer
    * @class Integer
@@ -1283,4 +1278,4 @@
   };
 
   exports.Integer = Integer;
-}());
+}(typeof exports !== 'undefined' ? exports : this));

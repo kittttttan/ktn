@@ -1,4 +1,4 @@
-#include "logger.h"
+﻿#include "logger.h"
 
 #include <locale.h>
 #include <share.h>

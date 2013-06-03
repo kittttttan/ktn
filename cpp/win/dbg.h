@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #ifndef __func__
 #ifdef __FUNCTION__

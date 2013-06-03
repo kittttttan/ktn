@@ -1,6 +1,6 @@
 @echo off
 
-cd /d %~d0%~p0
+cd /d %~dp0
 
 for %%i in (lib/*.ts) do (
   tsc lib/%%i -c

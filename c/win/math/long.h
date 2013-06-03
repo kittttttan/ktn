@@ -1,4 +1,4 @@
-#ifndef CKTN_MATH_LONG_H_
+﻿#ifndef CKTN_MATH_LONG_H_
 #define CKTN_MATH_LONG_H_
 
 #include "../bool.h"

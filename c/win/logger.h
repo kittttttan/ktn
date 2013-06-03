@@ -1,4 +1,4 @@
-#ifndef CKTN_LOGGER_H_
+﻿#ifndef CKTN_LOGGER_H_
 #define CKTN_LOGGER_H_
 
 #ifdef __cplusplus

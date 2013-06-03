@@ -1,4 +1,4 @@
-#ifndef CKTN_STRING_H_
+﻿#ifndef CKTN_STRING_H_
 #define CKTN_STRING_H_
 
 #ifdef __cplusplus

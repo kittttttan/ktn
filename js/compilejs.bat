@@ -3,7 +3,7 @@ rem compile with closure compiler
 rem https://developers.google.com/closure/compiler/
 
 setlocal
-cd /d %~d0%~p0
+cd /d %~dp0
 
 rem rewrite below path
 set COMPILER=D:\Documents\js\compiler-latest\compiler.jar

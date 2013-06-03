@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "logformatw.h"
 #include "dbg.h"

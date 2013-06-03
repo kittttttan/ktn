@@ -1,4 +1,4 @@
-#include "loggerw.h"
+﻿#include "loggerw.h"
 #include <iostream>
 #include <fstream>
 

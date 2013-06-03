@@ -1,4 +1,4 @@
-#ifndef CKTN_TEST_H_
+﻿#ifndef CKTN_TEST_H_
 #define CKTN_TEST_H_
 
 #include "long.h"

@@ -1,4 +1,4 @@
-#include "date.h"
+﻿#include "date.h"
 #include <sstream>
 #include <cstring>
 #include <cstdlib>

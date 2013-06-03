@@ -1,4 +1,4 @@
-#include "long.h"
+﻿#include "long.h"
 #include "../string.h"
 
 #include <stdio.h>

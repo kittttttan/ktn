@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef UTIL_H_
 #define UTIL_H_
 
