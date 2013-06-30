@@ -15,13 +15,17 @@ def compile_js(src, dest):
 
 def main():
     curr = path.abspath(path.dirname(__file__))
-    dir = path.join(curr, "lib", "src")
+    exe(curr, "lib")
+    exe(curr, "test")
+
+def exe(curr, dname):
+    dir = path.join(curr, dname, "src")
     for f in listdir(dir):
         src = path.join(dir, f)
         if path.isdir(src):
             continue
         src_time = path.getmtime(src)
-        dest = path.join(curr, "lib", f)
+        dest = path.join(curr, dname, f)
         if path.isfile(dest):
             dest_time = path.getmtime(dest)
         else:

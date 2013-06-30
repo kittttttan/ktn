@@ -10,21 +10,27 @@ if (typeof require !== 'undefined') {
 
 /**
  * Basic operations
- * @returns {string}
  */
 function basic() {
   var r = (Math.random() * 4 | 0) + 3,
       a = Integer.random(r),
       b = Integer.num(100000);
-  return [
-      '    a = ',a, '\n    b = ',b.toString(), '\na + b = ',a.add(b),
-      '\na - b = ',a.sub(b), '\na * b = ',a.mul(b),
-      '\na / b = ',a.div(b), '\na % b = ',a.mod(b),
-      '\na ^ 2 = ',a.pow(2), '\na^0.5 = ',a.pow(0.5), ' ~ ',a.sqrt(),
-      '\na >> 2 = ',a.rightShift(2),'\na << 2 = ',a.leftShift(2),
-      '\na >> 17 = ',a.rightShift(17),'\na << 17 = ',a.leftShift(17),
-      '\ngcd(a, b) = ',a.gcd(b), ' = ',a.gcdBin(b)
-      ].join('');
+  console.log('    a = '+ a.toString());
+  console.log('    b = '+ b.toString());
+  console.log('a + b = '+ a.add(b).toString());
+  console.log('a - b = '+ a.sub(b).toString());
+  console.log('a * b = '+ a.mul(b).toString());
+  console.log('a / b = '+ a.div(b).toString());
+  console.log('a % b = '+ a.mod(b).toString());
+  console.log('a >> 2 = '+ a.rightShift(2).toString());
+  console.log('a << 2 = '+ a.leftShift(2).toString());
+  console.log('a >> 17 = '+ a.rightShift(17).toString());
+  console.log('a << 17 = '+ a.leftShift(17).toString());
+  console.log('a ^ 2 = '+ a.pow(2).toString());
+  console.log('a ^ 0.5 = '+ a.pow(0.5).toString());
+  console.log('        ~ '+ a.sqrt().toString());
+  console.log('gcd(a, b) = '+ a.gcd(b).toString());
+  console.log('          = '+ a.gcdBin(b).toString());
 }
 
 /**
@@ -145,7 +151,7 @@ function pi(a) {
 // Test
 var d = Date.now();
 console.log('-- basic operations --');
-console.log(basic());
+basic();
 
 console.log('\n-- fibonacchi --');
 console.log('fib(77) = ');

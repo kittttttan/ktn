@@ -9,7 +9,20 @@
  * @author kittttttan
  */
 (function(exports) {
-  "use strict";
+  'use strict';
+
+  /**
+   * use of TypedArray
+   * @type boolean
+   */
+  //var _ta = false;
+  var _ta = typeof Uint32Array !== 'undefined';
+
+  /**
+   * cache
+   * @type function
+   */
+  var _random = Math.random;
   
   /**
    * Integer
@@ -21,7 +34,7 @@
      * @private
      * @property {number[]} Integer#_d
      */
-    this._d = [0];
+    this._d = _ta ? new Uint32Array(3) : [0];
     
     /**
      * Sign +, -. `false` means -.
@@ -29,6 +42,13 @@
      * @property {boolean} Integer#_s
      */
     this._s = true;
+    
+    /**
+     * Length of digits
+     * @private
+     * @property {number} Integer#_l
+     */
+    this._l = 1;
   }
 
   /**
@@ -52,7 +72,6 @@
    */
   var MASK = BASE - 1;
 
-  // static
   /**
    * 1
    * @static
@@ -77,24 +96,29 @@
    * @return {Integer}
    */
   Integer.num = function(n) {
+    n = n | 0;
+    
     var a = new Integer();
+    if (!n) { return a; }
     
     if (n < 0) {
       n = -n;
       a._s = false;
     }
     
-    n &= 0x7fffffff;
+    //n &= 0x7fffffff;
     a._d[0] = n & MASK;
     
     n >>>= SHIFT;
     if (n) {
       a._d[1] = n & MASK;
+      a._l = 2;
     }
     
     n >>>= SHIFT;
     if (n) {
       a._d[2] = n & MASK;
+      a._l = 3;
     }
     
     return a;
@@ -110,6 +134,7 @@
    * @return {Integer}
    */
   Integer.str = function(str, base) {
+    base = base | 0;
     if (!base) { base = 10; }
 
     var index = 0;
@@ -125,7 +150,7 @@
     while (str.charAt(index) === '0') { ++index; }
     if (!str.charAt(index)) { return new Integer(); }
     
-    var len;
+    var len = 0;
     if (base === 8) {
       len = 3 * (str.length + 1 - index);
     } else {
@@ -137,8 +162,11 @@
     var z = longAlloc(len, sign);
     longFillZero(z, len);
 
-    var zd = z._d, bl = 1;
-    var c, n, i;
+    var zd = z._d;
+    var bl = 1;
+    var c = '';
+    var n = 0;
+    var i = 0;
     for (;;) {
       c = str.charAt(index);
       ++index;
@@ -184,26 +212,26 @@
         return longNum(a);
       }
       
-      a += '';
-      var i = a.indexOf('e', 0);
+      var s = a + '';
+      var i = s.indexOf('e', 0);
       if (i < 0) {
         // 'e' is not found
-        return longStr(a);
+        return longStr(s);
       }
 
-      var a1 = a.substr(0, i);
-      var a2 = parseInt(a.substr(i + 2, a.length - (i + 2)), 10);
-      var fpt = a1.indexOf('.', 0);
+      var s1 = s.substr(0, i);
+      var s2 = parseInt(s.substr(i + 2, s.length - (i + 2)), 10);
+      var fpt = s1.indexOf('.', 0);
 
       if (fpt >= 0) {
         // '.' is found
-        var np = a1.length - (fpt + 1);
-        a1 = a1.substr(0, fpt) + a1.substr(fpt + 1, np);
-        a2 -= np;
+        var np = s1.length - (fpt + 1);
+        s1 = s1.substr(0, fpt) + s1.substr(fpt + 1, np);
+        s2 -= np;
       }
-      for (; a2 > 0; --a2) { a1 += '0'; }
+      for (; s2 > 0; --s2) { s1 += '0'; }
       
-      return longStr(a1);
+      return longStr(s1);
     }
     
     return new Integer();
@@ -218,11 +246,12 @@
    * @return {Integer}
    */
   Integer.random = function(a) {
+    a = a | 0;
     var r = longAlloc(a, true);
     var rd = r._d;
 
     for (var i = 0; i < a; ++i) {
-      rd[i] = Math.random() * BASE | 0;
+      rd[i] = _random() * BASE | 0;
     }
     
     return norm(r);
@@ -246,8 +275,7 @@
     
     for (;; i = i + 1|0) {
       l = (n / (1 << i)) | 0;
-      
-      if (l < 3) break;
+      if (l < 3) { break; }
       
       mi = 1;
       mj = 1;
@@ -303,9 +331,17 @@
    * @param {boolean} sign
    */
   function longAlloc(length, sign) {
+    length = length | 0;
+    
     var a = new Integer();
     a._s = sign ? true : false;
-    a._d.length = length;
+    a._l = length;
+    if (_ta) {
+      a._d = new Uint32Array(length);
+    } else {
+      a._d.length = length;
+    }
+    //console.log(a);
     
     return a;
   }
@@ -318,6 +354,7 @@
    * @return {Integer}
    */
   function longFillZero(a, b) {
+    b = b | 0;
     var d = a._d;
     while (b--) { d[b] = 0; }
     
@@ -332,13 +369,15 @@
    */
   function norm(a) {
     var d = a._d;
-    var l = d.length|0;
+    var l = a._l | 0;
 
-    do { l=l-1|0; } while (l && !d[l]);
-    d.length = l + 1|0;
+    do { l = l - 1|0; } while (l && !d[l]);
+    a._l = l + 1|0;
+    if (!_ta) { d.length = a._l; }
     
     // -0 -> +0
     if (!l && !d[l]) { a._s = true; }
+    //console.log(a);
     
     return a;
   }
@@ -351,7 +390,7 @@
    */
   function longHalf(a) {
     var d = a._d;
-    var l = d.length - 1;
+    var l = a._l - 1;
 
     for (var i = 0; i < l; ++i) {
       d[i] = (((d[i + 1] & 1) << SHIFT) + d[i]) >>> 1;
@@ -369,7 +408,7 @@
    */
   function longDouble(a) {
     var d = a._d;
-    var l = d.length;
+    var l = a._l;
     var c = 0;
 
     for (var i = 0, t = 0; i < l; ++i) {
@@ -377,7 +416,18 @@
       d[i] = t & MASK;
       c = t >>> SHIFT;
     }
-    if (c) { d[l] = c; }
+    if (c) {
+      // TODO:
+      if (_ta && l >= a._d.length) {
+        var ta = new Uint32Array(l);
+        ta.set(d);
+        ta[l] = c;
+        a._d = ta;
+      } else {
+        d[l] = c;
+      }
+      ++a._l;
+    }
     
     return norm(a);
   }
@@ -390,7 +440,8 @@
    */
   function longBitLength(a) {
     var ad = a._d;
-    return ad[ad.length - 1].toString(2).length + ((ad.length - 1) << 4);
+    var l = a._l;
+    return ad[l - 1].toString(2).length + ((l - 1) << 4);
   }
 
   /**
@@ -440,12 +491,14 @@
      * @return {string}
      */
     toString: function(b) {
+      b = b | 0;
       if (!b) { b = 10; }
 
-      var i = this._d.length;
+      var i = this._l;
       if (i < 2 && !this._d[0]) { return '0'; }
 
-      var j, hbase;
+      var j = 0;
+      var hbase = 0;
       switch (b) {
       case 16:
         j = (i << 3) + 2;
@@ -503,9 +556,9 @@
      * @return {number}
      */
     valueOf: function() {
-      var f = 0.0;
+      var f = +0;
       var d = this._d;
-      var i = d.length;
+      var i = this._l;
 
       while (i--) { f = d[i] + BASE * f; }
       if (!this._s) { f = -f; }
@@ -518,6 +571,18 @@
      * @return {number[]}
      */
     getDigits: function() { return this._d; },
+    
+    /**
+     * @method Integer#getCapacity
+     * @return {number}
+     */
+    getCapacity: function() { return this._d.length; },
+    
+    /**
+     * @method Integer#getLength
+     * @return {number}
+     */
+    getLength: function() { return this._l; },
     
     /**
      * @method Integer#getSign
@@ -533,7 +598,14 @@
     clone: function() {
       var b = new Integer();
       b._s = this._s;
-      b._d = Array.prototype.concat.call(this._d);
+      b._l = this._l;
+      if (_ta) {
+        //b._d = this._d.subarray(0, this._l);
+        b._d = new Uint32Array(this._l);
+        b._d.set(this._d.subarray(0, this._l));
+      } else {
+        b._d = Array.prototype.concat.call(this._d);
+      }
       
       return b;
     },
@@ -545,6 +617,8 @@
      * @return {Integer} this * 10<sup>n</sup>
      */
     addzero: function(b) {
+      b = b | 0;
+      
       var zeros = '';
       var z = '0';
 
@@ -562,9 +636,11 @@
      * @return {Integer}
      */
     leftShift: function(b) {
+      b = b | 0;
+      
       var a = this;
       var ad = a._d;
-      var l = ad.length|0;
+      var l = a._l | 0;
       var d = (b / SHIFT) | 0;
       var cl = l + d + 1;
       var bb = b % SHIFT;
@@ -573,10 +649,10 @@
       var i = 0;
       var carry = 0;
 
-      for (; (i|0) < (d|0); i=i+1|0) { cd[i] = 0; }
+      for (; (i|0) < (d|0); i = i + 1|0) { cd[i] = 0; }
       
       var t = 0;
-      for (i = 0; (i|0) < (l|0); i=i+1|0) {
+      for (i = 0; (i|0) < (l|0); i = i + 1|0) {
         t = (ad[i] << bb) + carry;
         cd[i + d] = t & MASK;
         carry = t >> SHIFT;
@@ -595,7 +671,7 @@
     rightShift: function(b) {
       var a = this;
       var ad = a._d;
-      var l = ad.length;
+      var l = a._l;
       var d = (b / SHIFT) | 0;
 
       if (l <= d) { return new Integer(); }
@@ -631,7 +707,7 @@
      * @method Integer#isNonZero
      * @return {boolean}
      */
-    isNonZero: function() { return (this._d.length > 1 || this._d[0]); },
+    isNonZero: function() { return (this._l > 1 || this._d[0]); },
 
     /**
      * Fast squaring.
@@ -642,13 +718,18 @@
       //var a = this.clone(),
       //    x = a._d,
       var x = this._d;
-      var t = x.length;
+      var t = this._l;
       var s = longAlloc(t << 1, true);
       var w = s._d;
-      longFillZero(s, w.length);
+      longFillZero(s, s._l);
 
-      var i, j, c, uv, u, v;
-      for (var i = 0; i < t; ++i) {
+      var i = 0;
+      var j = 0;
+      var c = 0;
+      var uv = 0;
+      var u = 0;
+      var v = 0;
+      for (; i < t; ++i) {
         uv = w[i << 1] + x[i] * x[i];
         u = uv >>> SHIFT;
         v = uv & MASK;
@@ -680,6 +761,8 @@
      * @return {Integer} <code>&radic;</code>this
      */
     sqrt: function() {
+      if (!this.isNonZero()) { return this; }
+      
       var b = this.clone();
       var c = Integer.one();
 
@@ -704,9 +787,11 @@
      * @return {Integer|number} this<sup>b</sup>
      */
     pow: function(b) {
+      b = +b;
       if (!b) { return Integer.one(); }
       
       if (b > 0 && b === (b | 0)) {
+        b = b | 0;
         var p = Integer.one();
         var a = this.clone();
         
@@ -787,14 +872,14 @@
      *      -(|this| + |b|) (else)
      */
     addAbs: function(b, sign) {
-      if (this._d.length < b._d.length) {
+      if (this._l < b._l) {
         return b.addAbs(this, sign);
       }
       
       var ad = this._d;
       var bd = b._d;
-      var al = ad.length;
-      var bl = bd.length;
+      var al = this._l;
+      var bl = b._l;
       var z = longAlloc(al + 1, sign);
       var zd = z._d;
       var i = 0;
@@ -814,6 +899,7 @@
         zd[i] = ad[i];
       }
       zd[i] = num & MASK;
+      //console.log(z);
       
       return norm(z);
     },
@@ -830,8 +916,8 @@
     subAbs: function(b, sign) {
       var ad = this._d;
       var bd = b._d;
-      var al = ad.length;
-      var bl = bd.length;
+      var al = this._l;
+      var bl = b._l;
       var z = longAlloc(al, sign);
       var zd = z._d;
       var i = 0;
@@ -909,8 +995,8 @@
       
       var ad = this._d;
       var bd = b._d;
-      var al = ad.length|0;
-      var bl = bd.length|0;
+      var al = this._l|0;
+      var bl = b._l|0;
       // if (al > 125 && bl > 125) { return longK(this, b); }
       
       var j = al + bl|0;
@@ -950,8 +1036,8 @@
       var a = this.clone();
       var ad = a._d;
       var bd = b._d;
-      var na = ad.length;
-      var nb = bd.length;
+      var na = a._l;
+      var nb = b._l;
 
       if (nb < 2 && !bd[0]) {
         // zero division
@@ -996,7 +1082,7 @@
 
       z = longAlloc(albl ? na + 2 : na + 1, a._s === b._s);
       zd = z._d;
-      longFillZero(z, zd.length);
+      longFillZero(z, z._l);
       dd = BASE / (bd[nb - 1] + 1) & MASK;
 
       var j = 0;
@@ -1078,7 +1164,8 @@
             t %= dd;
           }
         }
-        zd.length = nb;
+        if (!_ta) { zd.length = nb; }
+        div._l = nb;
         div._s = a._s;
         
         return norm(div);
@@ -1086,7 +1173,8 @@
 
       j = (albl ? na + 2 : na + 1) - nb;
       for (i = 0; i < j; ++i) { zd[i] = zd[i + nb]; }
-      zd.length = j;
+      if (!_ta) { zd.length = j; }
+      div._l = j;
       
       return norm(div);
     },
@@ -1165,8 +1253,8 @@
 
       var ad = this._d;
       var bd = b._d;
-      var al = ad.length;
-      var bl = bd.length;
+      var al = this._l;
+      var bl = b._l;
 
       if (al < bl) { return -1; }
       if (al > bl) { return 1; }
@@ -1192,8 +1280,8 @@
 
       var ad = this._d;
       var bd = b._d;
-      var al = ad.length;
-      var bl = bd.length;
+      var al = this._l;
+      var bl = b._l;
 
       if (al < bl) { return this._s ? -1 : 1; }
       if (al > bl) { return this._s ? 1 : -1; }
@@ -1219,10 +1307,10 @@
       b = any(b);
       if (this._s !== b._s) { return false; }
       
-      var ad = this._d,
-          bd = b._d,
-          l = ad.length;
-      if (l !== bd.length) { return false; }
+      var ad = this._d;
+      var bd = b._d;
+      var l = this._l;
+      if (l !== b._l) { return false; }
       
       for (var i = 0; i < l; ++i) {
         if (ad[i] !== bd[i]) { return false; }
@@ -1242,10 +1330,10 @@
       if (!(b instanceof Integer)) { return false; }
       if (this._s !== b._s) { return false; }
       
-      var ad = this._d,
-          bd = b._d,
-          l = ad.length;
-      if (l !== bd.length) { return false; }
+      var ad = this._d;
+      var bd = b._d;
+      var l = this._l;
+      if (l !== b._l) { return false; }
       
       for (var i = 0; i < l; ++i) {
         if (ad[i] !== bd[i]) { return false; }

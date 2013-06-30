@@ -39,12 +39,22 @@ test("basic", function() {
   var b = Integer.num(10).pow(7);
 
   equal(a.toString(), "1234567890", "1234567890");
+  equal(a.getLength(), 3, "len(1234567890) = 2");
+  equal(a.clone().toString(), "1234567890", "1234567890");
+
   equal(b.toString(), "10000000", "10000000");
+  equal(b.getLength(), 2, "len(10000000) = 2");
+
   equal(a.add(b).toString(), "1244567890", "1234567890 + 10000000 = 1244567890");
+  console.log(a.add(b));
   equal(a.sub(b).toString(), "1224567890", "1234567890 - 10000000 = 1224567890");
   equal(a.mul(b).toString(), "12345678900000000", "1234567890 x 10000000 = 12345678900000000");
   equal(a.div(b).toString(), "123", "1234567890 / 10000000 = 123");
   equal(a.mod(b).toString(), "4567890", "1234567890 % 10000000 = 4567890");
+  equal(a.square().toString(), "1524157875019052100", "1234567890 ^ 2 = 1524157875019052100");
+  
+  equal(a.sqrt().toString(), "35136", "1234567890 ^ 0.5 = 35136");
+  equal(a.gcd(b).toString(), "10", "gcd(1234567890, 10000000) = 10");
 });
 
 test("shift", function() {
@@ -60,7 +70,7 @@ test("shift", function() {
   equal(ls17.toString(), "131072", "1 << 17 = 131072");
   equal(ls27.toString(), "134217728", "1 << 27 = 134217728");
   equal(ls37.toString(), "137438953472", "1 << 37 = 137438953472");
-  equal(ls47.toString(), "140737488355328", "1 << 37 = 140737488355328");
+  equal(ls47.toString(), "140737488355328", "1 << 47 = 140737488355328");
 
   equal(two.pow(7).toString(), "128", "2 ^ 7 = 128");
   equal(two.pow(17).toString(), "131072", "2 ^ 17 = 131072");
@@ -75,6 +85,15 @@ test("shift", function() {
   equal(ls47.rightShift(47).toString(), "1", "140737488355328 >> 47 = 1");
 });
 
+test("factorial", function () {
+  equal(Integer.factorial(0).toString(), "1", "0! = 1");
+  equal(Integer.factorial(1).toString(), "1", "1! = 1");
+  equal(Integer.factorial(2).toString(), "2", "2! = 2");
+  equal(Integer.factorial(3).toString(), "6", "3! = 6");
+  equal(Integer.factorial(10).toString(), "3628800", "10! = 3628800");
+  equal(Integer.factorial(17).toString(), "355687428096000", "17! = 355687428096000");
+});
+
 function fib(a) {
   var b = Integer.zero();
   for (var i = 0, c = Integer.one(), d; i < a; ++i) {
@@ -85,22 +104,13 @@ function fib(a) {
   return b;
 }
 
-test("factorial", function () {
-  equal(Integer.factorial(0).toString(), "1", "0! = 1");
-  equal(Integer.factorial(1).toString(), "1", "1! = 1");
-  equal(Integer.factorial(2).toString(), "2", "2! = 2");
-  equal(Integer.factorial(3).toString(), "6", "3! = 6");
-  equal(Integer.factorial(10).toString(), "3628800", "10! = 3628800");
-  equal(Integer.factorial(17).toString(), "355687428096000", "17! = 355687428096000");
-});
-
 test("fib", function(){
   equal(fib(0).toString(), "0", "fib(0) = 0");
   equal(fib(1).toString(), "1", "fib(1) = 1");
   equal(fib(2).toString(), "1", "fib(2) = 1");
   equal(fib(3).toString(), "2", "fib(3) = 2");
   equal(fib(4).toString(), "3", "fib(4) = 3");
-  equal(fib(38).toString(), "39088169", "fib(10) = 39088169");
+  equal(fib(38).toString(), "39088169", "fib(38) = 39088169");
 });
 </script>
 </body>
