@@ -97,6 +97,11 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="doc.txt" />
+    <None Include="date.inl">
+      <Filter>ヘッダー ファイル</Filter>
+    </None>
+    <None Include="ktn.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </None>
   </ItemGroup>
 </Project>

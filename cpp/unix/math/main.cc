@@ -4,9 +4,8 @@
 
 #include "test.h"
 
-int main(int argc, char** argv) {
-    srand(static_cast<unsigned int>(time(NULL)));
-
+int main(int argc, char** argv)
+{
     ulongBasic();
     longBasic();
     fractionBasic();
@@ -14,8 +13,9 @@ int main(int argc, char** argv) {
     vectorBasic();
     matrixBasic();
 
-    //fib<ktn::math::ULong>(7777).out();
+    //fib<ktn::math::ULong>(10000).out();
     //fact<ktn::math::ULong>(777).out();
+    //ktn::math::ULong::factorial(777).out();
     //pi(777).out();
     //kTest();
 

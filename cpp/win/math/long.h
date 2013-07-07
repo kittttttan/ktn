@@ -6,8 +6,8 @@
 
 namespace ktn { namespace math {
 
-/**
- * @brief Signed BigInteger.
+/*!
+ @brief Signed BigInteger.
  */
 class Long
 {
@@ -31,8 +31,8 @@ public:
     void cstr(char *s, int base=10) const;
     std::string str(int base=10) const;
     void debug() const;
-    int cmp(const Long& b) const;
-    int cmp(ddigit b) const;
+    inline int cmp(const Long& b) const;
+    inline int cmp(ddigit b) const;
 
     bool operator!() const;
     Long operator+() const;
@@ -42,51 +42,57 @@ public:
     Long& operator--();
     Long operator--(int);
 
-    Long operator+(const Long& b) const;
-    Long operator-(const Long& b) const;
-    Long operator*(const Long& b) const;
-    Long operator/(const Long& b) const;
-    Long operator%(const Long& b) const;
+    inline Long operator+(const Long& b) const;
+    inline Long operator-(const Long& b) const;
+    inline Long operator*(const Long& b) const;
+    inline Long operator/(const Long& b) const;
+    inline Long operator%(const Long& b) const;
 
-    Long operator+(ddigit b) const;
-    Long operator-(ddigit b) const;
-    Long operator*(ddigit b) const;
-    Long operator/(ddigit b) const;
-    Long operator%(ddigit b) const;
-    Long operator<<(ddigit n) const;
-    Long operator>>(ddigit n) const;
+    inline Long operator+(ddigit b) const;
+    inline Long operator-(ddigit b) const;
+    inline Long operator*(ddigit b) const;
+    inline Long operator/(ddigit b) const;
+    inline Long operator%(ddigit b) const;
+    inline Long operator<<(ddigit n) const;
+    inline Long operator>>(ddigit n) const;
 
-    Long& operator=(const Long& b);
-    Long& operator+=(const Long& b);
-    Long& operator-=(const Long& b);
-    Long& operator*=(const Long& b);
-    Long& operator/=(const Long& b);
-    Long& operator%=(const Long& b);
+    inline Long& operator=(const Long& b);
+    inline Long& operator+=(const Long& b);
+    inline Long& operator-=(const Long& b);
+    inline Long& operator*=(const Long& b);
+    inline Long& operator/=(const Long& b);
+    inline Long& operator%=(const Long& b);
 
-    Long& operator+=(ddigit b);
-    Long& operator-=(ddigit b);
-    Long& operator*=(ddigit b);
-    Long& operator/=(ddigit b);
-    Long& operator%=(ddigit b);
-    Long& operator<<=(ddigit n);
-    Long& operator>>=(ddigit n);
+    inline Long& operator+=(ddigit b);
+    inline Long& operator-=(ddigit b);
+    inline Long& operator*=(ddigit b);
+    inline Long& operator/=(ddigit b);
+    inline Long& operator%=(ddigit b);
+    inline Long& operator<<=(ddigit n);
+    inline Long& operator>>=(ddigit n);
 
-    bool operator==(const Long& b) const;
-    bool operator!=(const Long& b) const;
-    bool operator<(const Long& b) const;
-    bool operator>(const Long& b) const;
-    bool operator<=(const Long& b) const;
-    bool operator>=(const Long& b) const;
+    inline bool operator==(const Long& b) const;
+    inline bool operator!=(const Long& b) const;
+    inline bool operator<(const Long& b) const;
+    inline bool operator>(const Long& b) const;
+    inline bool operator<=(const Long& b) const;
+    inline bool operator>=(const Long& b) const;
 
-    bool operator==(ddigit b) const;
-    bool operator!=(ddigit b) const;
-    bool operator<(ddigit b) const;
-    bool operator>(ddigit b) const;
-    bool operator<=(ddigit b) const;
-    bool operator>=(ddigit b) const;
+    inline bool operator==(ddigit b) const;
+    inline bool operator!=(ddigit b) const;
+    inline bool operator<(ddigit b) const;
+    inline bool operator>(ddigit b) const;
+    inline bool operator<=(ddigit b) const;
+    inline bool operator>=(ddigit b) const;
 
 private:
     ULong u_;
-    bool s_;  /**< sign */
+
+    /*!
+     sign
+     */
+    bool s_;
 };
 }} // namespace ktn math
+
+#include "long.inl"

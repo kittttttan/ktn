@@ -4,8 +4,8 @@
 
 namespace ktn {
 
-/**
- * @brief Extended std::string
+/*!
+ @brief Extended std::string
  */
 class String
 {
@@ -13,10 +13,14 @@ class String
     friend std::istream& operator>>(std::istream &is, String& s);
 
 public:
-    String();
-    explicit String(const char* s);
-    String(const String& s);
-    ~String();
+    String() {}
+    explicit String(const char* s) : str_(s) {}
+    String(const String& s)
+    {
+        if (this == &s) { return; }
+        str_ = s.str_;
+    }
+    ~String() {}
 
     const std::string& str() const { return str_; }
 

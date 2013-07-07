@@ -12,11 +12,13 @@
 #define _CRTDBG_MAP_ALLOC
 #include <crtdbg.h>
 #define new ::new(_NORMAL_BLOCK, __FILE__, __LINE__)
+#else
+#include <crtdbg.h>
 #endif
 
+#include <tchar.h>
 #ifdef _DEBUG
 #include <cstdio>
-#include <tchar.h>
 #define TRACE(...)                                        \
     {                                                     \
         printf("%s[%d]%s ", __FILE__, __LINE__, __func__);\

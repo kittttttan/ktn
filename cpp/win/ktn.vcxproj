@@ -147,7 +147,8 @@
     <ClCompile Include="uri.cc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="doc.txt" />
+    <None Include="date.inl" />
+    <None Include="ktn.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

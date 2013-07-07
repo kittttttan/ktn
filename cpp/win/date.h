@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "date_format.h"
+
 #include <ctime>
 #include <string>
 
@@ -11,20 +12,30 @@ class Date
     friend std::ostream& operator<<(std::ostream& os, const Date& d);
     friend std::wostream& operator<<(std::wostream& os, const Date& d);
     friend std::istream& operator>>(std::istream &is, Date& d);
-public:
-    Date();
-    Date(const Date& date);
-    explicit Date(time_t t);
-    explicit Date(int year, int month=1, int day=1,
-        int hour=0, int min=0, int sec=0);
-    ~Date();
 
+public:
     static const time_t MINUTE = 60;
     static const time_t HOUR = 60 * MINUTE;
     static const time_t DAY = 24 * HOUR;
     static const time_t WEEK = 7 * DAY;
 
     static Date parse(const char* str);
+
+public:
+    Date();
+    Date(const Date& date)
+    {
+        time(date.time_);
+    }
+
+    explicit Date(time_t t)
+    {
+        time(t);
+    }
+
+    explicit Date(int year, int month=1, int day=1,
+        int hour=0, int min=0, int sec=0);
+    ~Date() {}
 
     time_t time() const { return time_; }
     const struct tm* tm() const { return &date_; }
@@ -52,21 +63,21 @@ public:
     Date& addMinute(int min) { date_.tm_min += min; time_ = mktime(&date_); return *this; }
     Date& addSecond(int sec) { date_.tm_sec += sec; time_ = mktime(&date_); return *this; }
 
-    std::string str() const;
-    std::wstring wstr() const;
-    Date& operator=(const Date& d);
-    Date& operator+=(time_t time);
-    Date& operator-=(time_t time);
+    inline std::string str() const;
+    inline std::wstring wstr() const;
+    inline Date& operator=(const Date& d);
+    inline Date& operator+=(time_t time);
+    inline Date& operator-=(time_t time);
 
-    Date operator+(time_t time) const;
-    Date operator-(time_t time) const;
+    inline Date operator+(time_t time) const;
+    inline Date operator-(time_t time) const;
 
-    bool operator==(const Date& d) const;
-    bool operator!=(const Date& d) const;
-    bool operator>(const Date& d) const;
-    bool operator<(const Date& d) const;
-    bool operator>=(const Date& d) const;
-    bool operator<=(const Date& d) const;
+    inline bool operator==(const Date& d) const;
+    inline bool operator!=(const Date& d) const;
+    inline bool operator>(const Date& d) const;
+    inline bool operator<(const Date& d) const;
+    inline bool operator>=(const Date& d) const;
+    inline bool operator<=(const Date& d) const;
 private:
     time_t time_;
     struct tm date_;
@@ -74,3 +85,5 @@ private:
 };
 
 } // namespace ktn
+
+#include "date.inl"

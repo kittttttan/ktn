@@ -1,7 +1,7 @@
 CXX = g++
 CFLAGS = -g -W -Wall -O2 -Dnullptr=NULL
 TARGET = test
-OBJS = test.o string.o stringw.o date.o
+OBJS = test.o string.o stringw.o date_format.o date.o
 
 all: $(TARGET)
 
@@ -16,5 +16,6 @@ clean:
 
 string.o:
 stringw.o:
+date_format.o:
 date.o:
 test.o:

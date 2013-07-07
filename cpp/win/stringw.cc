@@ -10,35 +10,6 @@
 
 namespace ktn {
 
-StringW::StringW()
-{
-
-}
-
-StringW::StringW(const wchar_t* s) :
-    str_(s)
-{
-
-}
-
-StringW::StringW(const std::wstring& s) :
-    str_(s)
-{
-
-}
-
-StringW::StringW(const StringW& s)
-{
-    if (this == &s) { return; }
-
-    str_ = s.str_;
-}
-
-StringW::~StringW()
-{
-
-}
-
 StringW& StringW::operator=(const StringW& s)
 {
     if (this == &s) { return *this; }

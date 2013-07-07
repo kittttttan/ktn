@@ -7,8 +7,8 @@ namespace ktn {
 class HttpRequest
 {
 public:
-    HttpRequest();
-    ~HttpRequest();
+    HttpRequest() {}
+    ~HttpRequest() {}
 
     void parse(const char* src);
 

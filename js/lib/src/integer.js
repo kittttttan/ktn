@@ -15,7 +15,6 @@
    * use of TypedArray
    * @type boolean
    */
-  //var _ta = false;
   var _ta = typeof Uint32Array !== 'undefined';
 
   /**
@@ -1033,7 +1032,8 @@
      *     this / b (else)
      */
     divmod: function(b, modulus) {
-      var a = this.clone();
+      //var a = this.clone();
+      var a = this;
       var ad = a._d;
       var bd = b._d;
       var na = a._l;

@@ -7,8 +7,8 @@
 #include <Windows.h>
 
 #ifdef LOGGER_OFF
-#define LOGGER_INIT     ((void)0)
-#define LOGGER(name)    ((void)0)
+#define LOGGER_INIT                 ((void)0)
+#define LOGGER(name)                ((void)0)
 #define LOGGER_LEVEL(level)         ((void)0)
 #define LOGGER_LOG(level, logstr)   ((void)0)
 #define LOGGER_ERROR(logstr)        ((void)0)

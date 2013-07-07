@@ -60,9 +60,9 @@ const char* getCodeDesc(int code)
 
 int send(SOCKET sokcet, int code, const char* contentType, const char* body, size_t bodySize)
 {
-    if (!bodySize) bodySize = strlen(body);
+    if (!bodySize) bodySize = ::strlen(body);
     char header[128];
-    int cnt = sprintf_s(header,
+    int cnt = ::sprintf_s(header,
         "HTTP/1.1 %d %s\r\n"
         "Content-Length: %d\r\n"
         "Content-Type: %s\r\n"
@@ -73,8 +73,8 @@ int send(SOCKET sokcet, int code, const char* contentType, const char* body, siz
     size_t allSize = bodySize + cnt;
     char* res;
     res = new char[allSize + 1];
-    memcpy(res, header, cnt);
-    memcpy(res + cnt, body, bodySize);
+    ::memcpy(res, header, cnt);
+    ::memcpy(res + cnt, body, bodySize);
 
     int n = ::send(sokcet, res, static_cast<int>(allSize), 0);
     //res[allSize] = '\0';

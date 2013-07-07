@@ -47,6 +47,7 @@ void stringTest() {
 }
 
 void dateTest() {
+  /*
     Date d;
     std::wcout << d << std::endl;
     std::wcout << (d + Date::MINUTE) << std::endl;
@@ -70,6 +71,7 @@ void dateTest() {
 
     std::wcout << Date::parse("1980-01-21") << std::endl;
     std::wcout << Date::parse("2000") << std::endl;
+  */
 }
 
 int main(int argc, const char** argv) {

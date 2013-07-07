@@ -5,8 +5,8 @@ namespace ktn {
 namespace HttpResponse {
 
 const char* getCodeDesc(int code);
-int send(SOCKET sokcet, int code, const char* contentType, const char* body, size_t bodySize);
+int send(SOCKET sokcet, int code, const char* contentType,
+         const char* body, size_t bodySize);
 
-}
-
+} // namespace HttpResponse
 } // namespace ktn

@@ -4,8 +4,8 @@
 
 namespace ktn {
 
-/**
- * @brief Extended std::wstring
+/*!
+ @brief Extended std::wstring
  */
 class StringW
 {
@@ -13,11 +13,15 @@ class StringW
     friend std::wistream& operator>>(std::wistream &is, StringW& s);
 
 public:
-    StringW();
-    explicit StringW(const wchar_t* s);
-    explicit StringW(const std::wstring& s);
-    StringW(const StringW& s);
-    ~StringW();
+    StringW() {}
+    explicit StringW(const wchar_t* s) : str_(s) {}
+    explicit StringW(const std::wstring& s) : str_(s) {}
+    StringW(const StringW& s)
+    {
+        if (this == &s) { return; }
+        str_ = s.str_;
+    }
+    ~StringW() {}
 
     const std::wstring& str() const { return str_; }
 

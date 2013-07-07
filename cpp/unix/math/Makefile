@@ -1,5 +1,5 @@
 CXX = g++ #clang++
-CFLAGS = -g -W -Wall -O2 -Dnullptr=NULL
+CFLAGS = -g -W -Wall -O2 -std=c++11
 TARGET = test
 OBJS = main.o test.o ulong.o long.o fraction.o
 

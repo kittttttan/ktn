@@ -2,8 +2,6 @@
 #ifndef UTIL_H_
 #define UTIL_H_
 
-//#define nullptr NULL
-
 #define SAFE_DELETE(x)  \
     {                   \
         delete x;       \

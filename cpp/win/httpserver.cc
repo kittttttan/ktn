@@ -2,6 +2,7 @@
 #include "httprequest.h"
 #include "httpresponse.h"
 #include "uri.h"
+
 #include <cstdio>
 #include <iostream>
 #include <fstream>
@@ -11,48 +12,9 @@
 
 namespace ktn {
 
-const size_t kDataSize = 1024;
+const size_t kDataSize = 1024 * 4;
 
-HttpServer::HttpServer(char* ip, int port) :
-    port_(port), ipAddr_(ip), socket_(INVALID_SOCKET), rootDir_(".")
-{
-    int err = ::WSAStartup(MAKEWORD(2, 2), &wsaData_);
-    if (err) {
-        char strErr[64] = "failed WSAStartup: ";
-        switch (err) {
-        case WSASYSNOTREADY: strcat_s(strErr, "WSASYSNOTREADY"); break;
-        case WSAVERNOTSUPPORTED: strcat_s(strErr, "WSAVERNOTSUPPORTED"); break;
-        case WSAEINPROGRESS:strcat_s(strErr, "WSAEINPROGRESS"); break;
-        case WSAEPROCLIM: strcat_s(strErr, "WSAEPROCLIM"); break;
-        case WSAEFAULT: strcat_s(strErr, "WSAEFAULT"); break;
-        default: strcat_s(strErr, "unknown"); break;
-        }
-        throw std::exception(strErr);
-    }
-
-    socket_ = ::socket(AF_INET, SOCK_STREAM, 0);
-    if (socket_ == INVALID_SOCKET) {
-        char what[32];
-        sprintf_s(what, "socket failed: %d\n", ::WSAGetLastError());
-        throw std::exception(what);
-    }
-}
-
-HttpServer::~HttpServer()
-{
-    ::shutdown(socket_, SD_BOTH);
-    ::WSACleanup();
-}
-
-void HttpServer::wsaInfo()
-{
-    printf("%s ver.%u.%u %s\n",
-        wsaData_.szDescription,
-        (BYTE)wsaData_.wHighVersion , wsaData_.wHighVersion >> 8,
-        wsaData_.szSystemStatus);
-}
-
-const char* getFileType(const char* path)
+const char* HttpServer::getFileType(const char* path)
 {
     const char* ext = strrchr(path, '.');
     if (!ext) return "text/plain";
@@ -79,7 +41,40 @@ const char* getFileType(const char* path)
     return "text/plain";
 }
 
-int HttpServer::serveFile(SOCKET socket, const char* path)
+HttpServer::HttpServer(char* ip, int port) :
+    port_(port), ipAddr_(ip), socket_(INVALID_SOCKET), rootDir_(".")
+{
+    int err = ::WSAStartup(MAKEWORD(2, 2), &wsaData_);
+    if (err) {
+        char strErr[64] = "failed WSAStartup: ";
+        switch (err) {
+        case WSASYSNOTREADY: strcat_s(strErr, "WSASYSNOTREADY"); break;
+        case WSAVERNOTSUPPORTED: strcat_s(strErr, "WSAVERNOTSUPPORTED"); break;
+        case WSAEINPROGRESS:strcat_s(strErr, "WSAEINPROGRESS"); break;
+        case WSAEPROCLIM: strcat_s(strErr, "WSAEPROCLIM"); break;
+        case WSAEFAULT: strcat_s(strErr, "WSAEFAULT"); break;
+        default: strcat_s(strErr, "unknown"); break;
+        }
+        throw std::exception(strErr);
+    }
+
+    socket_ = ::socket(AF_INET, SOCK_STREAM, 0);
+    if (socket_ == INVALID_SOCKET) {
+        char what[32];
+        sprintf_s(what, "socket failed: %d\n", ::WSAGetLastError());
+        throw std::exception(what);
+    }
+}
+
+void HttpServer::wsaInfo() const
+{
+    printf("%s ver.%u.%u %s\n",
+        wsaData_.szDescription,
+        (BYTE)wsaData_.wHighVersion , wsaData_.wHighVersion >> 8,
+        wsaData_.szSystemStatus);
+}
+
+int HttpServer::serveFile(SOCKET socket, const char* path) const
 {
     printf("open %s\n", path);
 
@@ -116,7 +111,7 @@ int HttpServer::serveFile(SOCKET socket, const char* path)
     return n;
 }
 
-void HttpServer::serve()
+void HttpServer::serve() const
 {
     errno_t err = 0;
     struct sockaddr_in addr;

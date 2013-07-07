@@ -1,6 +1,7 @@
 ﻿#include "string.h"
 #include "util.h"
 #include "dbg.h"
+
 #include <cstdio>
 #include <clocale>
 #include <algorithm>
@@ -8,28 +9,6 @@
 #include <sstream>
 
 namespace ktn {
-
-String::String()
-{
-
-}
-
-String::String(const char* s) :
-    str_(s)
-{
-
-}
-
-String::String(const String& s)
-{
-    if (this == &s) { return; }
-    str_ = s.str_;
-}
-
-String::~String()
-{
-
-}
 
 String& String::operator=(const String& s)
 {
@@ -59,16 +38,16 @@ char& String::operator[](int index)
     return str_[index];
 }
 
-/**
- * @return true if string is empty, otherwise false
+/*!
+ @return true if string is empty, otherwise false
  */
 bool String::operator!() const
 {
     return str_.empty();
 }
 
-/**
- * @return reversed string
+/*!
+ @return reversed string
  */
 String String::operator-() const
 {
@@ -171,8 +150,8 @@ String& String::operator+=(const char* b)
     return *this;
 }
 
-/**
- * erase specific chars from string
+/*!
+ erase specific chars from string
  */
 String& String::operator-=(const char c)
 {
@@ -184,8 +163,8 @@ String& String::operator-=(const char c)
     return *this;
 }
 
-/**
- * @return repeated string. negative argument means reversed.
+/*!
+ @return repeated string. negative argument means reversed.
  */
 String& String::operator*=(int times)
 {

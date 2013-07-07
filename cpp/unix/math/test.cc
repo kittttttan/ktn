@@ -1,26 +1,31 @@
-/**
- * @file  math/test.cc
- * @brief test for ktn::math
- * @date  2012
- */
-#include <cstdio>
-#include <ctime>
-
 #include "test.h"
-
-using namespace std;
-using namespace ktn::math;
-
 #include "complex.h"
 #include "vector.h"
 #include "matrix.h"
 
-void ulongBasic() {
+#include <cstdio>
+#include <ctime>
+#include <iomanip>
+
+using namespace std;
+using namespace ktn::math;
+
+void ulongBasic()
+{
     ULong a = ULong::random(4), b(100000);
 
     puts("** Test for ULong **");
     printf("a = "); a.out();
+    
+    // TODO: ?
+    cout.setf(ios::hex, ios::basefield);
+    cout << "  = " << a << endl;
+    cout.unsetf(ios::hex);
+    cout.setf(ios::dec, ios::basefield);
+    cout << "  = " << a << endl;
+
     printf("b = "); b.out();
+
     printf("!a = %s\n", !a ? "true" : "false");
     printf("a < b is %s\n", (a < b) ? "true" : "false");
     printf("a + b = "); (a + b).out();
@@ -43,7 +48,8 @@ void ulongBasic() {
     printf("b %% 7 = "); (b % 7).out();
 }
 
-void longBasic() {
+void longBasic()
+{
     Long a("-1234567890987654321", 10), b(10000000);
 
     puts("** Test for Long **");
@@ -59,7 +65,8 @@ void longBasic() {
     printf("a %% b = "); (a % b).out();
 }
 
-void fractionBasic() {
+void fractionBasic()
+{
     Fraction a(154, 6), b(-11, 5);
 
     puts("** Test for Fraction **");
@@ -71,7 +78,8 @@ void fractionBasic() {
     printf("a / b = "); (a / b).out();
 }
 
-ULong arccot(const ULong& n, int m) {
+ULong arccot(const ULong& n, int m)
+{
     ULong c(n);
     ULong m2(m);
     ULong a(c / m2);
@@ -95,14 +103,16 @@ ULong arccot(const ULong& n, int m) {
     return a;
 }
 
-ULong pi(ddigit a) {
+ULong pi(ddigit a)
+{
     ULong n(10);
     n = n.pow(a);
 
     return ((arccot(n, 5) << 2) - arccot(n, 239)) << 2;
 }
 
-void kTest() {
+void kTest()
+{
     ULong a = ULong::random(1100), b = ULong::random(1100), c, d;
     clock_t t = clock(), t1, t2;
     c = a * b;
@@ -114,7 +124,8 @@ void kTest() {
     printf("%d\nk: %ldms\n*: %ldms\n", c == d, t2 - t1, t1 - t);
 }
 
-void compBasic() {
+void compBasic()
+{
     Complex<double> a(1,2), b(3,-4);
     puts("** Complex<double> **");
     printf("a = "); a.out();
@@ -133,7 +144,8 @@ void compBasic() {
     printf("c * d = "); (c*d).out();
 }
 
-void vectorBasic() {
+void vectorBasic()
+{
     Vector<int, 3> a, b;
     cout << "** " << a.dimension() << "D Vector **" << endl;
     a[0] = 1;
@@ -151,7 +163,8 @@ void vectorBasic() {
     cout << (a*b) << endl;
 }
 
-void matrixBasic() {
+void matrixBasic()
+{
     Matrix<int,3,2> n;
     cout << "** " <<  n.row() << "x"<< n.col() << " Matrix **" << endl;
     n.at(1,1) = 1;

@@ -3,16 +3,6 @@
 
 namespace ktn {
 
-Uri::Uri(const char* uri, Type type)
-{
-    parse(uri, type);
-}
-
-Uri::~Uri()
-{
-
-}
-
 void Uri::parse(const char* uri, Type type)
 {
     size_t size = strlen(uri) + 1;

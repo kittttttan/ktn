@@ -2,16 +2,6 @@
 
 namespace ktn {
 
-HttpRequest::HttpRequest()
-{
-
-}
-
-HttpRequest::~HttpRequest()
-{
-
-}
-
 void HttpRequest::parse(const char* src)
 {
     int begin = 0;

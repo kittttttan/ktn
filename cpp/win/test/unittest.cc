@@ -16,7 +16,17 @@ using namespace ktn::math;
 TEST(ULong, Basic) {
     ULong a(7777777), b(10000);
     ULong c("7777777777", 10), d("1000000000", 10);
-    char str[64];
+    char str[80];
+
+    ULong::ZERO.cstr(str);
+    EXPECT_STREQ("0", str);
+    EXPECT_TRUE(ULong::ZERO.isEven());
+    EXPECT_FALSE(ULong::ZERO.isOdd());
+
+    ULong::ONE.cstr(str);
+    EXPECT_STREQ("1", str);
+    EXPECT_FALSE(ULong::ONE.isEven());
+    EXPECT_TRUE(ULong::ONE.isOdd());
 
     a.cstr(str);
     EXPECT_STREQ("7777777", str);
@@ -55,6 +65,22 @@ TEST(ULong, Basic) {
 
     (c % d).cstr(str);
     EXPECT_STREQ("777777777", str);
+
+    ULong e("1000000000000000000", 10);
+    e.cstr(str);
+    EXPECT_STREQ("1000000000000000000", str);
+
+    (d*d).cstr(str);
+    EXPECT_STREQ("1000000000000000000", str);
+
+    d.square().cstr(str);
+    EXPECT_STREQ("1000000000000000000", str);
+
+    c.sqrt().cstr(str);
+    EXPECT_STREQ("88191", str);
+
+    a.gcdBin(c).cstr(str);
+    EXPECT_STREQ("7", str);
 }
 
 TEST(ULong, Shift) {
@@ -63,6 +89,8 @@ TEST(ULong, Shift) {
     ULong ls7;
     ULong ls17;
     ULong ls27;
+    ULong ls37;
+    ULong ls47;
     char str[64];
 
     ls7 = (one << 7);
@@ -77,6 +105,14 @@ TEST(ULong, Shift) {
     ls27.cstr(str);
     EXPECT_STREQ("134217728", str);
 
+    ls37 = (one << 37);
+    ls37.cstr(str);
+    EXPECT_STREQ("137438953472", str);
+
+    ls47 = (one << 47);
+    ls47.cstr(str);
+    EXPECT_STREQ("140737488355328", str);
+
     two.pow(7).cstr(str);
     EXPECT_STREQ("128", str);
 
@@ -86,6 +122,12 @@ TEST(ULong, Shift) {
     two.pow(27).cstr(str);
     EXPECT_STREQ("134217728", str);
 
+    two.pow(37).cstr(str);
+    EXPECT_STREQ("137438953472", str);
+
+    two.pow(47).cstr(str);
+    EXPECT_STREQ("140737488355328", str);
+
     (ls7 >> 7).cstr(str);
     EXPECT_STREQ("1", str);
 
@@ -94,6 +136,34 @@ TEST(ULong, Shift) {
 
     (ls27 >> 27).cstr(str);
     EXPECT_STREQ("1", str);
+
+    (ls37 >> 37).cstr(str);
+    EXPECT_STREQ("1", str);
+
+    (ls47 >> 47).cstr(str);
+    EXPECT_STREQ("1", str);
+}
+
+TEST(ULong, Factorial) {
+    char str[128];
+
+    ULong::factorial(0).cstr(str);
+    EXPECT_STREQ("1", str);
+
+    ULong::factorial(1).cstr(str);
+    EXPECT_STREQ("1", str);
+
+    ULong::factorial(2).cstr(str);
+    EXPECT_STREQ("2", str);
+
+    ULong::factorial(3).cstr(str);
+    EXPECT_STREQ("6", str);
+
+    ULong::factorial(10).cstr(str);
+    EXPECT_STREQ("3628800", str);
+
+    ULong::factorial(17).cstr(str);
+    EXPECT_STREQ("355687428096000", str);
 }
 
 TEST(Uri, Absolute) {

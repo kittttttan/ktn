@@ -1,24 +1,24 @@
+#pragma once
 #ifndef KTN_MATH_FRACTION_H_
 #define KTN_MATH_FRACTION_H_
 
-/**
- * @file  math/fraction.h
- * @brief Fraction
- */
-
+#include "ulong.h"
 #include <string>
 #include <iostream>
-#include "ulong.h"
 
 namespace ktn { namespace math {
 
-/**
- * @brief Fraction
+/*!
+ @brief Fraction
  */
-class Fraction {
-
+class Fraction
+{
     friend std::ostream& operator<<(std::ostream& os, const Fraction& f);
-    //friend std::istream& operator>>(std::istream& is, Fraction& f);
+    friend std::istream& operator>>(std::istream& is, Fraction& f);
+
+public:
+    static const Fraction ZERO;
+    static const Fraction ONE;
 
 public:
     explicit Fraction() : s_(true), n_(0), d_(1) {}
@@ -30,9 +30,6 @@ public:
     explicit Fraction(const char *s, int radix);
     ~Fraction(){}
 
-    static const Fraction ZERO;
-    static const Fraction ONE;
-
     ULong numerator() const { return n_; }
     ULong denominator() const { return d_; }
     bool sign() const { return s_; }
@@ -40,62 +37,76 @@ public:
     std::string str(int radix=10) const;
     void cstr(char *s, int radix=10) const;
     void out(int radix=10, bool br=true) const;
-    int cmp(const Fraction& b) const;
-    int cmp(ddigit b) const;
+    inline int cmp(const Fraction& b) const;
+    inline int cmp(ddigit b) const;
 
-    bool operator!() const;
-    Fraction operator+() const;
-    Fraction operator-() const;
-    Fraction& operator++();
-    Fraction operator++(int);
-    Fraction& operator--();
-    Fraction operator--(int);
+    inline bool operator!() const;
+    inline Fraction operator+() const;
+    inline Fraction operator-() const;
+    inline Fraction& operator++();
+    inline Fraction operator++(int);
+    inline Fraction& operator--();
+    inline Fraction operator--(int);
 
-    Fraction operator+(const Fraction& b) const;
-    Fraction operator-(const Fraction& b) const;
-    Fraction operator*(const Fraction& b) const;
-    Fraction operator/(const Fraction& b) const;
+    inline Fraction operator+(const Fraction& b) const;
+    inline Fraction operator-(const Fraction& b) const;
+    inline Fraction operator*(const Fraction& b) const;
+    inline Fraction operator/(const Fraction& b) const;
 
-    Fraction operator+(ddigit b) const;
-    Fraction operator-(ddigit b) const;
-    Fraction operator*(ddigit b) const;
-    Fraction operator/(ddigit b) const;
-    Fraction operator<<(ddigit n) const;
-    Fraction operator>>(ddigit n) const;
+    inline Fraction operator+(ddigit b) const;
+    inline Fraction operator-(ddigit b) const;
+    inline Fraction operator*(ddigit b) const;
+    inline Fraction operator/(ddigit b) const;
+    inline Fraction operator<<(ddigit n) const;
+    inline Fraction operator>>(ddigit n) const;
 
-    Fraction& operator=(const Fraction& b);
-    Fraction& operator+=(const Fraction& b);
-    Fraction& operator-=(const Fraction& b);
-    Fraction& operator*=(const Fraction& b);
-    Fraction& operator/=(const Fraction& b);
+    inline Fraction& operator=(const Fraction& b);
+    inline Fraction& operator+=(const Fraction& b);
+    inline Fraction& operator-=(const Fraction& b);
+    inline Fraction& operator*=(const Fraction& b);
+    inline Fraction& operator/=(const Fraction& b);
 
-    Fraction& operator+=(ddigit b);
-    Fraction& operator-=(ddigit b);
-    Fraction& operator*=(ddigit b);
-    Fraction& operator/=(ddigit b);
-    Fraction& operator<<=(ddigit n);
-    Fraction& operator>>=(ddigit n);
+    inline Fraction& operator+=(ddigit b);
+    inline Fraction& operator-=(ddigit b);
+    inline Fraction& operator*=(ddigit b);
+    inline Fraction& operator/=(ddigit b);
+    inline Fraction& operator<<=(ddigit n);
+    inline Fraction& operator>>=(ddigit n);
 
-    bool operator==(const Fraction& b) const;
-    bool operator!=(const Fraction& b) const;
-    bool operator<(const Fraction& b) const;
-    bool operator>(const Fraction& b) const;
-    bool operator<=(const Fraction& b) const;
-    bool operator>=(const Fraction& b) const;
+    inline bool operator==(const Fraction& b) const;
+    inline bool operator!=(const Fraction& b) const;
+    inline bool operator<(const Fraction& b) const;
+    inline bool operator>(const Fraction& b) const;
+    inline bool operator<=(const Fraction& b) const;
+    inline bool operator>=(const Fraction& b) const;
 
-    bool operator==(ddigit b) const;
-    bool operator!=(ddigit b) const;
-    bool operator<(ddigit b) const;
-    bool operator>(ddigit b) const;
-    bool operator<=(ddigit b) const;
-    bool operator>=(ddigit b) const;
+    inline bool operator==(ddigit b) const;
+    inline bool operator!=(ddigit b) const;
+    inline bool operator<(ddigit b) const;
+    inline bool operator>(ddigit b) const;
+    inline bool operator<=(ddigit b) const;
+    inline bool operator>=(ddigit b) const;
 
 private:
     void cancel();
 
-    bool s_;  /**< sign */
-    ULong n_;  /**< numerator */
-    ULong d_;  /**< denominator */
+    /*!
+     sign
+     */
+    bool s_;
+
+    /*!
+     numerator
+     */
+    ULong n_;
+
+    /*!
+     denominator
+     */
+    ULong d_;
 };
 }} // namespace ktn math
+
+#include "fraction.inl"
+
 #endif // KTN_MATH_FRACTION_H_

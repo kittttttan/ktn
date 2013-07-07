@@ -10,8 +10,8 @@ public:
         Relative,
     };
 
-    explicit Uri(const char* uri, Type type=Absolute);
-    ~Uri();
+    explicit Uri(const char* uri, Type type=Absolute) { parse(uri, type); }
+    ~Uri() {}
 
     void parse(const char* uri, Type type=Absolute);
 

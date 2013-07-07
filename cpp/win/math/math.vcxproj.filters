@@ -61,5 +61,20 @@
     <None Include="ulong.inl">
       <Filter>Header Files</Filter>
     </None>
+    <None Include="long.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="fraction.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="matrix.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="vector.inl">
+      <Filter>Header Files</Filter>
+    </None>
+    <None Include="complex.inl">
+      <Filter>Header Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
