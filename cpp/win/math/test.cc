@@ -18,11 +18,11 @@ void ulongBasic()
     printf("a = "); a.out();
     
     // TODO: ?
-    cout.setf(ios::hex, ios::basefield);
+    //cout.setf(ios::hex, ios::basefield);
     cout << "  = " << a << endl;
-    cout.unsetf(ios::hex);
-    cout.setf(ios::dec, ios::basefield);
-    cout << "  = " << a << endl;
+    //cout.unsetf(ios::hex);
+    //cout.setf(ios::dec, ios::basefield);
+    //cout << "  = " << a << endl;
 
     printf("b = "); b.out();
 

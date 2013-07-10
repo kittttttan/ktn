@@ -38,7 +38,7 @@ public:
     static ULong fact_even(uddigit n);
 
 public:
-    explicit ULong() : l_(0), d_(nullptr) {}
+    explicit ULong() : c_(0), l_(0), d_(nullptr) {}
     explicit ULong(uddigit u);
     ULong(const ULong& l);
     explicit ULong(const char *s, int base);

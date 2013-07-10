@@ -158,9 +158,7 @@ ULong& ULong::operator=(const ULong& b)
         c_ = len;
     }
     l_ = len;
-    for (size_t i = 0; i < len; ++i) {
-        d_[i] = b.d_[i];
-    }
+    ::memcpy(d_, b.d_, sizeof(udigit) * len);
 
     return *this;
 }
@@ -348,7 +346,7 @@ void ULong::out(int base, bool br) const
  */
 std::ostream& operator<<(std::ostream& os, const ULong& l)
 {
-    return os << l.str(os.hex ? 16 : 10);
+    return os << l.str(/*os.hex ? 16 : */10);
 }
 
 /*!
@@ -359,7 +357,7 @@ std::istream& operator>>(std::istream& is, ULong& l)
 {
     std::string str;
     is >> str;
-    l = ULong(str.c_str(), is.hex ? 16 : 10);
+    l = ULong(str.c_str(), /*is.hex ? 16 : */10);
     return is;
 }
 

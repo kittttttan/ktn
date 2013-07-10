@@ -44,6 +44,7 @@ ULong::ULong(const ULong& l)
 
     const size_t len = l.l_;
     c_ = l_ = len;
+    if (!len) { d_ = nullptr; return; }
     d_ = new udigit[len];
     for (size_t i = 0; i < len; ++i) {
         d_[i] = l.d_[i];

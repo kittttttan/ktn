@@ -79,6 +79,9 @@ TEST(ULong, Basic) {
     c.sqrt().cstr(str);
     EXPECT_STREQ("88191", str);
 
+    a.gcd(c).cstr(str);
+    EXPECT_STREQ("7", str);
+
     a.gcdBin(c).cstr(str);
     EXPECT_STREQ("7", str);
 }
