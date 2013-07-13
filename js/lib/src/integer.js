@@ -55,7 +55,7 @@
    * @const
    * @type number
    */
-  var SHIFT = 15;
+  var SHIFT = 16;
   
   /**
    * @private
@@ -105,7 +105,6 @@
       a._s = false;
     }
     
-    //n &= 0x7fffffff;
     a._d[0] = n & MASK;
     
     n >>>= SHIFT;
@@ -270,7 +269,7 @@
     var i = 0;
     var j = 0;
     var l = 0;
-    var limit = 1 << (SHIFT << 1);
+    var limit = 1 << ((SHIFT - 1) << 1);
     
     for (;; i = i + 1|0) {
       l = (n / (1 << i)) | 0;
@@ -714,8 +713,6 @@
      * @return {Integer} this * this
      */
     square: function() {
-      //var a = this.clone(),
-      //    x = a._d,
       var x = this._d;
       var t = this._l;
       var s = longAlloc(t << 1, true);
@@ -1032,7 +1029,6 @@
      *     this / b (else)
      */
     divmod: function(b, modulus) {
-      //var a = this.clone();
       var a = this;
       var ad = a._d;
       var bd = b._d;
@@ -1042,9 +1038,6 @@
       if (nb < 2 && !bd[0]) {
         // zero division
         throw new Error('zero division');
-        //if (modulus || na < 2 && !ad[0]) { return NaN; }
-        //if (a._s === b._s) { return Infinity; }
-        //return -Infinity;
       }
 
       var albl = na === nb;
@@ -1065,7 +1058,7 @@
         i = na;
         
         while (i--) {
-          t = (t << SHIFT) | zd[i];
+          t = ((t << SHIFT) | zd[i]) >>> 0;
           zd[i] = (t / dd) & MASK;
           t %= dd;
         }
@@ -1119,7 +1112,7 @@
         if (zd[j] === bd[nb - 1]) {
           q = MASK;
         } else {
-          q = ((zd[j] << SHIFT) | zd[j - 1]) / bd[nb - 1] & MASK;
+          q = (((zd[j] << SHIFT) | zd[j - 1]) >>> 0) / bd[nb - 1] & MASK;
         }
 
         if (q) {
@@ -1159,7 +1152,7 @@
           t = 0;
           i = nb;
           while (i--) {
-            t = (t << SHIFT) | zd[i];
+            t = ((t << SHIFT) | zd[i]) >>> 0;
             zd[i] = (t / dd) & MASK;
             t %= dd;
           }

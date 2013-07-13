@@ -34,6 +34,8 @@ TEST(ULong, Basic) {
     b.cstr(str);
     EXPECT_STREQ("10000", str);
 
+    EXPECT_TRUE(ULong::ZERO == ULong("", 10));
+
     EXPECT_TRUE(a > b);
 
     (a + b).cstr(str);
@@ -214,6 +216,6 @@ TEST(Uri, Relative) {
 }
 
 int main(int argc, char **argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }

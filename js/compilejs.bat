@@ -24,9 +24,14 @@ exit /b
 :opt
 :opt_loop
   if "%1"=="" goto :EOF
-  if /i "%1"=="/H" call :help else ^
-  if /i "%1"=="/A" set /a ALL=1 else ^
-  if /i "%1"=="/Q" set /a QUIET=1
+  if /i "%1"=="/H" (
+    call :help
+    exit /b
+  ) else if /i "%1"=="/A" (
+    set /a ALL=1
+  ) else if /i "%1"=="/Q" (
+    set /a QUIET=1
+  )
   
   shift
   goto :opt_loop
@@ -68,8 +73,8 @@ rem set IS_NEW=0 if src is older than dest
 rem  echo %LDH%, %RDH%
   
   rem compare date yyyyMMdd
-  set /a LDATE=%LDH:~1,4%%LDH:~6,2%%LDH:~9,2%
-  set /a RDATE=%RDH:~1,4%%RDH:~6,2%%RDH:~9,2%
+  set LDATE=%LDH:~1,4%%LDH:~6,2%%LDH:~9,2%
+  set RDATE=%RDH:~1,4%%RDH:~6,2%%RDH:~9,2%
 rem  echo %LDATE%, %RDATE%
   if %LDATE% GTR %RDATE% (
     goto :EOF
@@ -79,8 +84,8 @@ rem  echo %LDATE%, %RDATE%
   )
     
   rem compare time hhmm
-  set /a LTIME=%LDH:~12,2%%LDH:~15,2%
-  set /a RTIME=%RDH:~12,2%%RDH:~15,2%
+  set LTIME=%LDH:~12,2%%LDH:~15,2%
+  set RTIME=%RDH:~12,2%%RDH:~15,2%
 rem  echo %LTIME%, %RTIME%
   if %LTIME% LSS %RTIME% (
     set /a IS_NEW=0

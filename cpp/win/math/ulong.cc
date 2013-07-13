@@ -9,25 +9,25 @@
 namespace ktn { namespace math {
 
 #ifdef USE_64BIT
-const uddigit ULong::SHIFT_BIT = 30;
+const uddigit ULong::SHIFT_BIT = 32;
 const char ULong::FORMAT_DIGIT[] = "%lu";
 const char ULong::FORMAT_DDIGIT[] = "%llu";
 //const char ULong::FORMAT_DDIGIT[] = "%I64u";
 #else
-const uddigit ULong::SHIFT_BIT = 15;
+const uddigit ULong::SHIFT_BIT = 16;
 const char ULong::FORMAT_DIGIT[] = "%u";
 const char ULong::FORMAT_DDIGIT[] = "%u";
 #endif
 
 const char ULong::FORMAT_B[] = "%04x";
 
-const uddigit ULong::BASE = 1 << SHIFT_BIT;
+const uddigit ULong::BASE = static_cast<uddigit>(1) << SHIFT_BIT;
 const uddigit ULong::MASK = BASE - 1;
 
 /*!
  0
  */
-const ULong ULong::ZERO("", 10);
+const ULong ULong::ZERO;
 
 /*!
  1
@@ -44,36 +44,31 @@ ULong::ULong(const ULong& l)
 
     const size_t len = l.l_;
     c_ = l_ = len;
+    if (!len) { d_ = nullptr; return; }
     d_ = new udigit[len];
-    for (size_t i = 0; i < len; ++i) {
-        d_[i] = l.d_[i];
-    }
+    ::memcpy(d_, l.d_, sizeof(digit) * len);
 }
 
 /*!
  @param[in] u
  */
 ULong::ULong(uddigit u) :
-    c_(3),
-    l_(1)
+    c_(0),
+    l_(0),
+    d_(nullptr)
 {
-    d_ = new udigit[3];
-    d_[0] = u & MASK;
+    if (u == 0) { return; }
 
-    u >>= SHIFT_BIT;
-    if (u) {
-        d_[1] = u & MASK;
-        l_ = 2;
+    const udigit high = static_cast<udigit>(u >> SHIFT_BIT);
+    if (high) {
+        c_ = l_ = 2;
+        d_ = new udigit[2];
+        d_[0] = static_cast<udigit>(u);
+        d_[1] = high;
     } else {
-        d_[1] = 0;
-    }
-
-    u >>= SHIFT_BIT;
-    if (u) {
-        d_[2] = u & MASK;
-        l_ = 3;
-    } else {
-        d_[2] = 0;
+        c_ = l_ = 1;
+        d_ = new udigit[1];
+        d_[0] = static_cast<udigit>(u);
     }
 }
 
@@ -81,15 +76,15 @@ ULong::ULong(uddigit u) :
  @param[in] s
  @param[in] radix
  */
-ULong::ULong(const char *s, int radix)
+ULong::ULong(const char *s, int radix) :
+    c_(0),
+    l_(0),
+    d_(nullptr)
 {
     size_t index = 0;
     if (s[index] == '+') { ++index; }
     while (s[index] == '0') { ++index; }
     if (s[index] == '\0') {
-        c_ = 0;
-        l_ = 0;
-        d_ = nullptr;
         return;
     }
 
@@ -108,7 +103,7 @@ ULong::ULong(const char *s, int radix)
 
     for (size_t bl = 1; ; ++index) {
         uddigit n = s[index] - '0';
-        if (n > 9 || n < 0) { break; }
+        if (n > 9/* || n < 0*/) { break; }
 
         for (size_t i = 0;;) {
             for (; i < bl; ++i) {
@@ -125,6 +120,31 @@ ULong::ULong(const char *s, int radix)
     }
 
     norm();
+}
+
+/*!
+ @param[in] d
+ @param[in] size
+ */
+ULong::ULong(const udigit *d, size_t size) :
+    c_(0),
+    l_(0),
+    d_(nullptr)
+{
+    if (size < 1) {
+        return;
+    }
+
+    size_t i = size - 1;
+    while (i > 0 && d[i] == 0) { --i; }
+    if (d[i] == 0) {
+        return;
+    }
+
+    ++i;
+    c_ = l_ = i;
+    d_ = new udigit[i];
+    ::memcpy(d_, d, sizeof(udigit) * i);
 }
 
 /*!
@@ -156,6 +176,8 @@ ULong& ULong::operator=(const ULong& b)
         delete [] d_;
         d_ = new udigit[len];
         c_ = len;
+    } else {
+        ::memset(d_ + len, 0, sizeof(udigit) * (l_ - len));
     }
     l_ = len;
     ::memcpy(d_, b.d_, sizeof(udigit) * len);
@@ -252,16 +274,17 @@ void ULong::cstr(char *s, int radix) const
     }
 
     ULong t(*this);
+    udigit* td = t.d_;
     size_t index = 0;
     while (i && j) {
         size_t k = i;
         uddigit n = 0;
         while (k--) {
-            n = (n << SHIFT_BIT) | t.d_[k];
-            t.d_[k] = static_cast<udigit>(n / hradix);// & MASK;
+            n = (n << SHIFT_BIT) | td[k];
+            td[k] = static_cast<udigit>(n / hradix);// & MASK;
             n %= hradix;
         }
-        if (t.d_[i - 1] == 0) { --i; }
+        if (td[i - 1] == 0) { --i; }
         k = 4;
         while (k--) {
             s[index] = digits[n % radix];
@@ -433,7 +456,7 @@ ULong ULong::operator-(const ULong& b) const
     udigit c = 0;
     for (; i < bl; ++i) {
         if (ad[i] < bd[i] + c) {
-            zd[i] = BASE + ad[i] - bd[i] - c;
+            zd[i] = static_cast<udigit>(BASE + ad[i] - bd[i] - c);
             c = 1;
         } else {
             zd[i] = ad[i] - bd[i] - c;
@@ -442,7 +465,7 @@ ULong ULong::operator-(const ULong& b) const
     }
     for (; i < l; ++i) {
         if (ad[i] < c) {
-            zd[i] = BASE + ad[i] - c;
+            zd[i] = static_cast<udigit>(BASE + ad[i] - c);
             c = 1;
         } else {
             zd[i] = ad[i] - c;
@@ -659,11 +682,11 @@ ULong ULong::fact_odd(uddigit n)
     uddigit mi, mj;
     uddigit i, j;
     uddigit l;
-    const uddigit limit = 1 << (SHIFT_BIT);
+    const uddigit limit = static_cast<uddigit>(1) << (SHIFT_BIT);
     // const uddigit limit = 1 << (SHIFT_BIT << 1);
 
     for (i = 0; ; ++i) {
-        l = (n / (1 << i));
+        l = (n / (static_cast<uddigit>(1) << i));
         if (l < 3) { break; }
 
         mi = mj = 1;
@@ -852,7 +875,7 @@ ULong ULong::divmod(const ULong& b, bool mod) const
         if (zd[j] == bd[bl - 1]) {
             q = MASK;
         } else {
-            q = (((zd[j] << SHIFT_BIT) | zd[j - 1]) / bd[bl - 1]) & MASK;
+            q = (((static_cast<uddigit>(zd[j]) << SHIFT_BIT) | zd[j - 1]) / bd[bl - 1]) & MASK;
         }
 
         if (q) {

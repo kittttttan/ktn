@@ -66,8 +66,6 @@ public:
     int cmp(const ULong& b) const;
     int cmp(uddigit b) const;
 
-    //explicit operator bool() const { return d_ && d_[0] > 0); }
-
     inline bool operator!() const;
     inline ULong operator+() const;
     inline ULong& operator++();
@@ -127,6 +125,8 @@ private:
     static const char FORMAT_B[];
 
 private:
+    explicit ULong(const udigit *d, size_t size);
+
     void alloc(size_t length, bool zero);
     inline void norm();
 

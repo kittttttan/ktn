@@ -10,17 +10,27 @@ int main(int argc, char** argv)
 
     clock_t t = clock();
 
-    //ulongBasic();
-    //longBasic();
-    //fractionBasic();
-    //compBasic();
-    //vectorBasic();
-    //matrixBasic();
+    bool basic = true;
+    if (basic) {
+        ulongBasic();
+        longBasic();
+        fractionBasic();
+        compBasic();
+        vectorBasic();
+        matrixBasic();
+    }
 
-    fib<ktn::math::ULong>(25000).out();
-    //fact<ktn::math::ULong>(777).out();
-    ktn::math::ULong::factorial(5000).out();
-    //pi(777).out();
+    bool out = true;
+    if (out) {
+        fib<ktn::math::ULong>(25000).out();
+        ktn::math::ULong::factorial(5000).out();
+        pi(777).out();
+    } else {
+        fib<ktn::math::ULong>(25000);
+        ktn::math::ULong::factorial(5000);
+        pi(777);
+    }
+
     //kTest();
 
     ::printf("%ld ms\n", clock() - t);
