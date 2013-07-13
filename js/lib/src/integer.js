@@ -4,8 +4,8 @@
  *   var Integer = require('/path/to/integer.js').Integer;
  *   var a = Integer.str('12345678909876543210');
  *   var b = Integer.num(7777777);
- *   var c = a.mul(b);
- *   c.toString(); // === '96021937474622850618244170'
+ *   var c = a.mul(b); // a * b
+ *   c.toString();     // '96021937474622850618244170'
  * @author kittttttan
  */
 (function(exports) {
@@ -93,6 +93,10 @@
    * @method Integer.num
    * @param {number} n
    * @return {Integer}
+   * @example
+   *   Integer.num(0);       // 0
+   *   Integer.num(1234567); // 1234567
+   *   Integer.num(-37);     // -37
    */
   Integer.num = function(n) {
     n = n | 0;
@@ -130,6 +134,10 @@
    * @param {string} str For example '-9' or 'FF' etc.
    * @param {number} [base=10] 2, 8, 10 or 16
    * @return {Integer}
+   * @example
+   *   Integer.str('77');     // 77
+   *   Integer.str('ff', 16); // 255
+   *   Integer.str('111', 2); // 7
    */
   Integer.str = function(str, base) {
     base = base | 0;
@@ -194,6 +202,11 @@
    * @method Integer.any
    * @param {Object} a
    * @return {Integer}
+   * @example
+   *   Integer.any(0);         // 0
+   *   Integer.any(1234567);   // 1234567
+   *   Integer.any(-12.34567); // -12
+   *   Integer.any("37");      // 37
    */
   Integer.any = function(a) {
     if (typeof a === 'object') {
@@ -217,19 +230,19 @@
         return longStr(s);
       }
 
-      var s1 = s.substr(0, i);
-      var s2 = parseInt(s.substr(i + 2, s.length - (i + 2)), 10);
-      var fpt = s1.indexOf('.', 0);
+      var ss = s.substr(0, i);
+      var e = parseInt(s.substr(i + 1, s.length - (i + 1)), 10);
+      var fpt = ss.indexOf('.', 0);
 
       if (fpt >= 0) {
         // '.' is found
-        var np = s1.length - (fpt + 1);
-        s1 = s1.substr(0, fpt) + s1.substr(fpt + 1, np);
-        s2 -= np;
+        var np = ss.length - (fpt + 1);
+        ss = ss.substr(0, fpt) + ss.substr(fpt + 1, np);
+        e -= np;
       }
-      for (; s2 > 0; --s2) { s1 += '0'; }
+      for (; e > 0; --e) { ss += '0'; }
       
-      return longStr(s1);
+      return longStr(ss);
     }
     
     return new Integer();
@@ -315,6 +328,8 @@
    * @method Integer.factorial
    * @param {number} n
    * @return {Integer}
+   * @example
+   *   Integer.factorial(3); // 1*2*3 = 6
    */
   Integer.factorial = function(n) {
     n = n|0;

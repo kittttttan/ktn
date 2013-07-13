@@ -8,7 +8,8 @@ comp_path = "D:\\Documents\\js\\compiler-latest\\compiler.jar"
 
 def compile_js(src, dest):
     cmd = (
-        "java -jar %s --js %s --js_output_file %s"
+        "java -jar %s --language_in=ECMASCRIPT5_STRICT"
+        " --js %s --js_output_file %s"
         % (comp_path, src, dest))
     print(cmd)
     subprocess.check_call(cmd)

@@ -5,8 +5,9 @@
 "use strict";
 
 if (typeof require !== 'undefined') {
-  Rational = require('../lib/rational.js').Rational;
+  G.Rational = require('../lib/rational.js').Rational;
 }
+var Rational = G.Rational;
 
 function basic() {
   var a = Rational.num(1024, 78);

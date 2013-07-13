@@ -20,6 +20,11 @@
    * @param {function} [callback]
    * @return {object} exports
    * @throws {Error}
+   * @example
+   *   // module.js:
+   *   //   exports.fn = function(){ console.log('hello.'); };
+   *   var module = require('/path/to/module.js');
+   *   module.fn(); // hello.
    */
   var require = window.require = function(module, callback) {
     var url = require.resolve(module);

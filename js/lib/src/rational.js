@@ -5,9 +5,9 @@
  *    var a = Rational.num(2, 3);
  *    var b = Rational.str('-3/12');
  *    var c = a.add(b);
- *    a.toString();  // === '(2/3)'
- *    b.toString();  // === '(-1/4)'
- *    c.toString();  // === '(5/12)'
+ *    a.toString();  // '(2/3)'
+ *    b.toString();  // '(-1/4)'
+ *    c.toString();  // '(5/12)'
  * @author kittttttan
  */
 (function(exports){
@@ -15,8 +15,9 @@
 
   // require
   if (typeof require !== 'undefined') {
-    Integer = require('../lib/integer.js').Integer;
+    exports.Integer = require('../lib/integer.js').Integer;
   }
+  var Integer = exports.Integer;
 
   /**
    * @private

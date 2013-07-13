@@ -5,9 +5,9 @@
  *    var a = Decimal.num(7, -3);
  *    var b = Decimal.str('100.1');
  *    var c = a.mul(b);
- *    a.toString();  // === '0.007'
- *    b.toString();  // === '100.1'
- *    c.toString();  // === '0.7007'
+ *    a.toString();  // '0.007'
+ *    b.toString();  // '100.1'
+ *    c.toString();  // '0.7007'
  * @author kittttttan
  */
 (function(exports){
@@ -15,8 +15,9 @@
 
   // require
   if (typeof require !== 'undefined') {
-    Integer = require('../lib/integer.js').Integer;
+    exports.Integer = require('../lib/integer.js').Integer;
   }
+  var Integer = exports.Integer;
 
   /**
    * Decimal

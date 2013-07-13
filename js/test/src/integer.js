@@ -5,8 +5,9 @@
 "use strict";
 
 if (typeof require !== 'undefined') {
-  Integer = require('../lib/integer.js').Integer;
+  G.Integer = require('../lib/integer.js').Integer;
 }
+var Integer = G.Integer;
 
 /**
  * Basic operations
@@ -100,10 +101,6 @@ function gcd(a) {
 function gcdvsbin(a) {
   var m = [], n = [];
   for (var i = 0; i < a; ++i) {
-    m[i] = Integer.random(i + 20);
-    n[i] = Integer.random(i + 20);
-  }
-  var t0 = Date.now();
   for (i = 0; i < a; ++i) {
     m[i].gcd(n[i]);
   }
@@ -114,6 +111,10 @@ function gcdvsbin(a) {
   var t2 = Date.now();
   console.log('gcd: '+ (t1 - t0) +'ms\nbin: '+ (t2 - t1) +'ms\n      '
       + (100*(t2 - t1)/(t1 - t0)).toFixed(2) +'%');
+    m[i] = Integer.random(i + 20);
+    n[i] = Integer.random(i + 20);
+  }
+  var t0 = Date.now();
 }
 
 /**

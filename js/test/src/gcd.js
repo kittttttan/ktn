@@ -5,8 +5,9 @@
 "use strict";
 
 if (typeof require !== 'undefined') {
-  Integer = require('../lib/integer.js').Integer;
+  G.Integer = require('../lib/integer.js').Integer;
 }
+var Integer = G.Integer;
 
 function pad(value, n) {
   return ('        '+ value).slice(-n);

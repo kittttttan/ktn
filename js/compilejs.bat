@@ -7,7 +7,9 @@ cd /d %~dp0
 
 rem rewrite below path
 set COMPILER=D:\Documents\js\compiler-latest\compiler.jar
-set COMPILE=java -jar %COMPILER%
+set OPTIONS=--language_in=ECMASCRIPT5_STRICT --compilation_level SIMPLE_OPTIMIZATIONS
+rem WHITESPACE_ONLY SIMPLE_OPTIMIZATIONS ADVANCED_OPTIMIZATIONS 
+set COMPILE=java -jar %COMPILER% %OPTIONS%
 
 set /a IS_NEW=0
 set /a ALL=0

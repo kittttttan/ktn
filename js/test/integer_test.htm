@@ -31,9 +31,17 @@ test("init", function() {
   equal(Integer.any(12345678900).toString(), Integer.str("12345678900").toString(), "12345678900");
   equal(Integer.num(0x7fffffff).toString(), Integer.str("7fffffff", 16).toString(), "0x7fffffff = 2147483647");
   equal(Integer.any(-0x7fffffff).toString(), Integer.str("-7fffffff", 16).toString(), "-0x7fffffff = -2147483647");
-
-  equal(Integer.str("1234567", 8).toString(), Integer.num(342391).toString(), "01234567 = 342391");
+  
+  equal(Integer.str("111", 2).toString(), "7", "0b111 = 7");
+  equal(Integer.str("1234567", 8).toString(), "342391", "01234567 = 342391");
   equal(Integer.str("ffffffff", 16).toString(), "4294967295", "0xffffffff = 4294967295");
+
+  equal(Integer.any(1234567).toString(), "1234567", "1234567");
+  equal(Integer.any(3.14).toString(), "3", "3");
+  equal(Integer.any("7654321").toString(), "7654321", "7654321");
+  equal(Integer.any(1e7).toString(), "10000000", "10000000");
+  equal(Integer.any(1.23e5).toString(), "123000", "123000");
+  equal(Integer.any(1.23456e2).toString(), "123", "123");
 });
 
 test("basic", function() {
