@@ -10,8 +10,8 @@
  *    c.toString();  // '0.7007'
  * @author kittttttan
  */
-(function(exports){
-  "use strict";
+(function(exports) {
+  'use strict';
 
   // require
   if (typeof require !== 'undefined') {
@@ -88,7 +88,7 @@
     }
     if (arguments.length === 1) {
       if (l instanceof Decimal) { return l.clone(); }
-      if (typeof l === "string") { return decStr(l); }
+      if (typeof l === 'string') { return decStr(l); }
       return new Decimal(Integer.any(l), 0);
     }
     return new Decimal(Integer.any(l), e | 0);
@@ -111,17 +111,17 @@
    * 1
    * @static
    * @method Decimal.one
-   * @return {Decimal} 1
+   * @return {Decimal} 1.
    */
-  Decimal.one = function(){ return decNum(1, 0); };
+  Decimal.one = function() { return decNum(1, 0); };
 
   /**
    * 0
    * @static
    * @method Decimal.zero
-   * @return {Decimal} 0
+   * @return {Decimal} 0.
    */
-  Decimal.zero = function(){ return decNum(0, 0); };
+  Decimal.zero = function() { return decNum(0, 0); };
 
   Decimal.prototype = {
     /**
@@ -155,7 +155,7 @@
         for (var z = '0'; n > 0; n >>>= 1, z += z) {
           if (n & 1) { zeros += z; }
         }
-        return '0.'+ zeros + str;
+        return '0.' + zeros + str;
       }
       return this._l.addzero(this._e).toString();
     },

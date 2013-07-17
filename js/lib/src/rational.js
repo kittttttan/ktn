@@ -10,8 +10,8 @@
  *    c.toString();  // '(5/12)'
  * @author kittttttan
  */
-(function(exports){
-  "use strict";
+(function(exports) {
+  'use strict';
 
   // require
   if (typeof require !== 'undefined') {
@@ -70,7 +70,7 @@
    * 1/1
    * @static
    * @method Rational.one
-   * @return {Rational} 1/1
+   * @return {Rational} 1/1.
    */
   Rational.one = function() {
     return new Rational(Integer.num(1), Integer.num(1), true);
@@ -80,7 +80,7 @@
    * 0/1
    * @static
    * @method Rational.zero
-   * @return {Rational} 0/1
+   * @return {Rational} 0/1.
    */
   Rational.zero = function() {
     return new Rational(new Integer(), Integer.num(1), true);
@@ -107,7 +107,7 @@
    * Convert String to Rational.
    * @static
    * @method Rational.str
-   * @param {string} a ex.'-1/2'
+   * @param {string} a ex.'-1/2'.
    * @return {Rational}
    */
   Rational.str = function(a) {
@@ -131,7 +131,7 @@
     }
     if (arguments.length === 1) {
       if (a instanceof Rational) { return a.clone(); }
-      if (typeof a === "string") { return ratStr(a); }
+      if (typeof a === 'string') { return ratStr(a); }
       return new Rational(Integer.any(a), Integer.num(1), true);
     }
     if (!b) {
@@ -195,7 +195,7 @@
 
     /**
      * @method Rational#abs
-     * @return {Rational} |this|
+     * @return {Rational} |this|.
      */
     abs: function() {
       return new Rational(this._n.abs(), this._d, true);
@@ -203,7 +203,7 @@
 
     /**
      * @method Rational#neg
-     * @return {Rational} -this
+     * @return {Rational} -this.
      */
     neg: function() {
       return new Rational(this._n.neg(), this._d, true);
@@ -212,7 +212,7 @@
     /**
      * @method Rational#eq
      * @param {Rational} b
-     * @return {boolean} this == b
+     * @return {boolean} this == b.
      */
     eq: function(b) {
       b = rat(b);
@@ -223,7 +223,7 @@
     /**
      * @method Rational#equal
      * @param {Rational} b
-     * @return {boolean} this === b
+     * @return {boolean} this === b.
      */
     equal: function(b) {
       if (!(b instanceof Rational)) { return false; }
@@ -237,7 +237,7 @@
      * @return {number}
      *      1 (this > b)
      *      0 (this = b)
-     *     -1 (this < b)
+     *     -1 (this < b).
      */
     cmp: function(b) {
       return this._n.mul(b._d).cmp(this._d.mul(b._n));
@@ -267,7 +267,7 @@
     /**
      * @method Rational#add
      * @param {Rational} b
-     * @return {Rational} this + b
+     * @return {Rational} this + b.
      */
     add: function(b) {
       return new Rational(this._n.mul(b._d).add(this._d.mul(b._n)),
@@ -277,7 +277,7 @@
     /**
      * @method Rational#sub
      * @param {Rational} b
-     * @return {Rational} this - b
+     * @return {Rational} this - b.
      */
     sub: function(b) {
       return new Rational(this._n.mul(b._d).sub(this._d.mul(b._n)),
@@ -287,7 +287,7 @@
     /**
      * @method Rational#mul
      * @param {Rational} b
-     * @return {Rational} this * b
+     * @return {Rational} this * b.
      */
     mul: function(b) {
       return new Rational(this._n.mul(b._n), this._d.mul(b._d));
@@ -296,7 +296,7 @@
     /**
      * @method Rational#div
      * @param {Rational} b
-     * @return {Rational} this / b
+     * @return {Rational} this / b.
      */
     div: function(b) {
       return new Rational(this._n.mul(b._d), this._d.mul(b._n));
@@ -305,7 +305,7 @@
     /**
      * @method Rational#pow
      * @param {number} b
-     * @return {Rational} this^b
+     * @return {Rational} this ^ b.
      */
     pow: function(b) {
       return new Rational(this._n.pow(b), this._d.pow(b), true);

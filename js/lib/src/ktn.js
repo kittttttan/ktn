@@ -14,7 +14,6 @@
   }
 
   /**
-   * @global
    * @method require
    * @param {string} module
    * @param {function} [callback]
@@ -30,10 +29,12 @@
     var url = require.resolve(module);
 
     if (require.cache[url]) {
-      callback && setTimeout(function(){ callback(require.cache[url]); }, 0);
+      if (callback) {
+        setTimeout(function() { callback(require.cache[url]); }, 0);
+      }
       return require.cache[url];
     }
-    
+
     var exports = {};
     var request = new XMLHttpRequest();
     request.onreadystatechange = function() {
@@ -41,27 +42,28 @@
         return;
       }
       if (this.status !== 200) {
-        throw new Error('failed: GET '+url+' '+
+        throw new Error('failed: GET ' + url + ' ' +
             this.status+' ('+this.statusText+')');
       }
 
       if (require.cache[url]) {
         exports = require.cache[url];
       } else if (this.getResponseHeader('content-type')
-                     .indexOf('application/json') !== -1) { 
+                     .indexOf('application/json') !== -1) {
         exports = JSON.parse(this.responseText);
         require.cache[url] = exports;
       } else {
         require.cache[url] = exports;
         var source = this.responseText.match(
-            /^\s*(?:(['"]use strict['"])(?:;\r?\n?|\r?\n))?\s*((?:.*\r?\n?)*)/);//"
-        var evalCode = '(function(){'+ source[1] +
-            ';var exports=window.require.cache[\''+ url +'\'];\n'+
-            source[2] +'})();';
+          /^\s*(?:(['"]use strict['"])(?:;\r?\n?|\r?\n))?\s*((?:.*\r?\n?)*)/
+        );//"
+        var evalCode = '(function(){' + source[1] +
+            ';var exports=window.require.cache[\'' + url + '\'];\n' +
+            source[2] + '})();';
         eval(evalCode);
       }
 
-      callback && callback(require.cache[url]);
+      if (callback) { callback(require.cache[url]); }
     };
     
     request.open('GET', url, !!callback);

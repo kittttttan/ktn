@@ -22,7 +22,7 @@
    * @type function
    */
   var _random = Math.random;
-  
+
   /**
    * Integer
    * @class Integer
@@ -34,14 +34,14 @@
      * @property {number[]} Integer#_d
      */
     this._d = _ta ? new Uint32Array(3) : [0];
-    
+
     /**
      * Sign +, -. `false` means -.
      * @private
      * @property {boolean} Integer#_s
      */
     this._s = true;
-    
+
     /**
      * Length of digits
      * @private
@@ -56,14 +56,14 @@
    * @type number
    */
   var SHIFT = 16;
-  
+
   /**
    * @private
    * @const
    * @type number
    */
   var BASE = 1 << SHIFT;
-  
+
   /**
    * @private
    * @const
@@ -75,7 +75,7 @@
    * 1
    * @static
    * @method Integer.one
-   * @return {Integer} 1
+   * @return {Integer} 1.
    */
   Integer.one = function() { return longNum(1); };
 
@@ -83,10 +83,10 @@
    * 0
    * @static
    * @method Integer.zero
-   * @return {Integer} 0
+   * @return {Integer} 0.
    */
   Integer.zero = function() { return new Integer(); };
-  
+
   /**
    * Converts integer to Integer.
    * @static
@@ -100,29 +100,29 @@
    */
   Integer.num = function(n) {
     n = n | 0;
-    
+
     var a = new Integer();
     if (!n) { return a; }
-    
+
     if (n < 0) {
       n = -n;
       a._s = false;
     }
-    
+
     a._d[0] = n & MASK;
-    
+
     n >>>= SHIFT;
     if (n) {
       a._d[1] = n & MASK;
       a._l = 2;
     }
-    
+
     n >>>= SHIFT;
     if (n) {
       a._d[2] = n & MASK;
       a._l = 3;
     }
-    
+
     return a;
   };
   var longNum = Integer.num;
@@ -151,11 +151,11 @@
       sign = false;
       ++index;
     }
-    
+
     // Ignore following zeros. '00102' is regarded as '102'.
     while (str.charAt(index) === '0') { ++index; }
     if (!str.charAt(index)) { return new Integer(); }
-    
+
     var len = 0;
     if (base === 8) {
       len = 3 * (str.length + 1 - index);
@@ -177,7 +177,7 @@
       c = str.charAt(index);
       ++index;
       if (!c) { break; }
-      
+
       n = parseInt(c, base);
       for (i = 0;;) {
         for (; i < bl; ++i) {
@@ -185,13 +185,13 @@
           zd[i] = n & MASK;
           n >>>= SHIFT;
         }
-        
+
         if (!n) { break; }
 
         ++bl;
       }
     }
-    
+
     return norm(z);
   };
   var longStr = Integer.str;
@@ -213,16 +213,16 @@
       if (a instanceof Integer) { return a.clone(); }
       return new Integer();
     }
-    
+
     if (typeof a === 'string') {
       return longStr(a);
     }
-    
+
     if (typeof a === 'number') {
       if (-0x7fffffff <= a && a <= 0x7fffffff) {
         return longNum(a);
       }
-      
+
       var s = a + '';
       var i = s.indexOf('e', 0);
       if (i < 0) {
@@ -241,10 +241,10 @@
         e -= np;
       }
       for (; e > 0; --e) { ss += '0'; }
-      
+
       return longStr(ss);
     }
-    
+
     return new Integer();
   };
   var any = Integer.any;
@@ -253,7 +253,7 @@
    * Random.
    * @static
    * @method Integer.random
-   * @param {number} a Length
+   * @param {number} a Length.
    * @return {Integer}
    */
   Integer.random = function(a) {
@@ -264,18 +264,18 @@
     for (var i = 0; i < a; ++i) {
       rd[i] = _random() * BASE | 0;
     }
-    
+
     return norm(r);
   };
-  
+
   /**
    * @private
    * @param {number} n
    * @return {Integer}
    */
   function fact_odd(n) {
-    n = n|0;
-    
+    n = n | 0;
+
     var m = Integer.one();
     var mi = 0;
     var mj = 0;
@@ -283,14 +283,14 @@
     var j = 0;
     var l = 0;
     var limit = 1 << ((SHIFT - 1) << 1);
-    
-    for (;; i = i + 1|0) {
+
+    for (;; i = i + 1 | 0) {
       l = (n / (1 << i)) | 0;
       if (l < 3) { break; }
-      
+
       mi = 1;
       mj = 1;
-      for (j = 3; (j|0) <= (l|0); j = j + 2|0) {
+      for (j = 3; (j | 0) <= (l | 0); j = j + 2 | 0) {
         mi = mi * j;
         if (mi > limit) {
           m = m.mul(Integer.num(mj));
@@ -299,30 +299,30 @@
           mj = mi;
         }
       }
-      
-      if ((mj|0) > 1) { m = m.mul(Integer.num(mj)); }
+
+      if ((mj | 0) > 1) { m = m.mul(Integer.num(mj)); }
     }
-    
+
     return m;
   }
-  
+
   /**
    * @private
    * @param {number} n
    * @return {Integer}
    */
   function fact_even(n) {
-    n = n|0;
-    
+    n = n | 0;
+
     var s = 0;
     while (n) {
       n = n >>> 1;
       s = s + n;
     }
-    
+
     return Integer.one().leftShift(s);
   }
-  
+
   /**
    * @static
    * @method Integer.factorial
@@ -332,10 +332,10 @@
    *   Integer.factorial(3); // 1*2*3 = 6
    */
   Integer.factorial = function(n) {
-    n = n|0;
+    n = n | 0;
     if (n < 1) { return Integer.one(); }
     return fact_odd(n).mul(fact_even(n));
-  }
+  };
 
   /**
    * Set length.
@@ -345,7 +345,7 @@
    */
   function longAlloc(length, sign) {
     length = length | 0;
-    
+
     var a = new Integer();
     a._s = sign ? true : false;
     a._l = length;
@@ -355,7 +355,7 @@
       a._d.length = length;
     }
     //console.log(a);
-    
+
     return a;
   }
 
@@ -363,14 +363,14 @@
    * Assign zero to initialize.
    * @private
    * @param {Integer} a
-   * @param {number} b Length
+   * @param {number} b Length.
    * @return {Integer}
    */
   function longFillZero(a, b) {
     b = b | 0;
     var d = a._d;
     while (b--) { d[b] = 0; }
-    
+
     return a;
   }
 
@@ -384,14 +384,14 @@
     var d = a._d;
     var l = a._l | 0;
 
-    do { l = l - 1|0; } while (l && !d[l]);
-    a._l = l + 1|0;
+    do { l = l - 1 | 0; } while (l && !d[l]);
+    a._l = l + 1 | 0;
     if (!_ta) { d.length = a._l; }
-    
+
     // -0 -> +0
     if (!l && !d[l]) { a._s = true; }
     //console.log(a);
-    
+
     return a;
   }
 
@@ -409,7 +409,7 @@
       d[i] = (((d[i + 1] & 1) << SHIFT) + d[i]) >>> 1;
     }
     d[l] >>>= 1;
-    
+
     return norm(a);
   }
 
@@ -441,7 +441,7 @@
       }
       ++a._l;
     }
-    
+
     return norm(a);
   }
 
@@ -547,7 +547,7 @@
           n %= hbase;
         }
         if (!d[i - 1]) { --i; }
-        
+
         k = 4;
         while (k--) {
           s = digits.charAt(n % b) + s;
@@ -556,10 +556,10 @@
           if (!i && !n) { break; }
         }
       }
-      
+
       s = s.replace(/^0+/, '');
       if (!this._s) { s = '-' + s; }
-      
+
       return s;
     },
 
@@ -575,7 +575,7 @@
 
       while (i--) { f = d[i] + BASE * f; }
       if (!this._s) { f = -f; }
-      
+
       return f;
     },
 
@@ -584,19 +584,19 @@
      * @return {number[]}
      */
     getDigits: function() { return this._d; },
-    
+
     /**
      * @method Integer#getCapacity
      * @return {number}
      */
     getCapacity: function() { return this._d.length; },
-    
+
     /**
      * @method Integer#getLength
      * @return {number}
      */
     getLength: function() { return this._l; },
-    
+
     /**
      * @method Integer#getSign
      * @return {boolean}
@@ -619,7 +619,7 @@
       } else {
         b._d = Array.prototype.concat.call(this._d);
       }
-      
+
       return b;
     },
 
@@ -631,14 +631,14 @@
      */
     addzero: function(b) {
       b = b | 0;
-      
+
       var zeros = '';
       var z = '0';
 
       for (; b > 0; b >>>= 1, z += z) {
         if (b & 1) { zeros += z; }
       }
-      
+
       return longStr(this.toString() + zeros);
     },
 
@@ -650,7 +650,7 @@
      */
     leftShift: function(b) {
       b = b | 0;
-      
+
       var a = this;
       var ad = a._d;
       var l = a._l | 0;
@@ -662,16 +662,16 @@
       var i = 0;
       var carry = 0;
 
-      for (; (i|0) < (d|0); i = i + 1|0) { cd[i] = 0; }
-      
+      for (; (i | 0) < (d | 0); i = i + 1 | 0) { cd[i] = 0; }
+
       var t = 0;
-      for (i = 0; (i|0) < (l|0); i = i + 1|0) {
+      for (i = 0; (i | 0) < (l | 0); i = i + 1 | 0) {
         t = (ad[i] << bb) + carry;
         cd[i + d] = t & MASK;
         carry = t >> SHIFT;
       }
       cd[i + d] = carry;
-      
+
       return norm(c);
     },
 
@@ -700,7 +700,7 @@
         cd[i] = ((ad[i + d + 1] & mask) << (SHIFT - bb)) + (ad[i + d] >> bb);
       }
       cd[i] = ad[i + d] >> bb;
-      
+
       return norm(c);
     },
 
@@ -709,13 +709,13 @@
      * @return {boolean}
      */
     isOdd: function() { return !!(this._d[0] & 1); },
-    
+
     /**
      * @method Integer#isEven
      * @return {boolean}
      */
     isEven: function() { return !(this._d[0] & 1); },
-    
+
     /**
      * @method Integer#isNonZero
      * @return {boolean}
@@ -746,7 +746,7 @@
         v = uv & MASK;
         w[i << 1] = v;
         c = u;
-        
+
         for (j = i + 1; j < t; ++j) {
           // uv = w[i + j] + (x[j] * x[i] << 1) + c
           // can overflow.
@@ -759,7 +759,7 @@
           w[i + j] = v;
           c = u;
         }
-        
+
         w[i + t] = u;
       }
 
@@ -773,7 +773,7 @@
      */
     sqrt: function() {
       if (!this.isNonZero()) { return this; }
-      
+
       var b = this.clone();
       var c = Integer.one();
 
@@ -781,13 +781,13 @@
         longHalf(b);
         longDouble(c);
       }
-      
+
       do {
         b = c.clone();
         c = this.divmod(c, false).add(c);
         longHalf(c);
       } while (b.cmp(c) > 0);
-      
+
       return b;
     },
 
@@ -800,19 +800,19 @@
     pow: function(b) {
       b = +b;
       if (!b) { return Integer.one(); }
-      
+
       if (b > 0 && b === (b | 0)) {
         b = b | 0;
         var p = Integer.one();
         var a = this.clone();
-        
+
         for (; b > 0; b >>= 1, a = a.square()) {
           if (b & 1) { p = p.mul(a); }
         }
-        
+
         return p;
       }
-      
+
       return Math.pow(this.valueOf(), b);
     },
 
@@ -825,12 +825,12 @@
     gcd: function(b) {
       var c;
       var a = this.abs();
-      
+
       while ((c = a.divmod(b, true)).isNonZero()) {
         a = b;
         b = c;
       }
-      
+
       return b;
     },
 
@@ -851,16 +851,16 @@
         longHalf(b);
         longDouble(g);
       }
-      
+
       while (a.isNonZero()) {
         while (!(a._d[0] & 1)) {
           longHalf(a);
         }
-        
+
         while (!(b._d[0] & 1)) {
           longHalf(b);
         }
-        
+
         if (a.cmpAbs(b) < 0) {
           b = b.sub(a);
           longHalf(b);
@@ -869,7 +869,7 @@
           longHalf(a);
         }
       }
-      
+
       return g.mul(b);
     },
 
@@ -879,14 +879,14 @@
      * @param {Integer} b
      * @param {boolean} sign
      * @return {Integer}
-     *        |this| + |b| (sign == true)  
+     *        |this| + |b| (sign == true)
      *      -(|this| + |b|) (else)
      */
     addAbs: function(b, sign) {
       if (this._l < b._l) {
         return b.addAbs(this, sign);
       }
-      
+
       var ad = this._d;
       var bd = b._d;
       var al = this._l;
@@ -911,7 +911,7 @@
       }
       zd[i] = num & MASK;
       //console.log(z);
-      
+
       return norm(z);
     },
 
@@ -944,8 +944,8 @@
           c = 0;
         }
       }
-      
-      for (; i < al; ++i) { 
+
+      for (; i < al; ++i) {
         c = ad[i] - c;
         if (c < 0) {
           zd[i] = c & MASK;
@@ -955,7 +955,7 @@
           c = 0;
         }
       }
-      
+
       return norm(z);
     },
 
@@ -970,10 +970,10 @@
         if (this.cmpAbs(b) < 0) {
           return b.subAbs(this, b._s);
         }
-        
+
         return this.subAbs(b, this._s);
       }
-      
+
       return this.addAbs(b, this._s);
     },
 
@@ -988,10 +988,10 @@
         if (this.cmpAbs(b) < 0) {
             return b.subAbs(this, !b._s);
         }
-        
+
         return this.subAbs(b, this._s);
       }
-      
+
       return this.addAbs(b, this._s);
     },
 
@@ -1003,33 +1003,33 @@
      */
     mul: function(b) {
       // if (this.equal(b)) { return this.square(); }
-      
+
       var ad = this._d;
       var bd = b._d;
-      var al = this._l|0;
-      var bl = b._l|0;
+      var al = this._l | 0;
+      var bl = b._l | 0;
       // if (al > 125 && bl > 125) { return longK(this, b); }
-      
-      var j = al + bl|0;
+
+      var j = al + bl | 0;
       var z = longAlloc(j, this._s === b._s);
 
       longFillZero(z, j);
       for (var i = 0, n = 0, d = 0, e = 0, zd = z._d;
-          (i|0) < (al|0); i = i + 1|0) {
-        d = ad[i]; 
+          (i | 0) < (al | 0); i = i + 1 | 0) {
+        d = ad[i];
         if (!d) { continue; }
-        
+
         n = 0;
-        for (j = 0; (j|0) < (bl|0); j=j+1|0) {
+        for (j = 0; (j | 0) < (bl | 0); j = j + 1 | 0) {
           e = n + d * bd[j];
           n = zd[i + j] + e;
           if (e) { zd[i + j] = n & MASK; }
           n >>>= SHIFT;
         }
-        
-        if (n) { zd[i + j] = n|0; }
+
+        if (n) { zd[i + j] = n | 0; }
       }
-      
+
       return norm(z);
     },
 
@@ -1040,7 +1040,7 @@
      * @param {boolean} modulus If true then mod, else div.
      * @throws {Error} zero division
      * @return {Integer}
-     *     this % b (modulus == true)  
+     *     this % b (modulus == true)
      *     this / b (else)
      */
     divmod: function(b, modulus) {
@@ -1071,19 +1071,19 @@
         z = a.clone();
         zd = z._d;
         i = na;
-        
+
         while (i--) {
           t = ((t << SHIFT) | zd[i]) >>> 0;
           zd[i] = (t / dd) & MASK;
           t %= dd;
         }
-        
+
         if (modulus) {
           if (!a._s) { return longNum(-t); }
-          
+
           return longNum(t);
         }
-        
+
         z._s = a._s === b._s;
         return norm(z);
       }
@@ -1156,7 +1156,7 @@
             --num;
           }
         }
-        
+
         zd[j] = q;
       } while (--j >= nb);
 
@@ -1175,7 +1175,7 @@
         if (!_ta) { zd.length = nb; }
         div._l = nb;
         div._s = a._s;
-        
+
         return norm(div);
       }
 
@@ -1183,7 +1183,7 @@
       for (i = 0; i < j; ++i) { zd[i] = zd[i + nb]; }
       if (!_ta) { zd.length = j; }
       div._l = j;
-      
+
       return norm(div);
     },
 
@@ -1266,10 +1266,10 @@
 
       if (al < bl) { return -1; }
       if (al > bl) { return 1; }
-      
+
       do { --al; } while (al && ad[al] === bd[al]);
       if (!al && ad[0] === bd[0]) { return 0; }
-      
+
       return ad[al] > bd[al] ? 1 : -1;
     },
 
@@ -1293,12 +1293,12 @@
 
       if (al < bl) { return this._s ? -1 : 1; }
       if (al > bl) { return this._s ? 1 : -1; }
-      
+
       do { --al; } while (al && ad[al] === bd[al]);
       if (!al && ad[0] === bd[0]) {
         return (this._s ? 1 : 0) - (b._s ? 1 : 0);
       }
-      
+
       if (ad[al] > bd[al]) { return this._s ? 1 : -1; }
       return this._s ? -1 : 1;
     },
@@ -1311,19 +1311,19 @@
      */
     eq: function(b) {
       if (this === b) { return true; }
-      
+
       b = any(b);
       if (this._s !== b._s) { return false; }
-      
+
       var ad = this._d;
       var bd = b._d;
       var l = this._l;
       if (l !== b._l) { return false; }
-      
+
       for (var i = 0; i < l; ++i) {
         if (ad[i] !== bd[i]) { return false; }
       }
-      
+
       return true;
     },
 
@@ -1337,16 +1337,16 @@
       if (this === b) { return true; }
       if (!(b instanceof Integer)) { return false; }
       if (this._s !== b._s) { return false; }
-      
+
       var ad = this._d;
       var bd = b._d;
       var l = this._l;
       if (l !== b._l) { return false; }
-      
+
       for (var i = 0; i < l; ++i) {
         if (ad[i] !== bd[i]) { return false; }
       }
-      
+
       return true;
     },
 
@@ -1360,9 +1360,9 @@
     /**
      * Absolute Integer.
      * @method Integer#abs
-     * @return {Integer} |this|
+     * @return {Integer} |this|.
      */
-    abs: function(){
+    abs: function() {
       var z = this.clone();
       z._s = true;
       return z;
@@ -1371,7 +1371,7 @@
     /**
      * Negate Integer.
      * @method Integer#neg
-     * @return {Integer} -this
+     * @return {Integer} -this.
      */
     neg: function() {
       var z = this.clone();
