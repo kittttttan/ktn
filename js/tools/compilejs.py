@@ -16,17 +16,17 @@ def compile_js(src, dest):
 
 def main():
     curr = path.abspath(path.dirname(__file__))
-    exe(curr, "lib")
-    exe(curr, "test")
+    exe(curr, "../src", "../build")
 
-def exe(curr, dname):
-    dir = path.join(curr, dname, "src")
-    for f in listdir(dir):
-        src = path.join(dir, f)
+def exe(curr, src_dir, dest_dir):
+    src_long_dir = path.join(curr, src_dir)
+    dest_long_dir = path.join(curr, dest_dir)
+    for f in listdir(src_long_dir):
+        src = path.join(src_long_dir, f)
         if path.isdir(src):
             continue
         src_time = path.getmtime(src)
-        dest = path.join(curr, dname, f)
+        dest = path.join(dest_long_dir, f)
         if path.isfile(dest):
             dest_time = path.getmtime(dest)
         else:

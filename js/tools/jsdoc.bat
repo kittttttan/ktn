@@ -6,4 +6,4 @@ setlocal
 cd /d %~dp0
 set JSDOC=D:\Documents\js\jsdoc\jsdoc.cmd
 
-%JSDOC% -r lib/src
+%JSDOC% -r ../src

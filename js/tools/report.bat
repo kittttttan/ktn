@@ -5,4 +5,4 @@ rem https://github.com/jsoverson/plato
 setlocal
 cd /d %~dp0
 
-plato -r -d report lib/src
+plato -r -d report ../src

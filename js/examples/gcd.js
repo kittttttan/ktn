@@ -36,8 +36,9 @@ function gcdTest(a) {
     t2 = Date.now();
     
     if (!j.eq(k)) {
-      console.log('error: values are different');
-      continue;
+      throw new Error('error: values are different\n'+
+          j.toString() +'\n'+
+          k.toString());
     }
     console.log(pad(i * r, 6) +' '+ pad(t1 - t0, 6) +' '+ pad(t2 - t1, 6));
   }

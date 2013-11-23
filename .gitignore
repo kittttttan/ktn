@@ -3,19 +3,21 @@
 *_.htm
 
 Debug/
-Release/
 ipch/
-*.sdf
-*.opensdf
-*.suo
-*.user
-*.o
+Release/
 *.exe
 *.log
+*.opensdf
+*.o
+*.sdf
+*.suo
+*.user
 
-js/doc/
-js/out/
-js/report/
-js/lib/*.js
+js/build/
+js/coverage/
+js/node_modules/
 js/test/*.js
+js/tools/doc/
+js/tools/out/
+js/tools/report/
 ts/*/*.js

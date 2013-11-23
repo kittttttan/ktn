@@ -31,66 +31,66 @@ describe("Integer", function() {
     var a = Integer.str("1234567890");
     var b = Integer.num(10).pow(7);
 
-    expect(a.toString(), "1234567890", "1234567890");
-    expect(a.clone().toString(), "1234567890", "1234567890");
-    expect(a.neg().toString(), "-1234567890", "-1234567890");
+    expect(a.toString()).toEqual("1234567890");
+    expect(a.clone().toString()).toEqual("1234567890");
+    expect(a.neg().toString()).toEqual("-1234567890");
 
-    expect(b.toString(), "10000000", "10000000");
+    expect(b.toString()).toEqual("10000000");
 
-    expect(a.add(b).toString(), "1244567890", "1234567890 + 10000000 = 1244567890");
-    expect(a.sub(b).toString(), "1224567890", "1234567890 - 10000000 = 1224567890");
-    expect(a.mul(b).toString(), "12345678900000000", "1234567890 x 10000000 = 12345678900000000");
-    expect(a.div(b).toString(), "123", "1234567890 / 10000000 = 123");
-    expect(a.mod(b).toString(), "4567890", "1234567890 % 10000000 = 4567890");
-    expect(a.square().toString(), "1524157875019052100", "1234567890 ^ 2 = 1524157875019052100");
+    expect(a.add(b).toString()).toEqual("1244567890");
+    expect(a.sub(b).toString()).toEqual("1224567890");
+    expect(a.mul(b).toString()).toEqual("12345678900000000");
+    expect(a.div(b).toString()).toEqual("123");
+    expect(a.mod(b).toString()).toEqual("4567890");
+    expect(a.square().toString()).toEqual("1524157875019052100");
     
-    expect(a.sqrt().toString(), "35136", "1234567890 ^ 0.5 = 35136");
-    expect(a.gcd(b).toString(), "10", "gcd(1234567890, 10000000) = 10");
+    expect(a.sqrt().toString()).toEqual("35136");
+    expect(a.gcd(b).toString()).toEqual("10");
   });
 
   it("add", function() {
     var a = Integer.num(1e7);
     
-    expect(a.add(Integer.zero()).toString(), "10000000", "10000000 + 0 = 10000000");
-    expect(a.add(Integer.one()).toString(), "10000001", "10000000 + 1 = 10000001");
-    expect(a.add(a).toString(), "20000000", "10000000 + 10000000 = 20000000");
+    expect(a.add(Integer.zero()).toString()).toEqual("10000000");
+    expect(a.add(Integer.one()).toString()).toEqual("10000001");
+    expect(a.add(a).toString()).toEqual("20000000");
   });
 
   it("sub", function() {
     var a = Integer.num(1e7);
     
-    expect(a.sub(Integer.zero()).toString(), "10000000", "10000000 - 0 = 10000000");
-    expect(a.sub(Integer.one()).toString(), "9999999", "10000000 - 1 = 9999999");
-    expect(a.sub(a).toString(), "0", "10000000 - 10000000 = 0"); 
-    expect(Integer.one().sub(a).toString(), "-9999999", "1 - 10000000 = -9999999");
-    expect(Integer.zero().sub(a).toString(), "-10000000", "0 - 10000000 = -10000000");
+    expect(a.sub(Integer.zero()).toString()).toEqual("10000000");
+    expect(a.sub(Integer.one()).toString()).toEqual("9999999");
+    expect(a.sub(a).toString()).toEqual("0"); 
+    expect(Integer.one().sub(a).toString()).toEqual("-9999999");
+    expect(Integer.zero().sub(a).toString()).toEqual("-10000000");
   });
 
   it("mul", function() {
     var a = Integer.num(1e7);
     
-    expect(a.mul(Integer.zero()).toString(), "0", "10000000 * 0 = 0");
-    expect(a.mul(Integer.one()).toString(), "10000000", "10000000 * 1 = 10000000");
-    expect(a.mul(a).toString(), "100000000000000", "10000000 * 10000000 = 100000000000000"); 
-    expect(Integer.one().neg().mul(a).toString(), "-10000000", "-1 * 10000000 = -10000000");
+    expect(a.mul(Integer.zero()).toString()).toEqual("0");
+    expect(a.mul(Integer.one()).toString()).toEqual("10000000");
+    expect(a.mul(a).toString()).toEqual("100000000000000"); 
+    expect(Integer.one().neg().mul(a).toString()).toEqual("-10000000");
   });
 
   it("div", function() {
     var a = Integer.num(1e7);
     
-    throws(function(){ a.div(Integer.zero()); }, Error, "zero division");
-    expect(a.div(Integer.one()).toString(), "10000000", "10000000 / 1 = 10000000");
-    expect(a.div(a).toString(), "1", "10000000 / 10000000 = 1"); 
-    expect(Integer.one().neg().div(a).toString(), "0", "-1 / 10000000 = 0");
+    expect(function(){ a.div(Integer.zero()); }).toThrow();
+    expect(a.div(Integer.one()).toString()).toEqual("10000000");
+    expect(a.div(a).toString()).toEqual("1"); 
+    expect(Integer.one().neg().div(a).toString()).toEqual("0");
   });
 
   it("mod", function() {
     var a = Integer.num(1e7);
     
-    throws(function(){ a.mod(Integer.zero()); }, Error, "zero division");
-    expect(a.mod(Integer.one()).toString(), "0", "10000000 % 1 = 0");
-    expect(a.mod(a).toString(), "0", "10000000 % 10000000 = 0"); 
-    expect(Integer.one().neg().mod(a).toString(), "-1", "-1 % 10000000 = -1");
+    expect(function(){ a.mod(Integer.zero()); }).toThrow();
+    expect(a.mod(Integer.one()).toString()).toEqual("0");
+    expect(a.mod(a).toString()).toEqual("0"); 
+    expect(Integer.one().neg().mod(a).toString()).toEqual("-1");
   });
 
   it("shift", function() {
@@ -102,23 +102,23 @@ describe("Integer", function() {
     var ls37 = one.leftShift(37);
     var ls47 = one.leftShift(47);
 
-    expect(ls7.toString(), "128", "1 << 7 = 128");
-    expect(ls17.toString(), "131072", "1 << 17 = 131072");
-    expect(ls27.toString(), "134217728", "1 << 27 = 134217728");
-    expect(ls37.toString(), "137438953472", "1 << 37 = 137438953472");
-    expect(ls47.toString(), "140737488355328", "1 << 47 = 140737488355328");
+    expect(ls7.toString()).toEqual("128");
+    expect(ls17.toString()).toEqual("131072");
+    expect(ls27.toString()).toEqual("134217728");
+    expect(ls37.toString()).toEqual("137438953472");
+    expect(ls47.toString()).toEqual("140737488355328");
 
-    expect(two.pow(7).toString(), "128", "2 ^ 7 = 128");
-    expect(two.pow(17).toString(), "131072", "2 ^ 17 = 131072");
-    expect(two.pow(27).toString(), "134217728", "2 ^ 27 = 134217728");
-    expect(two.pow(37).toString(), "137438953472", "2 ^ 37 = 137438953472");
-    expect(two.pow(47).toString(), "140737488355328", "2 ^ 47 = 140737488355328");
+    expect(two.pow(7).toString()).toEqual("128");
+    expect(two.pow(17).toString()).toEqual("131072");
+    expect(two.pow(27).toString()).toEqual("134217728");
+    expect(two.pow(37).toString()).toEqual("137438953472");
+    expect(two.pow(47).toString()).toEqual("140737488355328");
 
-    expect(ls7.rightShift(7).toString(), "1", "128 >> 7 = 1");
-    expect(ls17.rightShift(17).toString(), "1", "131072 >> 17 = 1");
-    expect(ls27.rightShift(27).toString(), "1", "134217728 >> 27 = 1");
-    expect(ls37.rightShift(37).toString(), "1", "137438953472 >> 37 = 1");
-    expect(ls47.rightShift(47).toString(), "1", "140737488355328 >> 47 = 1");
+    expect(ls7.rightShift(7).toString()).toEqual("1");
+    expect(ls17.rightShift(17).toString()).toEqual("1");
+    expect(ls27.rightShift(27).toString()).toEqual("1");
+    expect(ls37.rightShift(37).toString()).toEqual("1");
+    expect(ls47.rightShift(47).toString()).toEqual("1");
   });
 
   it("factorial", function () {
@@ -180,3 +180,30 @@ describe("Integer", function() {
     expect(pi(80).toString()).toEqual(p);
   });
 });
+
+/*
+(function() {
+  var jasmineEnv = jasmine.getEnv();
+  jasmineEnv.updateInterval = 250;
+
+  var htmlReporter = new jasmine.HtmlReporter();
+  jasmineEnv.addReporter(htmlReporter);
+
+  jasmineEnv.specFilter = function(spec) {
+    return htmlReporter.specFilter(spec);
+  };
+  var currentWindowOnload = window.onload;
+  window.onload = function() {
+    if (currentWindowOnload) {
+      currentWindowOnload();
+    }
+
+    document.querySelector('.version').innerHTML = jasmineEnv.versionString();
+    execJasmine();
+  };
+
+  function execJasmine() {
+    jasmineEnv.execute();
+  }
+})();
+*/

@@ -5,7 +5,7 @@
   "url": "http://kittttttan.web.fc2.com/",
   "options": {
     "paths": [
-      "./lib/src"
+      "../src"
     ],
     "outdir": "./doc"
   }

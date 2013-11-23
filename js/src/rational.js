@@ -14,8 +14,9 @@
   'use strict';
 
   // require
-  if (typeof require !== 'undefined') {
-    exports.Integer = require('../lib/integer.js').Integer;
+  if (typeof exports.Integer === 'undefined' &&
+    typeof require !== 'undefined') {
+    exports.Integer = require('./integer.js').Integer;
   }
   var Integer = exports.Integer;
 

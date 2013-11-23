@@ -40,8 +40,9 @@ for (var i = 0, l = arr.length; i < l; ++i) {
   t2 = Date.now();
   
   if (!s1.equal(s2)) {
-    console.log('error: values are different');
-    console.log(s1.div(s2).toString());
+    throw new Error('error: values are different\n'+
+        s1.toString() +'\n'+
+        s2.toString());
   }
   
   console.log(pad(arr[i], 6) + pad(t1 - t0, 8) + pad(t2 - t1, 8));

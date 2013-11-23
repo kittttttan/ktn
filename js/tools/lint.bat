@@ -7,4 +7,4 @@ cd /d %~dp0
 
 rem set OPT=--strict
 set OPT=--nobeep --nojsdoc --custom_jsdoc_tags=example,fileOverview,method,property,static
-gjslint %OPT% -r lib/src>lint.log
+gjslint %OPT% -r ../src>lint.log

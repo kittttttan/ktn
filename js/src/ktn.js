@@ -9,8 +9,9 @@
     return;
   }
 
-  if (typeof window.require !== 'undefined') {
-    throw new Error('RequireException: `require` already defined');
+  if (typeof require !== 'undefined') {
+    //throw new Error('RequireException: `require` already defined');
+    return;
   }
 
   /**

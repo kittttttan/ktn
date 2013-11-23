@@ -2,17 +2,17 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
 
-    autotest: {
-      unit: 'karma.conf.js'
+    clean: {
+      build:{
+        src: ['build/']
+      }
     },
 
     jshint: {
-      files: ['gruntfile.js', 'src/**/*.js', 'test/**/*.js'],
-      // configure JSHint (documented at http://www.jshint.com/docs/)
+      files: ['Gruntfile.js', 'src/**/*.js', 'test/**/*.js'],
       options: {
         globals: {
-          console: true,
-          module: true
+          devel: true
         }
       }
     },
@@ -33,9 +33,9 @@ module.exports = function(grunt) {
       dist: {
         files: [{
           expand: true,
-          cwd: 'src/js',
-          src: '**/*.js',
-          dest: 'dest/js'
+          cwd: 'src/',
+          src: '*.js',
+          dest: 'build/'
         }]
       }
     },
@@ -46,12 +46,18 @@ module.exports = function(grunt) {
     }
   });
 
+  //grunt.loadTasks('tasks');
+
   // grunt plugins
+  grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-jshint');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-karma');
 
   // tasks
-  grunt.registerTask('default', ['jshint']);
+  grunt.registerTask('build', ['clean','uglify']);
+  grunt.registerTask('lint', ['jshint']);
+  grunt.registerTask('test', ['karma']);
+  grunt.registerTask('default', ['lint','test','build']);
 };
