@@ -17,12 +17,3 @@ Set environment variables below.
 ## C++
 
 [doc](http://kittttttan.web.fc2.com/ktn/)
-
-
-## JavaScript
-
-[doc](http://kittttttan.web.fc2.com/js/)
-
-
-## TypeScript
-

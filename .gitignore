@@ -8,5 +8,3 @@ Release/
 *.sdf
 *.suo
 *.user
-
-ts/*/*.js
