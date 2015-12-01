@@ -1,4 +1,4 @@
-﻿#include "../math/test.h"
+﻿#include <ktn/math/long.h>
 
 #include <gtest/gtest.h>
 #pragma comment(lib, "gtestd.lib")

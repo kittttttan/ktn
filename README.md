@@ -5,7 +5,7 @@
 
 ## C
 
-Using [googletest](http://code.google.com/p/googletest/)
+Using [googletest](https://github.com/google/googletest)
 for unit test.
 
 Set environment variables below.

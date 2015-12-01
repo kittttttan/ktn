@@ -1,10 +1,13 @@
+build/
 Debug/
 ipch/
 Release/
 *.exe
+*.filters
 *.log
 *.opensdf
 *.o
 *.sdf
 *.suo
 *.user
+*.vcxproj
