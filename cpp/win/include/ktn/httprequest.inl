@@ -1,8 +1,9 @@
-﻿#include "ktn/httprequest.h"
+﻿#pragma once
+//#include "ktn/httprequest.h"
 
 namespace ktn {
 
-void HttpRequest::parse(const char* src)
+inline void HttpRequest::parse(const char* src)
 {
     int begin = 0;
     int cur = begin;

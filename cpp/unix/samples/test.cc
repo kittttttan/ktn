@@ -48,7 +48,6 @@ void stringTest() {
 }
 
 void dateTest() {
-  /*
     Date d;
     std::wcout << d << std::endl;
     std::wcout << (d + Date::MINUTE) << std::endl;
@@ -58,21 +57,20 @@ void dateTest() {
     std::wcout << d << std::endl;
 
     Date d2(d);
-    d2.setMonth(2);
-    std::wcout << d2 << std::endl;
+    //d2.setMonth(2);
+    //std::wcout << d2 << std::endl;
 
     d2.addMonth(-2);
     std::wcout << d2 << std::endl;
 
-    d2.setDateFormat("%Y/%m/%d");
-    std::wcout << d2 << std::endl;
+    //d2.setDateFormat("%Y/%m/%d");
+    //std::wcout << d2 << std::endl;
 
     std::wcout.setf(std::ios::boolalpha);
     std::wcout << L"d < d2 == " << (d < d2) << std::endl;
 
     std::wcout << Date::parse("1980-01-21") << std::endl;
     std::wcout << Date::parse("2000") << std::endl;
-  */
 }
 
 int main(int argc, const char** argv) {

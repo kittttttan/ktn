@@ -48,6 +48,6 @@ private:
 
 }} // namespace ktn math
 
-#include "vector.inl"
+#include "ktn/math/vector.inl"
 
 #endif // KTN_MATH_VECTOR_H_

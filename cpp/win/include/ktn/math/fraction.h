@@ -2,7 +2,7 @@
 #ifndef KTN_MATH_FRACTION_H_
 #define KTN_MATH_FRACTION_H_
 
-#include "ulong.h"
+#include "ktn/math/ulong.h"
 #include <string>
 #include <iostream>
 
@@ -128,6 +128,6 @@ private:
 };
 }} // namespace ktn math
 
-#include "fraction.inl"
+#include "ktn/math/fraction.inl"
 
 #endif // KTN_MATH_FRACTION_H_

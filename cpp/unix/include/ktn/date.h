@@ -1,13 +1,14 @@
 #pragma once
 
-#include "date_format.h"
+#include "ktn/base_date.h"
+#include "ktn/date_format.h"
 
 #include <time.h>
 #include <string>
 
 namespace ktn {
 
-class Date
+class Date : public BaseDate
 {
     friend std::ostream& operator<<(std::ostream& os, const Date& d);
     friend std::wostream& operator<<(std::wostream& os, const Date& d);
@@ -38,7 +39,7 @@ public:
     ~Date() {}
 
     time_t time() const { return time_; }
-    const struct tm* tm() const { return &date_; }
+    const struct tm* tm() const override { return &date_; }
     int year() const { return date_.tm_year; }
     int month() const { return date_.tm_mon; }
     int date() const { return date_.tm_mday; }
@@ -86,4 +87,4 @@ private:
 
 } // namespace ktn
 
-#include "date.inl"
+#include "ktn/date.inl"

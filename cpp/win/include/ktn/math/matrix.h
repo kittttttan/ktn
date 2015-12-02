@@ -2,7 +2,7 @@
 #ifndef KTN_MATH_MATRIX_H_
 #define KTN_MATH_MATRIX_H_
 
-#include "math.h"
+#include "ktn/math/math.h"
 
 namespace ktn { namespace math {
 

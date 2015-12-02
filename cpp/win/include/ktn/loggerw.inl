@@ -1,4 +1,5 @@
-﻿#include "ktn/loggerw.h"
+﻿#pragma once
+//#include "ktn/loggerw.h"
 #include <iostream>
 #include <fstream>
 
@@ -6,7 +7,7 @@ namespace ktn {
 
 DefaultLogFormatW LoggerW::defaultLogFormat;
 
-void LoggerW::log(const wchar_t* log, LogLevel::Level level,
+inline void LoggerW::log(const wchar_t* log, LogLevel::Level level,
         const wchar_t* file, int line, const wchar_t* func)
 {
     std::wstring str = logFormat_->format(log, level, file, line, func);

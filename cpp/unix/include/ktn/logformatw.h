@@ -2,10 +2,10 @@
 #ifndef LOGFORMATW_H_
 #define LOGFORMATW_H_
 
-#include <ctime>
-#include <cstdio>
-#include "stringw.h"
-#include "loglevel.h"
+#include "ktn/loglevel.h"
+#include "ktn/stringw.h"
+#include <stdio.h>
+#include <time.h>
 
 #ifdef __MINGW32__
 #define swprintf(dest, size, format, ...) swprintf(dest, format, __VA_ARGS__)

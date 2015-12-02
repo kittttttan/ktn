@@ -1,19 +1,16 @@
-file(GLOB SRC
-     "${CMAKE_SOURCE_DIR}/src/*.cc")
-
 file(GLOB HEADERS
-     "${CMAKE_SOURCE_DIR}/include/**/*.inl"
-     "${CMAKE_SOURCE_DIR}/include/**/*.h")
+     "${CMAKE_SOURCE_DIR}/include/ktn/*.inl"
+     "${CMAKE_SOURCE_DIR}/include/ktn/*.h")
 
-file(GLOB ALL_SRC
-     "${CMAKE_SOURCE_DIR}/src/*.cc"
-     "${CMAKE_SOURCE_DIR}/include/**/*.inl"
-     "${CMAKE_SOURCE_DIR}/include/**/*.h")
+file(GLOB MATH_HEADERS
+     "${CMAKE_SOURCE_DIR}/include/ktn/math/*.inl"
+     "${CMAKE_SOURCE_DIR}/include/ktn/math/*.h")
 
-add_executable(testcc test.cc ${ALL_SRC})
-add_executable(main main.cc math-test.cc math-test.h ${ALL_SRC})
+add_executable(testcc test.cc ${HEADERS} ${MATH_HEADERS})
+add_executable(main main.cc math-test.cc math-test.h ${HEADERS} ${MATH_HEADERS})
 
 source_group("src" FILES ${SRC})
 source_group("header" FILES ${HEADERS})
+source_group("math" FILES ${MATH_HEADERS})
 
 include_directories(${CMAKE_SOURCE_DIR}/include)

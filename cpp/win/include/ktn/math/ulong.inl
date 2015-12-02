@@ -617,22 +617,22 @@ inline void ULong::out(int base, bool br) const
 @param[in,out] os
 @param[in]     l
 */
-//inline std::ostream& operator<<(std::ostream& os, const ULong& l)
-//{
-//	return os << l.str(/*os.hex ? 16 : */10);
-//}
+inline std::ostream& operator<<(std::ostream& os, const ULong& l)
+{
+	return os << l.str(/*os.hex ? 16 : */10);
+}
 
 /*!
 @param[in,out] is
 @param[out]    l
 */
-//inline std::istream& operator>>(std::istream& is, ULong& l)
-//{
-//	std::string str;
-//	is >> str;
-//	l = ULong(str.c_str(), /*is.hex ? 16 : */10);
-//	return is;
-//}
+inline std::istream& operator>>(std::istream& is, ULong& l)
+{
+	std::string str;
+	is >> str;
+	l = ULong(str.c_str(), /*is.hex ? 16 : */10);
+	return is;
+}
 
 /*!
 @param[in] b

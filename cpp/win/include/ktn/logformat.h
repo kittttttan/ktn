@@ -2,7 +2,7 @@
 #ifndef LOGFORMAT_H_
 #define LOGFORMAT_H_
 
-#include "loglevel.h"
+#include "ktn/loglevel.h"
 #include <time.h>
 #include <sstream>
 #include <iomanip>

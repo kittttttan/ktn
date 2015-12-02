@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#include "logformatw.h"
-#include "dbg.h"
+#include "ktn/dbg.h"
+#include "ktn/logformatw.h"
 #include <tchar.h>
 #include <codecvt>
 
@@ -52,3 +52,5 @@ private:
 };
 
 } // namespace ktn
+
+#include "ktn/loggerw.inl"

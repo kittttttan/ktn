@@ -26,3 +26,5 @@ private:
 };
 
 } // namespace ktn
+
+#include "ktn/httprequest.inl"

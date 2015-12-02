@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "logformat.h"
+#include "ktn/logformat.h"
 #include <fstream>
 #include <iostream>
 #include <queue>
@@ -56,7 +56,7 @@ private:
 
     Logger();
     Logger(const Logger& rhs);
-    Logger& operator=(const Logger& rhs);
+    //Logger& operator=(const Logger& rhs);
 
     void write();
 
@@ -67,3 +67,5 @@ private:
 };
 
 } // namespace ktn
+
+#include "ktn/logger.inl"

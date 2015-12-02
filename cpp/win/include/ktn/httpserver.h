@@ -29,3 +29,5 @@ private:
 };
 
 } // namespace ktn
+
+#include "ktn/httpserver.inl"

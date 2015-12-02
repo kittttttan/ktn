@@ -1,4 +1,6 @@
-﻿#include "ktn/httpserver.h"
+﻿#pragma once
+
+//#include "ktn/httpserver.h"
 #include "ktn/httprequest.h"
 #include "ktn/httpresponse.h"
 #include "ktn/uri.h"
@@ -12,9 +14,10 @@
 
 namespace ktn {
 
-const size_t kDataSize = 1024 * 4;
+//const size_t kDataSize = 1024 * 4;
+#define kDataSize (1024 * 4)
 
-const char* HttpServer::getFileType(const char* path)
+inline const char* HttpServer::getFileType(const char* path)
 {
     const char* ext = strrchr(path, '.');
     if (!ext) return "text/plain";
@@ -41,7 +44,7 @@ const char* HttpServer::getFileType(const char* path)
     return "text/plain";
 }
 
-HttpServer::HttpServer(char* ip, int port) :
+inline HttpServer::HttpServer(char* ip, int port) :
     port_(port), ipAddr_(ip), socket_(INVALID_SOCKET), rootDir_(".")
 {
     int err = ::WSAStartup(MAKEWORD(2, 2), &wsaData_);
@@ -66,7 +69,7 @@ HttpServer::HttpServer(char* ip, int port) :
     }
 }
 
-void HttpServer::wsaInfo() const
+inline void HttpServer::wsaInfo() const
 {
     printf("%s ver.%u.%u %s\n",
         wsaData_.szDescription,
@@ -74,7 +77,7 @@ void HttpServer::wsaInfo() const
         wsaData_.szSystemStatus);
 }
 
-int HttpServer::serveFile(SOCKET socket, const char* path) const
+inline int HttpServer::serveFile(SOCKET socket, const char* path) const
 {
     printf("open %s\n", path);
 
@@ -111,7 +114,7 @@ int HttpServer::serveFile(SOCKET socket, const char* path) const
     return n;
 }
 
-void HttpServer::serve() const
+inline void HttpServer::serve() const
 {
     errno_t err = 0;
     struct sockaddr_in addr;

@@ -10,3 +10,5 @@ int send(SOCKET sokcet, int code, const char* contentType,
 
 } // namespace HttpResponse
 } // namespace ktn
+
+#include "ktn/httpresponse.inl"

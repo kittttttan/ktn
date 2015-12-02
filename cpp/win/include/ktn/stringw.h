@@ -57,4 +57,6 @@ private:
 };
 
 } // namespace ktn
+
+#include "ktn/stringw.inl"
 #endif // KTN_STRINGW_H_

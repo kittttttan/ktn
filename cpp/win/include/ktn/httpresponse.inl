@@ -1,4 +1,6 @@
-﻿#include "ktn/httpresponse.h"
+﻿#pragma once
+
+//#include "ktn/httpresponse.h"
 #include <stdio.h>
 #include <assert.h>
 #include <stdexcept>
@@ -6,7 +8,7 @@
 namespace ktn {
 namespace HttpResponse {
 
-const char* getCodeDesc(int code)
+inline const char* getCodeDesc(int code)
 {
     switch (code) {
         case 100: return "Continue";
@@ -58,7 +60,7 @@ const char* getCodeDesc(int code)
     }
 }
 
-int send(SOCKET sokcet, int code, const char* contentType, const char* body, size_t bodySize)
+inline int send(SOCKET sokcet, int code, const char* contentType, const char* body, size_t bodySize)
 {
     if (!bodySize) bodySize = ::strlen(body);
     char header[128];

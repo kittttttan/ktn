@@ -1,4 +1,6 @@
-﻿#include "ktn/logger.h"
+﻿#pragma once
+
+//#include "ktn/logger.h"
 
 namespace ktn {
 
@@ -9,14 +11,14 @@ std::string Logger::name_ = "";
 HANDLE Logger::hWriteEvent_ = nullptr;
 HANDLE Logger::hThread_ = nullptr;
 
-Logger* Logger::getInstance(const char* name)
+inline Logger* Logger::getInstance(const char* name)
 {
     if (name) { name_ = name; }
     static Logger logger;
     return &logger;
 }
 
-Logger::Logger() :
+inline Logger::Logger() :
     logLevel_(LogLevel::INFO),
     logFormat_(&defaultLogFormat),
     filename_("ktn.log")
@@ -24,7 +26,7 @@ Logger::Logger() :
     hWriteEvent_ = ::CreateEventA(NULL, FALSE, TRUE, "LogWriteEvent");
 }
 
-Logger::~Logger()
+inline Logger::~Logger()
 {
     DWORD dwWait = ::WaitForSingleObject(hWriteEvent_, maxWaitTime);
     if (dwWait != WAIT_OBJECT_0) {
@@ -42,7 +44,7 @@ Logger::~Logger()
     }
 }
 
-void Logger::process()
+inline void Logger::process()
 {
     ::ResetEvent(hWriteEvent_);
 
@@ -52,7 +54,7 @@ void Logger::process()
     ::ExitThread(0);
 }
 
-void Logger::log(const char* log, LogLevel::Level level,
+inline void Logger::log(const char* log, LogLevel::Level level,
         const char* file, int line, const char* func)
 {
     std::string str = logFormat_->format(log, level, file, name_.c_str(), line, func);
@@ -68,7 +70,7 @@ void Logger::log(const char* log, LogLevel::Level level,
                 0, 0, nullptr);
 }
 
-void Logger::write()
+inline void Logger::write()
 {
     if (queue_.empty()) { return; }
 

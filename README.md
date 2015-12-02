@@ -3,17 +3,32 @@
 <https://github.com/kittttttan/ktn>
 
 
-## C
+## Docs
+
+<http://kittttttan.info/docs/ktn/>
+
+
+## Build
+
+```bat
+cd /ktn/cpp/win/build
+[cmake](https://cmake.org/) ..
+ktn.sln
+```
+
+```sh
+cd /ktn/cpp/unix/build
+cmake ..
+make
+```
+
+
+## Test
 
 Using [googletest](https://github.com/google/googletest)
 for unit test.
 
 Set environment variables below.
 
-* GTEST_INC  - path to gtest include. ex. C:\gtest-1.6.0\include
-* GTESTD_LIB - path to gtest lib.     ex. C:\gtest-1.6.0\msvc\gtest\Debug
+* GTEST_ROOT  - path to googletest root. ex. D:\lib\googletest\googletest
 
-
-## C++
-
-[doc](http://kittttttan.web.fc2.com/ktn/)

@@ -2,6 +2,7 @@ build/
 Debug/
 ipch/
 Release/
+cpp/win/docs/html/
 *.exe
 *.filters
 *.log

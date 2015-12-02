@@ -1,5 +1,5 @@
 ﻿#include <ktn/math/ulong.h>
-//#include <ktn/uri.h>
+#include <ktn/uri.h>
 
 #include <gtest/gtest.h>
 #ifdef _M_AMD64
@@ -180,7 +180,7 @@ TEST(ULong, Factorial) {
     ULong::factorial(17).cstr(str);
     EXPECT_STREQ("355687428096000", str);
 }
-/*
+
 TEST(Uri, Absolute) {
     Uri uri("http://www.yyy.zzz:8000/aaa/bbb/ccc.cgi?KEY=CGI#XYZ");
     EXPECT_STREQ("http:", uri.protocol().c_str());
@@ -224,7 +224,7 @@ TEST(Uri, Relative) {
     EXPECT_STREQ("", uri.ext().c_str());
     EXPECT_STREQ("/abc.def/#main", uri.str().c_str());
 }
-*/
+
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

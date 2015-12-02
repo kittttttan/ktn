@@ -66,6 +66,6 @@ private:
 
 }} // namespace ktn math
 
-#include "complex.inl"
+#include "ktn/math/complex.inl"
 
 #endif // KTN_MATH_COMPLEX_H_

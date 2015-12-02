@@ -42,3 +42,5 @@ private:
 };
 
 } // namespace ktn
+
+#include "ktn/uri.inl"

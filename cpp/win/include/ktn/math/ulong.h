@@ -80,8 +80,8 @@ typedef ULong_constants_<void> ULong_constants;
  */
 class ULong : public ULong_constants
 {
-    //friend std::ostream& operator<<(std::ostream& os, const ULong& l);
-    //friend std::istream& operator>>(std::istream& is, ULong& l);
+    friend std::ostream& operator<<(std::ostream& os, const ULong& l);
+    friend std::istream& operator>>(std::istream& is, ULong& l);
 
 public:
     static ULong random(size_t n);
@@ -192,6 +192,6 @@ private:
 
 }} // namespace ktn math
 
-#include "ulong.inl"
+#include "ktn/math/ulong.inl"
 
 #endif // KTN_MATH_ULONG_H_

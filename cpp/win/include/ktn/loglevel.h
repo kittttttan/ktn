@@ -5,7 +5,7 @@
 namespace ktn {
 
 namespace LogLevel {
-    static enum Level {
+    enum Level {
         NONE = 0,   //< no log
         ERR,        //< define ERROR in wingdi.h
         WARN,       //< Warning

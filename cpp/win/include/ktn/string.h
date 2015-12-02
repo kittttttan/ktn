@@ -56,4 +56,6 @@ private:
 };
 
 } // namespace ktn
+
+#include "ktn/string.inl"
 #endif // KTN_STRING_H_

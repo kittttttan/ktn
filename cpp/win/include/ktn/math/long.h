@@ -2,7 +2,7 @@
 #ifndef KTN_MATH_LONG_H_
 #define KTN_MATH_LONG_H_
 
-#include "ulong.h"
+#include "ktn/math/ulong.h"
 #include <string>
 #include <iostream>
 
@@ -112,6 +112,6 @@ private:
 };
 }} // namespace ktn math
 
-#include "long.inl"
+#include "ktn/math/long.inl"
 
 #endif // KTN_MATH_LONG_H_

@@ -2,10 +2,10 @@
 #ifndef LOGFORMAT_H_
 #define LOGFORMAT_H_
 
-#include <ctime>
-#include <cstdio>
-#include "string.h"
-#include "loglevel.h"
+#include "ktn/loglevel.h"
+#include "ktn/string.h"
+#include <time.h>
+#include <stdio.h>
 
 namespace ktn {
 

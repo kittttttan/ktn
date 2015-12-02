@@ -1,9 +1,11 @@
-﻿#include "ktn/date_format.h"
-#include "ktn/date.h"
+﻿#pragma once
+
+//#include "ktn/date_format.h"
+#include <time.h>
 
 namespace ktn {
 
-std::string DateFormat::format(const Date& date) const
+inline std::string DateFormat::format(const BaseDate& date) const
 {
     char datetime[32];
     const struct tm* d = date.tm();
@@ -21,7 +23,7 @@ std::string DateFormat::format(const Date& date) const
     return std::string(timezone);
 }
 
-std::wstring DateFormat::wformat(const Date& date) const
+inline std::wstring DateFormat::wformat(const BaseDate& date) const
 {
     wchar_t datetime[21];
     const struct tm* d = date.tm();
