@@ -1,43 +1,43 @@
 #pragma once
-#ifndef LOGGING_H_
-#define LOGGING_H_
+#ifndef LOGGER_H_
+#define LOGGER_H_
 
-#include "logformat.h"
-#include "dbg.h"
+#include "ktn/dbg.h"
+#include "ktn/logformat.h"
 
-#define LOGGING
-#ifdef LOGGING
-#define LOGGING_LOG(logging, level, logstr)                             \
+#define LOGGER
+#ifdef LOGGER
+#define LOGGER_LOG(logging, level, logstr)                             \
     {                                                                   \
         if (logging.logLevel() >= level) {                              \
             logging.log(logstr, level, __FILE__, __LINE__, __func__);   \
         }                                                               \
     }
-#define LOGGING_ERROR(logging, logstr)  LOGGING_LOG(logging, LogLevel::ERROR, logstr)
-#define LOGGING_WARN(logging, logstr)   LOGGING_LOG(logging, LogLevel::WARN, logstr)
-#define LOGGING_INFO(logging, logstr)   LOGGING_LOG(logging, LogLevel::INFO, logstr)
+#define LOGGER_ERROR(logging, logstr)  LOGGER_LOG(logging, LogLevel::ERROR, logstr)
+#define LOGGER_WARN(logging, logstr)   LOGGER_LOG(logging, LogLevel::WARN, logstr)
+#define LOGGER_INFO(logging, logstr)   LOGGER_LOG(logging, LogLevel::INFO, logstr)
 #else
-#define LOGGING_LOG(logging, level, logstr)
-#define LOGGING_ERROR(logging, logstr)
-#define LOGGING_WARN(logging, logstr)
-#define LOGGING_INFO(logging, logstr)
+#define LOGGER_LOG(logging, level, logstr)
+#define LOGGER_ERROR(logging, logstr)
+#define LOGGER_WARN(logging, logstr)
+#define LOGGER_INFO(logging, logstr)
 #endif
 
 namespace ktn {
 
-class Logging {
+class Logger {
 public:
     static DefaultLogFormat defaultLogFormat;
 
-    Logging() :
+    Logger() :
         logLevel_(LogLevel::INFO),
         logFormat_(&defaultLogFormat),
         filename_("log.txt") {}
-    explicit Logging(ILogFormat* format) :
+    explicit Logger(ILogFormat* format) :
         logLevel_(LogLevel::INFO),
         logFormat_(format),
         filename_("log.txt") {}
-    ~Logging() {}
+    ~Logger() {}
 
     LogLevel::Level logLevel() const { return logLevel_; }
     void logLevel(LogLevel::Level logLevel) { logLevel_ = logLevel; }
@@ -59,8 +59,8 @@ private:
     char* filename_;
 };
 
-DefaultLogFormat Logging::defaultLogFormat;
+DefaultLogFormat Logger::defaultLogFormat;
 
 } // namespace ktn
 
-#endif // LOGGING_H_
+#endif // LOGGER_H_

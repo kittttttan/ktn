@@ -3,8 +3,7 @@
  * @brief test for String
  */
 #include <ktn/dbg.h>
-#include <ktn/loggingw.h>
-#include <ktn/stringw.h>
+#include <ktn/loggerw.h>
 #include <ktn/stringw.h>
 #include <ktn/date.h>
 
@@ -12,10 +11,13 @@
 #include <stdlib.h>
 #include <locale.h>
 
+#include <iostream>
+
 using namespace ktn;
+using namespace std;
 
 void stringTest() {
-    setlocale(LC_CTYPE, "");
+    wcout << L"## stringTest" << endl;
 
     StringW a(L"水樹"), b(L"奈々");
     wprintf(L"%ls: %d\n", a.string(), a.length());
@@ -24,7 +26,7 @@ void stringTest() {
     StringW c = a + b;
     c.out();
     (-c).out();
-    std::wcout << c << std::endl;
+    wcout << c << endl;
 
     wprintf(L"%d\n", c.indexOf(L'々'));
     wprintf(L"%d\n", c.lastIndexOf(L'水', 2));
@@ -48,32 +50,45 @@ void stringTest() {
 }
 
 void dateTest() {
+    cout << "## dateTest" << endl;
+
     Date d;
-    std::wcout << d << std::endl;
-    std::wcout << (d + Date::MINUTE) << std::endl;
-    std::wcout << (d - Date::DAY) << std::endl;
+    cout << d << endl;
+    cout << (d + Date::MINUTE) << endl;
+    cout << (d - Date::DAY) << endl;
 
     d += Date::WEEK;
-    std::wcout << d << std::endl;
+    cout << d << endl;
 
     Date d2(d);
     //d2.setMonth(2);
-    //std::wcout << d2 << std::endl;
+    //cout << d2 << endl;
 
     d2.addMonth(-2);
-    std::wcout << d2 << std::endl;
+    cout << d2 << endl;
 
     //d2.setDateFormat("%Y/%m/%d");
-    //std::wcout << d2 << std::endl;
+    //cout << d2 << endl;
 
-    std::wcout.setf(std::ios::boolalpha);
-    std::wcout << L"d < d2 == " << (d < d2) << std::endl;
+    cout.setf(ios::boolalpha);
+    cout << "d < d2 == " << (d < d2) << endl;
 
-    std::wcout << Date::parse("1980-01-21") << std::endl;
-    std::wcout << Date::parse("2000") << std::endl;
+    cout << Date::parse("1980-01-21") << endl;
+    cout << Date::parse("2000") << endl;
+}
+
+void defaultLocale() {
+    ios_base::sync_with_stdio(false);
+    locale default_loc("");
+    locale::global(default_loc);
+    locale ctype_default(locale::classic(), default_loc, locale::ctype);
+    wcout.imbue(ctype_default);
+    wcin.imbue(ctype_default);
 }
 
 int main(int argc, const char** argv) {
+    defaultLocale();
+
     stringTest();
     dateTest();
 
