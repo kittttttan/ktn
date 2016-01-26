@@ -19,12 +19,12 @@ static TCHAR filename_[MAX_PATH] = _T("");
 static int format_ = LOG_OUT_STDOUT;
 static FILE* fp_ = NULL;
 
-static int getColor(LogLevel level);
-static void _tprintfColored(int color, const TCHAR* fmt);
-static void _vtprintfColored(int color, const TCHAR* fmt, va_list ap);
+static WORD getColor(LogLevel level);
+static void _tprintfColored(WORD color, const TCHAR* fmt);
+static void _vtprintfColored(WORD color, const TCHAR* fmt, va_list ap);
 
-void loggerGetLocal(char* locale, int size) {
-    const int s = min(size, LOCALE_CHAR);
+void loggerGetLocal(char* locale, uint32_t size) {
+    const uint32_t s = min(size, LOCALE_CHAR);
     strcpy_s(locale, s, locale_);
 }
 
@@ -32,8 +32,8 @@ LogLevel loggerGetLevel() {
     return loglevel_;
 }
 
-void loggerGetFilename(TCHAR* filename, int size) {
-    const int s = min(size, MAX_PATH);
+void loggerGetFilename(TCHAR* filename, uint32_t size) {
+    const uint32_t s = min(size, MAX_PATH);
     _tcscpy_s(filename, s, filename_);
 }
 
@@ -106,8 +106,8 @@ void loggerLog(LogLevel level, const TCHAR* fmt, ...) {
     va_end(ap);
 }
 
-int getColor(LogLevel level) {
-    int color;
+WORD getColor(LogLevel level) {
+    WORD color;
 
     switch (level) {
     case LOG_INFO:
@@ -127,7 +127,7 @@ int getColor(LogLevel level) {
     return color;
 }
 
-void _tprintfColored(int color, const TCHAR* fmt) {
+void _tprintfColored(WORD color, const TCHAR* fmt) {
     WORD old_color_attrs;
     CONSOLE_SCREEN_BUFFER_INFO buffer_info;
     HANDLE stdout_handle;
@@ -144,7 +144,7 @@ void _tprintfColored(int color, const TCHAR* fmt) {
 
     fflush(stdout);
     SetConsoleTextAttribute(stdout_handle,
-        (WORD)color | FOREGROUND_INTENSITY);
+        color | FOREGROUND_INTENSITY);
 
     _tprintf(fmt);
 
@@ -152,7 +152,7 @@ void _tprintfColored(int color, const TCHAR* fmt) {
     SetConsoleTextAttribute(stdout_handle, old_color_attrs);
 }
 
-void _vtprintfColored(int color, const TCHAR* fmt, va_list ap) {
+void _vtprintfColored(WORD color, const TCHAR* fmt, va_list ap) {
     WORD old_color_attrs;
     CONSOLE_SCREEN_BUFFER_INFO buffer_info;
     HANDLE stdout_handle;
@@ -169,7 +169,7 @@ void _vtprintfColored(int color, const TCHAR* fmt, va_list ap) {
 
     fflush(stdout);
     SetConsoleTextAttribute(stdout_handle,
-        (WORD)color | FOREGROUND_INTENSITY);
+        color | FOREGROUND_INTENSITY);
 
     _vtprintf(fmt, ap);
 

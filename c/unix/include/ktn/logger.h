@@ -1,13 +1,13 @@
-#ifndef CKTN_LOGGER_H_
-#define CKTN_LOGGER_H_
+#pragma once
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include <string.h>
-#include <stdio.h>
 #include <stdarg.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
 
 #ifdef _DEBUG
 #define TRACE(...)	printf(__VA_ARGS__);
@@ -29,9 +29,9 @@ typedef enum _LogFormat {
     //LOG_OUT_STDERR  = 4,
 } LogFormat;
 
-void loggerGetLocal(char* locale, int size);
+void loggerGetLocal(char* locale, uint32_t size);
 LogLevel loggerGetLevel();
-void loggerGetFilename(char* filename, int size);
+void loggerGetFilename(char* filename, uint32_t size);
 int loggerGetLogFormat();
 
 void loggerSetLocal(const char* locale);
@@ -56,5 +56,3 @@ void loggerClose();
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* CKTN_LOGGER_H_ */

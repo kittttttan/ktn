@@ -53,8 +53,15 @@ public:
     bool operator!=(const Complex<T>& b) const;
 
 private:
-    T r_;  /**< real */
-    T i_;  /**< imaginary */
+    /*!
+     real
+     */
+    T r_;
+
+    /*!
+     imaginary
+     */
+    T i_;
 };
 
 }} // namespace ktn math

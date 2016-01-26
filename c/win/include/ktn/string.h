@@ -1,5 +1,4 @@
-﻿#ifndef CKTN_STRING_H_
-#define CKTN_STRING_H_
+﻿#pragma once
 
 #ifdef __cplusplus
 extern "C" {
@@ -10,5 +9,3 @@ void reverseString(char* s);
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* CKTN_STRING_H_ */

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 project(ktn)
 
-# set(CMAKE_CXX_FLAGS_DEBUG "/MTd")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -std=c11")
 add_definitions(-DUNICODE -D_UNICODE)
 include_directories(${CMAKE_SOURCE_DIR}/include)
 

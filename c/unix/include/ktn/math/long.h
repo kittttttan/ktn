@@ -1,17 +1,17 @@
-#ifndef CKTN_MATH_LONG_H_
-#define CKTN_MATH_LONG_H_
+#pragma once
 
-#include "../bool.h"
+#include <stdbool.h>
+#include <stdint.h>
 
 /*
 #define USE_64BIT
 */
 #ifdef USE_64BIT
-typedef long digit;
-typedef long long ddigit;
+typedef int32_t digit;
+typedef int64_t ddigit;
 #else
-typedef short digit;
-typedef long ddigit;
+typedef int16_t digit;
+typedef int32_t ddigit;
 #endif
 
 #ifdef __cplusplus
@@ -19,13 +19,13 @@ extern "C" {
 #endif
 
 typedef struct _Long {
-  int a_;     /**< allocate size */
-  int l_;     /**< length */
-  digit* d_;  /**< digits */
+  uint32_t a_; /**< allocate size */
+  int32_t l_;  /**< length */
+  digit* d_;   /**< digits */
 } Long;
 
 void longInit(Long* self);
-void longAlloc(Long* self, int length);
+void longAlloc(Long* self, int32_t length);
 void longNum(Long* self, ddigit n);
 void longFree(Long* self);
 
@@ -69,4 +69,3 @@ void longPow(Long* dest, const Long* self, ddigit n);
 #ifdef __cplusplus
 }
 #endif
-#endif /* CKTN_MATH_LONG_H_ */

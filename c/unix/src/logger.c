@@ -31,7 +31,7 @@ static int getColor(LogLevel level);
 static void printfColored(int color, const char* fmt);
 static void vprintfColored(int color, const char* fmt, va_list ap);
 
-void loggerGetLocal(char* locale, int size) {
+void loggerGetLocal(char* locale, uint32_t size) {
     strncpy(locale, locale_, size);
 }
 
@@ -39,7 +39,7 @@ LogLevel loggerGetLevel() {
     return loglevel_;
 }
 
-void loggerGetFilename(char* filename, int size) {
+void loggerGetFilename(char* filename, uint32_t size) {
     strncpy(filename, filename_, size);
 }
 

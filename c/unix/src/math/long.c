@@ -1,14 +1,14 @@
 #include "ktn/math/long.h"
 #include "ktn/string.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 #ifdef USE_64BIT
 #define getStringLength(l) ((l) * 241 / 25 + 2)
@@ -29,7 +29,7 @@ enum {
 };
 
 #define longNorm(self) {                            \
-  int l = abs((self)->l_);                          \
+  int32_t l = abs((self)->l_);                      \
   while (l > 0 && (self)->d_[l - 1] == 0) { --l; }  \
   if (l == 0) {                                     \
     (self)->l_ = 0;                                 \
@@ -52,12 +52,14 @@ void longInit(Long* self) {
   self->d_ = NULL;
 }
 
-void longAlloc(Long* self, int length) {
-  int absLength = abs(length);
+void longAlloc(Long* self, int32_t length) {
+  const uint32_t absLength = abs(length);
+
   self->l_ = length;
   if (self->a_ > absLength) { return; }
+
   if (self->d_ != NULL) { free(self->d_); }
-  self->d_ = (digit*)malloc(sizeof(digit) * absLength);
+  self->d_ = (digit*)calloc(sizeof(digit), absLength);
   LONG_MALLOC_ERROR_CHECK(self);
   self->a_ = absLength;
 }
@@ -68,7 +70,7 @@ void longFillZero(Long* self, int length) {
 }
 
 void longNum(Long* self, ddigit n) {
-  int d = 0;
+  int32_t d = 0;
   ddigit t = abs(n);
 
   while (t) {
@@ -77,7 +79,7 @@ void longNum(Long* self, ddigit n) {
   }
   self->l_ = n < 0 ? -d : d;
   if (self->d_ != NULL) { free(self->d_); }
-  self->d_ = (digit*)malloc(sizeof(digit) * d);
+  self->d_ = (digit*)calloc(sizeof(digit), d);
   LONG_MALLOC_ERROR_CHECK(self);
   self->a_ = d;
 
@@ -100,15 +102,13 @@ void longFree(Long* self) {
 }
 
 void longClone(Long* dest, const Long* src) {
-  int destLength;
-
   if (dest == src) { return; }
 
   dest->l_ = src->l_;
-  destLength = abs(src->l_);
+  const uint32_t destLength = abs(src->l_);
   if (dest->a_ < destLength) {
     if (dest->d_ != NULL) { free(dest->d_); }
-    dest->d_ = (digit*)malloc(sizeof(digit) * destLength);
+    dest->d_ = (digit*)calloc(sizeof(digit), destLength);
     LONG_MALLOC_ERROR_CHECK(dest);
     dest->a_ = destLength;
   }
@@ -129,13 +129,7 @@ void longNeg(Long* dest, const Long* src) {
  * @param[out] s
  */
 void longStr(const Long* self, char *s) {
-  const digit radix = 10;
-  const int length = abs(self->l_);
-  int i, j, k, index;
-  ddigit n, hradix;
-  const char digits[] = "0123456789abcdef";
-  Long t;
-  digit *td;
+  const int32_t length = abs(self->l_);
 
   if (length < 1) {
     s[0] = '0';
@@ -143,10 +137,12 @@ void longStr(const Long* self, char *s) {
     return;
   }
 
-  i = length;
+  const digit radix = 10;
+  const char digits[] = "0123456789abcdef";
+  int32_t i = length;
   if (i < 2) {
     digit d = self->d_[0];
-    j = 0;
+    int32_t j = 0;
     while (d) {
       s[j++] = digits[d % radix];
       d /= radix;
@@ -157,17 +153,18 @@ void longStr(const Long* self, char *s) {
     return;
   }
 
-  j = getStringLength(i);
-  hradix = 10000;
+  int32_t j = getStringLength(i);
+  const ddigit hradix = 10000;
 
+  Long t;
   longInit(&t);
   longClone(&t, self);
-  td = t.d_;
-  index = 0;
-  
+  digit *td = t.d_;
+  int32_t index = 0;
+
   while (i && j) {
-    k = i;
-    n = 0;
+    int32_t k = i;
+    ddigit n = 0;
     while (k--) {
       n = (n << SHIFT_BIT) | td[k];
       td[k] = (n / hradix) & MASK;
@@ -195,18 +192,15 @@ void longStr(const Long* self, char *s) {
  * output.
  */
 void longWrite(const Long* self) {
-  char *c;
-  int length, abs_l;
-
   if (longIsZero(self)) {
     putchar('0');
     return;
   }
 
-  abs_l = abs(self->l_);
-  length = (abs_l > 1) ? getStringLength(abs_l) + 1 : 20;
-  c = (char*)malloc(sizeof(char) * length);
-  if (!c) { printf("Failed malloc char*"); return; }
+  const int32_t abs_l = abs(self->l_);
+  const int32_t length = (abs_l > 1) ? getStringLength(abs_l) + 1 : 20;
+  char *c = (char*)calloc(sizeof(char), length);
+  if (!c) { fprintf(stderr, "Failed malloc char*\n"); return; }
   longStr(self, c);
   printf("%s", c);
   free(c);
@@ -224,9 +218,8 @@ void longWriteln(const Long* self) {
  * |lhs| + |rhs|
  */
 void longAddAbs(Long* dest, const Long* lhs, const Long* rhs) {
-  int i, ll, rl;
-  ddigit n;
-  digit *dd, *ld, *rd;
+  int32_t ll, rl;
+  digit *ld, *rd;
 
   if (abs(lhs->l_) < abs(rhs->l_)) {
     ll = abs(rhs->l_);
@@ -242,10 +235,10 @@ void longAddAbs(Long* dest, const Long* lhs, const Long* rhs) {
     rd = rhs->d_;
   }
 
-  dd = dest->d_;
+  digit *dd = dest->d_;
   ll = abs(ll);
-  i = 0;
-  n = 0;
+  int32_t i = 0;
+  ddigit n = 0;
   for (; i < rl; ++i) {
     n += ld[i] + rd[i];
     dd[i] = n & MASK;
@@ -266,9 +259,7 @@ void longAddAbs(Long* dest, const Long* lhs, const Long* rhs) {
 }
 
 void longAdd(Long* dest, const Long* lhs, const Long* rhs) {
-  const int sign = lhs->l_ ^ rhs->l_;
-
-  // TODO
+  const int32_t sign = lhs->l_ ^ rhs->l_;
   if (sign < 0) {
     longSubAbs(dest, lhs, rhs);
   } else {
@@ -280,16 +271,14 @@ void longAdd(Long* dest, const Long* lhs, const Long* rhs) {
  * |lhs| - |rhs|
  */
 void longSubAbs(Long* dest, const Long* lhs, const Long* rhs) {
-  int i, ll, rl;
-  digit c;
-  digit *dd, *ld, *rd;
-  const int cmp = longCmpAbs(lhs, rhs);
-
+  const int32_t cmp = longCmpAbs(lhs, rhs);
   if (cmp == 0) {
     longInit(dest);
     return;
   }
 
+  int ll, rl;
+  digit *ld, *rd;
   if (cmp < 1) {
     ll = abs(rhs->l_);
     rl = abs(lhs->l_);
@@ -304,9 +293,9 @@ void longSubAbs(Long* dest, const Long* lhs, const Long* rhs) {
     rd = rhs->d_;
   }
 
-  dd = dest->d_;
-  i = 0;
-  c = 0;
+  digit *dd = dest->d_;
+  int32_t i = 0;
+  digit c = 0;
   for (; i < rl; ++i) {
     if (ld[i] < rd[i] + c) {
       dd[i] = (digit)(BASE + ld[i] - rd[i] - c);
@@ -329,7 +318,7 @@ void longSubAbs(Long* dest, const Long* lhs, const Long* rhs) {
 }
 
 void longSub(Long* dest, const Long* lhs, const Long* rhs) {
-  const int sign = lhs->l_ ^ rhs->l_;
+  const int32_t sign = lhs->l_ ^ rhs->l_;
 
   if (sign < 0) {
     longAddAbs(dest, lhs, rhs);
@@ -339,22 +328,22 @@ void longSub(Long* dest, const Long* lhs, const Long* rhs) {
 }
 
 void longMul(Long* dest, const Long* lhs, const Long* rhs) {
-  int i, j;
-  ddigit n, e;
-  digit *dd, *ld, *rd;
-  int sign = rhs->l_ ^ lhs->l_;
-  int ll = abs(lhs->l_), rl = abs(rhs->l_);
+  const int32_t sign = rhs->l_ ^ lhs->l_;
+  const int32_t ll = abs(lhs->l_);
+  const int32_t rl = abs(rhs->l_);
 
-  longFillZero(dest, sign < 0 ? -(ll + rl) : ll + rl);
+  longAlloc(dest, sign < 0 ? -(ll + rl) : ll + rl);
 
-  dd = dest->d_;
-  ld = lhs->d_;
-  rd = rhs->d_;
-  for (i = 0; i < ll; ++i) {
+  digit *dd = dest->d_;
+  digit *ld = lhs->d_;
+  digit *rd = rhs->d_;
+
+  for (int32_t i = 0; i < ll; ++i) {
     if (ld[i] == 0) { continue; }
-    n = 0;
-    for (j = 0; j < rl; ++j) {
-      e = n + ld[i] * rd[j];
+    ddigit n = 0;
+    int32_t j = 0;
+    for (; j < rl; ++j) {
+      const ddigit e = n + ld[i] * rd[j];
       n = dd[i + j] + e;
       if (e) { dd[i + j] = n & MASK; }
       n >>= SHIFT_BIT;
@@ -365,22 +354,18 @@ void longMul(Long* dest, const Long* lhs, const Long* rhs) {
   longNorm(dest);
 }
 
-
 /**
  * @param b
  * @param mod
  * @return modulus if mod is true, else division
  */
 void longDivmod(Long* dest, const Long* lhs, const Long* rhs, bool mod) {
-  const bool albl = lhs->l_ == rhs->l_;
-  int i, j, ll, rl, bbl, sign;
-  Long bb, div;
-  ddigit dd, ee, t, num, q;
-
   if (longIsZero(rhs)) {
     fprintf(stderr, "Zero Division @%d\n", __LINE__);
     return;
   }
+
+  Long bb;
   if (longIsOne(rhs)) {
     if (mod) {
       longInit(&bb);
@@ -392,8 +377,9 @@ void longDivmod(Long* dest, const Long* lhs, const Long* rhs, bool mod) {
     return;
   }
 
-  ll = abs(lhs->l_);
-  rl = abs(rhs->l_);
+  const bool albl = lhs->l_ == rhs->l_;
+  const int32_t ll = abs(lhs->l_);
+  const int32_t rl = abs(rhs->l_);
   if (ll < rl || (albl && lhs->d_[ll - 1] < rhs->d_[rl - 1])) {
     if (mod) {
       longClone(dest, lhs);
@@ -405,6 +391,8 @@ void longDivmod(Long* dest, const Long* lhs, const Long* rhs, bool mod) {
     return;
   }
 
+  int i;
+  ddigit dd, t;
   if (rl == 1) {
     dd = rhs->d_[0];
     t = 0;
@@ -426,10 +414,12 @@ void longDivmod(Long* dest, const Long* lhs, const Long* rhs, bool mod) {
 
   longInit(&bb);
   longClone(&bb, rhs);
-  bbl = abs(bb.l_);
+  int bbl = abs(bb.l_);
   longFillZero(dest, albl ? ll + 2 : ll + 1);
   dd = BASE / (rhs->d_[rl - 1] + 1) & MASK;
   
+  int j;
+  ddigit ee, num, q;
   if (dd == 1) {
     j = ll;
     while (j--) { dest->d_[j] = lhs->d_[j]; }
@@ -494,6 +484,7 @@ void longDivmod(Long* dest, const Long* lhs, const Long* rhs, bool mod) {
     dest->d_[j] = (digit)q;
   } while (--j >= bbl);
 
+  Long div;
   longInit(&div);
   longClone(&div, dest);
   if (mod) {
@@ -515,7 +506,7 @@ void longDivmod(Long* dest, const Long* lhs, const Long* rhs, bool mod) {
     return;
   }
 
-  sign = lhs->l_ ^ rhs->l_;
+  const int32_t sign = lhs->l_ ^ rhs->l_;
 
   j = (albl ? ll + 2 : ll + 1) - bbl;
   for (i = 0; i < j; ++i) { div.d_[i] = div.d_[i + bbl]; }
@@ -527,9 +518,6 @@ void longDivmod(Long* dest, const Long* lhs, const Long* rhs, bool mod) {
 }
 
 void longLeftShift(Long* dest, const Long* self, ddigit n) {
-  int i;
-  ddigit t, carry = 0;
-  digit *dd, *sd;
   const int length = abs(self->l_);
   const int d = (int)n / SHIFT_BIT;
   const ddigit b = n % SHIFT_BIT;
@@ -537,10 +525,12 @@ void longLeftShift(Long* dest, const Long* self, ddigit n) {
   longAlloc(dest, longIsNeg(self) ? -(length + d + 1) : length + d + 1);
   memset(dest->d_, 0, sizeof(digit) * d);
 
-  dd = dest->d_;
-  sd = self->d_;
-  for (i = 0; i < length; ++i) {
-    t = (sd[i] << b) + carry;
+  digit *dd = dest->d_;
+  digit *sd = self->d_;
+  ddigit carry = 0;
+  int32_t i = 0;
+  for (; i < length; ++i) {
+    const ddigit t = (sd[i] << b) + carry;
     dd[i + d] = t & MASK;
     carry = t >> SHIFT_BIT;
   }
@@ -550,13 +540,8 @@ void longLeftShift(Long* dest, const Long* self, ddigit n) {
 }
 
 void longRightShift(Long* dest, const Long* self, ddigit n) {
-  int i;
-  digit *dd, *sd;
   const int d = (int)n / SHIFT_BIT;
   const int length = abs(self->l_);
-  const ddigit b = n % SHIFT_BIT;
-  const ddigit mask = (1 << b) - 1;
-
   if (length <= d) {
     longInit(dest);
     return;
@@ -564,9 +549,12 @@ void longRightShift(Long* dest, const Long* self, ddigit n) {
 
   longAlloc(dest, longIsNeg(self) ? -(length - d) : length - d);
 
-  dd = dest->d_;
-  sd = self->d_;
-  for (i = 0; i < length - d - 1; ++i) {
+  const ddigit b = n % SHIFT_BIT;
+  const ddigit mask = (1 << b) - 1;
+  digit *dd = dest->d_;
+  digit *sd = self->d_;
+  int32_t i = 0;
+  for (; i < length - d - 1; ++i) {
     dd[i] = ((sd[i + d + 1] & mask) << (SHIFT_BIT - b)) + (sd[i + d] >> b);
   }
   dd[i] = sd[i + d] >> b;
@@ -575,22 +563,18 @@ void longRightShift(Long* dest, const Long* self, ddigit n) {
 }
 
 void longSquare(Long* dest, const Long* self) {
-  ddigit u, v ,uv, c;
-  digit *dd, *sd;
-  int i, j;
   const int length = abs(self->l_);
-
   longFillZero(dest, length << 1);
 
-  dd = dest->d_;
-  sd = self->d_;
-  for (i = 0; i < length; ++i) {
-    uv = dd[i << 1] + sd[i] * sd[i];
-    u = uv >> SHIFT_BIT;
-    v = uv & MASK;
+  digit *dd = dest->d_;
+  digit *sd = self->d_;
+  for (int32_t i = 0; i < length; ++i) {
+    ddigit uv = dd[i << 1] + sd[i] * sd[i];
+    ddigit u = uv >> SHIFT_BIT;
+    ddigit v = uv & MASK;
     dd[i << 1] = (digit)v;
-    c = u;
-    for (j = i + 1; j < length; ++j) {
+    ddigit c = u;
+    for (int32_t j = i + 1; j < length; ++j) {
       uv = sd[j] * sd[i];
       u = (uv >> SHIFT_BIT) << 1;
       v = (uv & MASK) << 1;
@@ -645,6 +629,7 @@ void longPow(Long* dest, const Long* self, ddigit n) {
   longInit(&t);
   longClone(&a, self);
   longNum(dest, 1);
+
   for (; n > 0; n >>= 1) {
     if (n & 1) {
       longMul(&t, dest, &a);
@@ -654,43 +639,40 @@ void longPow(Long* dest, const Long* self, ddigit n) {
     longSquare(&t, &a);
     longClone(&a, &t);
   }
+
   longFree(&a);
   longFree(&t);
 }
 
 int longCmpAbs(const Long* lhs, const Long* rhs) {
-  int al;
-  digit *ld, *rd;
-
   if (lhs == rhs) { return 0; }
-  al = abs(lhs->l_);
+
+  int32_t al = abs(lhs->l_);
   if (al < abs(rhs->l_)) { return -1; }
   if (al > abs(rhs->l_)) { return 1; }
   if (al == 0) { return 0; }
 
   al = abs(al);
-  ld = lhs->d_;
-  rd = rhs->d_;
+  digit *ld = lhs->d_;
+  digit *rd = rhs->d_;
   do { --al; } while (al && ld[al] == rd[al]);
   return ld[al] > rd[al] ? 1 :
       ld[al] < rd[al] ? -1 : 0;
 }
 
 int longCmp(const Long* lhs, const Long* rhs) {
-  int al;
-  digit *ld, *rd;
-  const int sign = lhs->l_ ^ rhs->l_;
-
   if (lhs == rhs) { return 0; }
-  al = lhs->l_;
+
+  int32_t al = lhs->l_;
   if (al < rhs->l_) { return -1; }
   if (al > rhs->l_) { return 1; }
   if (al == 0) { return 0; }
 
   al = abs(al);
-  ld = lhs->d_;
-  rd = rhs->d_;
+  digit *ld = lhs->d_;
+  digit *rd = rhs->d_;
   do { --al; } while (al && ld[al] == rd[al]);
+  const int sign = lhs->l_ ^ rhs->l_;
   return ld[al] > rd[al] ? (sign < 0 ? -1 : 1) :
       ld[al] < rd[al] ? (sign < 0 ? 1 : -1) : 0;
 }
